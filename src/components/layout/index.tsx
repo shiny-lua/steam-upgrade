@@ -5,7 +5,7 @@ import Footer from './footer';
 const Layout = ({ children }: { children: ReactNode }) => {
 
     return (
-        <div className="h-full w-full bg-primary pt-5 pb-8">
+        <div className="h-full w-full bg-primary pb-8">
             <Header />
             {children}
             <Footer />

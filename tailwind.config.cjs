@@ -230,6 +230,12 @@ module.exports = withMT({
         '.overflow-wrap-anywhere': {
           'overflow-wrap': 'anywhere',
         },
+        '.mask-composite-exclude': {
+          'mask-composite': 'exclude',
+        },
+        '.webkit-mask-xor': {
+          '-webkit-mask-composite': 'xor',
+        },
       });
     },
   ],

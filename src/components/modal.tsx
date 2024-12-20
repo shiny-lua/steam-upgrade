@@ -1,3 +1,5 @@
+import React from "react";
+
 const Modal = ({ children }: { children: React.ReactNode }) => {
   return (
     <div
@@ -9,9 +11,6 @@ const Modal = ({ children }: { children: React.ReactNode }) => {
       }}
     >
       <span
-        data-type="inside"
-        aria-hidden="true"
-        data-floating-ui-focus-guard=""
         style={{
           border: "0px",
           clip: "rect(0px, 0px, 0px, 0px)",
@@ -25,13 +24,9 @@ const Modal = ({ children }: { children: React.ReactNode }) => {
           top: "0px",
           left: "0px",
         }}
-        data-aria-hidden="true"
       ></span>
       {children}
       <span
-        data-type="inside"
-        aria-hidden="true"
-        data-floating-ui-focus-guard=""
         style={{
           border: "0px",
           clip: "rect(0px, 0px, 0px, 0px)",
@@ -45,7 +40,6 @@ const Modal = ({ children }: { children: React.ReactNode }) => {
           top: "0px",
           left: "0px",
         }}
-        data-aria-hidden="true"
       ></span>
     </div>
   );
