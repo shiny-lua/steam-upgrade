@@ -10,7 +10,7 @@ const Footer = () => {
           <div className="flex gap-1 items-center">
             <img src="/image/icons/logo.png" alt="logo" />
             <div className="flex flex-col mt-1">
-              <p className="text-[#A942E7] font-bold text-sm leading-none">Steam</p>
+              <p className="text-[#A942E7] font-bold text-[19px] leading-none">Steam</p>
               <p className="text-[#A942E7] font-bold text-sm leading-none">
                 Upgrade
               </p>

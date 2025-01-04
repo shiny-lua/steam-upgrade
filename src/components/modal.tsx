@@ -9,6 +9,7 @@ const Modal = ({ children }: { children: React.ReactNode }) => {
         inset: "0px",
         zIndex: 9999,
       }}
+      className="bg-black bg-opacity-60"
     >
       <span
         style={{

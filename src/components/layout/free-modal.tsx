@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Modal from "../modal";
 import { Button } from "@material-tailwind/react";
 import Icon from "../icon";
@@ -10,46 +10,46 @@ const FreeModal = ({
   isOpen: boolean;
   onClose: VoidFunction;
 }) => {
+
   const modalRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
     } else {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, onClose]);
 
   return (
     <Modal>
       <div
-        className="grid place-items-center fixed w-screen h-screen bg-black bg-opacity-60 backdrop-blur-sm"
+        className="grid place-items-center fixed w-screen h-screen bg-black bg-opacity-60 backdrop-blur-sm fade-in"
         style={{ opacity: 1 }}
       >
         <div
           ref={modalRef}
-          className="relative m-4 shadow-2xl text-blue-gray-500 antialiased font-sans text-base font-light leading-relaxed w-full md:w-3/4 lg:w-3/5 2xl:w-2/5 min-w-[90%] md:min-w-[75%] lg:min-w-[60%] 2xl:min-w-[40%] max-w-[90%] md:max-w-[75%] lg:max-w-[60%] 2xl:max-w-[40%] !w-[1052px] !min-w-[1052px] min-h-[80vh] h-[80vh] bg-[#252633] rounded-xl flex flex-col gap-6 p-6 border-0 overflow-auto my-16" 
-          style={{ opacity: 1, transform: "none" }}
+          className={`relative m-4 shadow-2xl text-blue-gray-500 antialiased font-sans text-base font-light leading-relaxed !w-[1052px] !min-w-[1052px] min-h-[80vh] h-[80vh] bg-[#252633] rounded-xl flex flex-col gap-6 p-6 border-0 overflow-auto my-16 transform transition-transform duration-500 ${isOpen ? "scale-100 translate-y-0" : "scale-95 translate-y-8 opacity-0"
+            }`}
         >
           <div className="flex justify-between items-center">
             <div className="flex gap-2 items-center">
               <Icon icon="Free" />
               <span className="text-sm text-primary-white">Free Case</span>
             </div>
-            <div onClick={onClose}>
+            <div
+              onClick={onClose}
+            >
               <Icon icon="Cancel" />
             </div>
           </div>
@@ -108,7 +108,7 @@ const FreeModal = ({
                   <span className="text-[10px] text-primary-grey">0.0001%</span>
                 </div>
                 <div className="flex gap-4 w-full pl-4 pb-2">
-                <img src="/image/icons/sword-2.png" alt="" />
+                  <img src="/image/icons/sword-2.png" alt="" />
                   <div className="flex gap-1 flex-col">
                     <span className="text-primary-grey text-xs">Karambit</span>
                     <span className="text-white text-sm">Lore</span>
@@ -170,5 +170,6 @@ const FreeModal = ({
     </Modal>
   );
 };
+
 
 export default FreeModal;

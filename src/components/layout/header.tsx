@@ -105,7 +105,7 @@ const Header = () => {
             <img src="/image/icons/logo.png" alt="logo" />
             {!state.isOpenedMenu && (
               <div className="flex flex-col mt-1">
-              <p className="text-[#A942E7] font-bold text-sm leading-none">Steam</p>
+              <p className="text-[#A942E7] font-bold text-[20px] leading-none">Steam</p>
               <p className="text-[#A942E7] font-bold text-sm leading-none">
                 Upgrade
               </p>

@@ -30,7 +30,7 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
   return (
     <Modal>
       <div
-        className="grid place-items-center fixed w-screen h-screen bg-black bg-opacity-60 backdrop-blur-sm"
+        className="grid place-items-center fixed w-screen h-screen bg-black bg-opacity-60 backdrop-blur-sm fade-in"
         style={{ opacity: 1 }}
       >
         <div ref={modalRef}

@@ -10,6 +10,24 @@ const Home = () => {
   const [state, { dispatch }]: GlobalContextType = useGlobalContext();
 
   const [showLevelUpModal, setShowLevelUpModal] = React.useState(false);
+  
+  React.useEffect(() => {
+    
+    const scrollContainer = document.querySelector(".scroll-container");
+
+    if (scrollContainer) { 
+      const handleWheel = (e) => {
+        e.preventDefault();
+        scrollContainer.scrollLeft += e.deltaY;
+      };
+
+      scrollContainer.addEventListener("wheel", handleWheel);
+
+      return () => {
+        scrollContainer.removeEventListener("wheel", handleWheel);
+      };
+    }
+  }, []);
   return (
     <Layout>
       <div className="mx-auto w-[868px] mt-5 md:mt-20">
@@ -287,7 +305,7 @@ const Home = () => {
           <span className="text-primary-grey text-sm">
             A quick introduction on the basic features of the website.
           </span>
-          <div className="bg-[#161620] opacity-90 flex gap-3 p-7 overflow-hidden">
+          <div className="bg-[#161620] opacity-90 flex gap-3 p-7 flex-none overflow-x-auto scroll-container">
             <div className="rounded-[10px] bg-[#252633] opacity-90 min-w-[38%] px-5 py-6 flex flex-col gap-[14px]">
               <span className="font-bold text-sm text-white">
                 Log In with Steam &amp; Select Your Dream Level
