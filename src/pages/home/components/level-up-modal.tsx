@@ -196,15 +196,15 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
                 <Button
                   onClick={onClose}
                   className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] w-1/6 normal-case"
-                  type="button" placeholder="" onPointerEnterCapture="" onPointerLeaveCapture=""                >
+                  type="button" placeholder=""                  >
                   Cancel
                 </Button>
                 <Button
                   onClick={() => setTabIdx(1)}
                   className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-5/6 normal-case flex gap-2 items-center justify-center"
-                  type="button" placeholder="" onPointerEnterCapture="" onPointerLeaveCapture=""                >
+                  type="button" placeholder=""                  >
                   Continue{" "}
-                  <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 320 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" >
+                  <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 320 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" >
                     <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"></path>
                   </svg>
                 </Button>
@@ -260,12 +260,12 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
                   onClick={() => setTabIdx(2)}
                   className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-full normal-case flex gap-2 items-center justify-center"
                   type="button"
-                  style={{ position: "relative", overflow: "hidden" }} placeholder="" onPointerEnterCapture="" onPointerLeaveCapture=""                >
+                  style={{ position: "relative", overflow: "hidden" }} placeholder=""                  >
                   Continue{" "}
                   <svg
                     stroke="currentColor"
                     fill="currentColor"
-                    stroke-width="0"
+                    strokeWidth="0"
                     viewBox="0 0 320 512"
                     height="1em"
                     width="1em"
@@ -331,12 +331,12 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
                   onClick={() => setTabIdx(3)}
                   className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-full normal-case flex gap-2 items-center justify-center"
                   type="button"
-                  style={{ position: "relative", overflow: "hidden" }} placeholder="" onPointerEnterCapture="" onPointerLeaveCapture=""                >
+                  style={{ position: "relative", overflow: "hidden" }} placeholder=""                  >
                   Continue{" "}
                   <svg
                     stroke="currentColor"
                     fill="currentColor"
-                    stroke-width="0"
+                    strokeWidth="0"
                     viewBox="0 0 320 512"
                     height="1em"
                     width="1em"
@@ -360,7 +360,7 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
                 </span>
                 <Button
                   className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] w-full mt-2 bg-opacity-75 text-primary-grey flex gap-2 justify-center items-center"
-                  type="button" placeholder="" onPointerEnterCapture="" onPointerLeaveCapture=""                >
+                  type="button" placeholder=""                  >
                   <Icon icon="Tutorial" />
                   Tutorial
                 </Button>
@@ -369,7 +369,7 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
                 <Button
                   onClick={onClose}
                   className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-full normal-case flex gap-2 items-center justify-center"
-                  type="button" placeholder="" onPointerEnterCapture="" onPointerLeaveCapture=""                >
+                  type="button" placeholder=""                  >
                   <Icon icon="WhiteBag" />{" "}
                   Check Inventory
                 </Button>

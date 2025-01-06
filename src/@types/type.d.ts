@@ -6,6 +6,7 @@ interface ReducerObject {
 interface InitStateObject {
     isLoggedIn: false
     isOpenedMenu: false
+    user: any
 }
 
 type GlobalContextType = [
@@ -13,6 +14,6 @@ type GlobalContextType = [
 
     {
         dispatch: (data: ReducerObject) => void
-        storeData: (authToken: string) => void
+        storeData: (authToken: any) => void
     }
 ]

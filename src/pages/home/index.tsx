@@ -5,17 +5,18 @@ import LevelUpModal from "./components/level-up-modal";
 import { useGlobalContext } from "../../context";
 import { Button } from "@material-tailwind/react";
 import Icon from "../../components/icon";
+import { restApi } from "../../context/restApi";
 
 const Home = () => {
   const [state, { dispatch }]: GlobalContextType = useGlobalContext();
 
   const [showLevelUpModal, setShowLevelUpModal] = React.useState(false);
-  
+
   React.useEffect(() => {
-    
+
     const scrollContainer = document.querySelector(".scroll-container");
 
-    if (scrollContainer) { 
+    if (scrollContainer) {
       const handleWheel = (e) => {
         e.preventDefault();
         scrollContainer.scrollLeft += e.deltaY;
@@ -28,6 +29,11 @@ const Home = () => {
       };
     }
   }, []);
+
+  const onSignIn = async () => {
+    window.location.href = 'http://localhost:5000/auth/steam';
+  }
+  
   return (
     <Layout>
       <div className="mx-auto w-[868px] mt-5 md:mt-20">
@@ -83,7 +89,7 @@ const Home = () => {
                     </div>
                   </div>
                   <Button
-                    className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 flex items-center justify-center gap-1" type="button" placeholder="" onPointerEnterCapture="" onPointerLeaveCapture="">
+                    className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 flex items-center justify-center gap-1" type="button" placeholder=""  >
                     <Icon icon="Refresh" />
                     <span className="text-primary-grey normal-case">
                       Refresh
@@ -143,11 +149,11 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-              {!state.isLoggedIn ? (
+              {Object.keys(state.user).length === 0 ? (
                 <Button
-                  onClick={() => dispatch({ type: "isLoggedIn", payload: true })}
+                  onClick={onSignIn}
                   className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4"
-                  type="button" placeholder="" onPointerEnterCapture="" onPointerLeaveCapture=""                >
+                  type="button" placeholder=""                  >
                   <div className="flex gap-1 justify-center items-center">
                     <Icon icon="Steam" />
                     <span className="text-white normal-case text-sm">
@@ -160,7 +166,7 @@ const Home = () => {
                 <Button
                   onClick={() => setShowLevelUpModal(true)}
                   className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4"
-                  type="button" placeholder="" onPointerEnterCapture="" onPointerLeaveCapture=""                >
+                  type="button" placeholder=""                  >
                   <div className="flex gap-2 justify-center items-center">
                     Continue{" "}
                     <Icon icon="TriangleRight" />
@@ -220,7 +226,7 @@ const Home = () => {
                     <svg
                       stroke="currentColor"
                       fill="currentColor"
-                      stroke-width="0"
+                      strokeWidth="0"
                       viewBox="0 0 16 16"
                       className="text-primary-grey"
                       height="1em"
@@ -386,7 +392,7 @@ const Home = () => {
             </span>
             <Button
               className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-28 mt-2"
-              type="button" placeholder="" onPointerEnterCapture="" onPointerLeaveCapture=""            >
+              type="button" placeholder=""              >
               <div className="flex items-center gap-1">
                 <Icon icon="Discord" />
                 <span className="normal-case text-white">Contact</span>

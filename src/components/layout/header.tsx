@@ -6,20 +6,39 @@ import FreeModal from "./free-modal";
 import { useGlobalContext } from "../../context";
 import { Button } from "@material-tailwind/react";
 import Icon from "../icon";
+import { restApi } from "../../context/restApi";
 
 const Header = () => {
-  const [state, { dispatch }]: GlobalContextType = useGlobalContext();
+  const [state, { dispatch, storeData }]: GlobalContextType = useGlobalContext();
 
   const [showWalletModal, setWalletModal] = React.useState(false);
   const [showFreeModal, setFreeModal] = React.useState(false);
 
   const location = useLocation();
   const { pathname } = location;
+
+  React.useEffect(() => {
+    (async () => {
+      console.log("state.user", Object.keys(state.user).length)
+
+      const res = await restApi.postRequest("get-user")
+
+      if (res.status === 200) {
+        dispatch({ type: "user", payload: res.user })
+        storeData(res.user)
+      }
+    })()
+  }, [])
+
+  const onSignIn = async () => {
+    window.location.href = 'http://localhost:5000/auth/steam';
+  }
+
   return (
     <div className="h-full w-full bg-primary pt-5 z-999999">
       <header className="flex justify-around">
         <div className="flex gap-6 items-center">
-          {state.isLoggedIn && (
+          {Object.keys(state.user).length !== 0 && (
             <div
               onClick={(e) => {
                 e.stopPropagation();
@@ -105,16 +124,16 @@ const Header = () => {
             <img src="/image/icons/logo.png" alt="logo" />
             {!state.isOpenedMenu && (
               <div className="flex flex-col mt-1">
-              <p className="text-[#A942E7] font-bold text-[20px] leading-none">Steam</p>
-              <p className="text-[#A942E7] font-bold text-sm leading-none">
-                Upgrade
-              </p>
-            </div>
+                <p className="text-[#A942E7] font-bold text-[20px] leading-none">Steam</p>
+                <p className="text-[#A942E7] font-bold text-sm leading-none">
+                  Upgrade
+                </p>
+              </div>
             )}
           </div>
         </div>
 
-        {state.isLoggedIn ? (
+        {Object.keys(state.user).length !== 0 ? (
           <div className="flex rounded-[10px] border border-[#252633]">
             <div className="flex justify-center items-center w-24 text-sm text-white">
               $50.97
@@ -123,7 +142,7 @@ const Header = () => {
               <Button
                 className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient flex items-center gap-2"
                 style={{ position: "relative", overflow: "hidden" }}
-                onClick={() => setWalletModal(true)} placeholder="" onPointerEnterCapture="" onPointerLeaveCapture=""              >
+                onClick={() => setWalletModal(true)} placeholder=""                >
                 <Icon icon="Wallet" />
                 <span
                   className="normal-case text-white text-sm"
@@ -175,7 +194,7 @@ const Header = () => {
             </div>
           </div>
         )}
-        {state.isLoggedIn ? (
+        {Object.keys(state.user).length !== 0 ? (
           <div className="flex gap-3 items-center">
             <div
               onClick={() => setFreeModal(true)}
@@ -192,7 +211,7 @@ const Header = () => {
             </Link>
             <Link to="/profile">
               <img
-                src="/image/icons/user.png"
+                src={state.user.photos[0].value}
                 alt=""
                 className="!rounded-full w-10 h-10"
               />
@@ -201,10 +220,7 @@ const Header = () => {
         ) : (
           <Button
             className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4 z-10"
-            onClick={() => dispatch({
-              type: "isLoggedIn",
-              payload: true
-            })} placeholder="" onPointerEnterCapture="" onPointerLeaveCapture=""          >
+            onClick={onSignIn} placeholder=""            >
             <div className="flex gap-1">
               <Icon icon="Steam" />
               <span

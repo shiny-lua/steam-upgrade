@@ -28,7 +28,7 @@ const Inventory = () => {
                                 <div className="bg-[#3A3B54] p-1 rounded-md text-xs font-bold flex items-center justify-center text-primary-grey w-1/4">256</div>
                             </div>
                         </div>
-                        <Button onClick={() => setShowModal(true)} className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-[170px] p-2.5 z-10 cursor-pointer" style={{ position: "relative", overflow: "hidden" }} placeholder="" onPointerEnterCapture="" onPointerLeaveCapture="">
+                        <Button onClick={() => setShowModal(true)} className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-[170px] p-2.5 z-10 cursor-pointer" style={{ position: "relative", overflow: "hidden" }} placeholder=""  >
                             <div className="w-full flex justify-between items-center">
                                 <span className="capitalize text-sm">Withdraw Cards</span>
                                 <div className="bg-[#3A3B54] text-primary-white py-1 px-1.5 rounded-md text-xs font-bold flex items-center justify-center">14</div>

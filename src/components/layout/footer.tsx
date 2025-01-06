@@ -21,7 +21,7 @@ const Footer = () => {
           </span>
           <Button
             className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-grey bg-opacity-10 w-[136px] mt-10"
-            type="button" placeholder="" onPointerEnterCapture="" onPointerLeaveCapture=""          >
+            type="button" placeholder=""            >
             <div className="flex gap-1 ">
               <Icon icon="Discord" />
               <span className="text-[13px] text-primary-grey normal-case">

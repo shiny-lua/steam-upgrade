@@ -59,7 +59,7 @@ const FreeModal = ({
               <span className="text-white text-[18px]">Daily Case</span>
               <div className="flex gap-2 items-center">
                 <Button
-                  className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient" placeholder="" onPointerEnterCapture="" onPointerLeaveCapture=""                >
+                  className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient" placeholder=""                  >
                   Open Case
                 </Button>
                 <div className="flex items-center justify-center bg-[#3A3B54] rounded-md p-3">
