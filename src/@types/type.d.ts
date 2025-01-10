@@ -6,7 +6,8 @@ interface ReducerObject {
 interface InitStateObject {
     isLoggedIn: false
     isOpenedMenu: false
-    user: any
+    userData: any 
+    authToken: string
 }
 
 type GlobalContextType = [

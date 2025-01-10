@@ -126,7 +126,7 @@ const Affiliates = () => {
                 type="button" placeholder=""                >
                 <div className="flex gap-1 justify-center items-center">
                   <span className="text-white normal-case text-sm">
-                    Claim $2.10
+                    Claim discount
                   </span>
                 </div>
               </Button>
@@ -157,7 +157,7 @@ const Affiliates = () => {
                         id=":rj:"
                       />
                       <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
-                        <Icon icon="Sort" />
+                        <Icon icon="CheckedBox" />
                       </span>
                     </label>
                   </div>
@@ -178,7 +178,7 @@ const Affiliates = () => {
                         className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark"
                       />
                       <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
-                        <Icon icon="Sort" />
+                        <Icon icon="CheckedBox" />
                       </span>
                     </label>
                   </div>
@@ -200,7 +200,7 @@ const Affiliates = () => {
                         id=":rl:"
                       />
                       <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
-                        <Icon icon="Sort" />
+                        <Icon icon="CheckedBox" />
                       </span>
                     </label>
                   </div>
@@ -214,7 +214,7 @@ const Affiliates = () => {
                 disabled placeholder=""                >
                 <div className="flex gap-1 justify-center items-center">
                   <span className="text-white normal-case text-sm">
-                    Claim $2.10
+                    Claim discount
                   </span>
                 </div>
               </Button>
@@ -240,7 +240,7 @@ const Affiliates = () => {
                     <button className="flex items-center gap-2">
                       <p>level</p>
                       <span>
-                        <Icon icon="Sort" />
+                        <Icon icon="CheckedBox" />
                       </span>
                     </button>
                   </div>
@@ -254,7 +254,7 @@ const Affiliates = () => {
                   <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
                     <button className="flex items-center gap-2">
                       <p>games</p>
-                      <Icon icon="Sort" />
+                      <Icon icon="CheckedBox" />
                     </button>
                   </div>
                 </th>
@@ -262,7 +262,7 @@ const Affiliates = () => {
                   <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
                     <button className="flex items-center gap-2">
                       <p>badges</p>
-                      <Icon icon="Sort" />
+                      <Icon icon="CheckedBox" />
                     </button>
                   </div>
                 </th>
@@ -270,7 +270,7 @@ const Affiliates = () => {
                   <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
                     <button className="flex items-center gap-2">
                       <p>playtime</p>
-                      <Icon icon="Sort" />
+                      <Icon icon="CheckedBox" />
                     </button>
                   </div>
                 </th>
@@ -278,7 +278,7 @@ const Affiliates = () => {
                   <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
                     <button className="flex items-center gap-2">
                       <p>year</p>
-                      <Icon icon="Sort" />
+                      <Icon icon="CheckedBox" />
                     </button>
                   </div>
                 </th>

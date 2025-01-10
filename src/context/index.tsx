@@ -1,10 +1,19 @@
 import React from "react";
 import { config } from "../config/config";
+import { restApi } from "./restApi";
 
 const INIT_STATE: InitStateObject = {
     isLoggedIn: false,
-    user: {},
-    isOpenedMenu: false
+    userData: {
+        fullName: "",
+        email: "",
+        id: "",
+        avatar: "",
+        joinDate: "",
+        tradeLink: ""
+    },
+    isOpenedMenu: false,
+    authToken: ""
 }
 
 const GlobalContext = React.createContext<any>(null);
@@ -21,22 +30,11 @@ function useGlobalContext() {
 }
 
 const storeData = async (value: any) => {
-    return window.localStorage.setItem("user", value)
+    return window.localStorage.setItem("authToken", value)
 }
 
 const getData = async () => {
-    let init = {} as any
-    try {
-        const buf = window.localStorage.getItem("user")
-        if (buf) {
-            const json = JSON.parse(buf)
-            Object.entries(json).map(([k, value]) => {
-                init[k] = value;
-            })
-        }
-    } catch (err) {
-    }
-    return init
+    return window.localStorage.getItem("authToken")
 }
 
 const GlobalContextProvider = ({ children }: any) => {
@@ -48,17 +46,37 @@ const GlobalContextProvider = ({ children }: any) => {
 
     const initSessionSetting = async () => {
         try {
-            const user = await getData();
+            const authToken = await getData() || "";
+            // console.log("authToken", authToken)
+            restApi.setAuthToken(authToken)
+            if (!!authToken) {
+                const loginStatus = await restApi.loginStatus(authToken);
+                console.log("loginStatus", loginStatus);
 
-            if (user) {
-                dispatch({ type: 'user', payload: user })
+                if (!!loginStatus?.status) {
+                    const userData = {
+                        fullName: loginStatus.fullName,
+                        email: loginStatus.email,
+                        id: loginStatus.id,
+                        avatar: loginStatus.avatar,
+                        joinedDate: loginStatus.joinedDate,
+                        tradeLink: loginStatus.tradeLink
+                    }
+
+                    // console.log("userData::", userData)
+                    dispatch({ type: "authToken", payload: authToken });
+                    dispatch({ type: "userData", payload: userData });
+
+                    // setTimeout(() => { dispatch({ type: "showLoadingPage", payload: false }) }, 1000);
+                } else {
+                    console.log("Invalid authToken!");
+                }
             } else {
-                // throw new ValidateError("Invalid authToken!")
+                console.log("Invalid authToken!");
             }
-
-        } catch (error: any) {
+        } catch (err: any) {
+            console.log("auth_token_invalid::", err.message);
             // setTimeout(() => { dispatch({ type: "showLoadingPage", payload: false }) }, 1000);
-            console.error(error)
         }
     }
 

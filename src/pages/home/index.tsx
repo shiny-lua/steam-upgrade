@@ -149,7 +149,7 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-              {Object.keys(state.user).length === 0 ? (
+              {Object.keys(state.userData).length === 0 ? (
                 <Button
                   onClick={onSignIn}
                   className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4"

@@ -7,7 +7,6 @@ import { useGlobalContext } from "../../context";
 import { Button } from "@material-tailwind/react";
 import Icon from "../icon";
 import { restApi } from "../../context/restApi";
-
 const Header = () => {
   const [state, { dispatch, storeData }]: GlobalContextType = useGlobalContext();
 
@@ -18,16 +17,21 @@ const Header = () => {
   const { pathname } = location;
 
   React.useEffect(() => {
-    (async () => {
-      console.log("state.user", Object.keys(state.user).length)
-
-      const res = await restApi.postRequest("get-user")
-
-      if (res.status === 200) {
-        dispatch({ type: "user", payload: res.user })
-        storeData(res.user)
+    const fetchData = async () => {
+      if (!state.authToken) {
+        const res = await restApi.postRequest("get-token")
+        if (res.status === 200) {
+          
+          dispatch({ type: "authToken", payload: res.authToken })
+          storeData(res.authToken)
+          restApi.setAuthToken(res.authToken)
+          const resp = await restApi.postRequest("get-user")
+          dispatch({ type: "userData", payload: resp.data })
+          console.log(resp.data, "data");
+        }
       }
-    })()
+    }
+    fetchData()
   }, [])
 
   const onSignIn = async () => {
@@ -38,7 +42,7 @@ const Header = () => {
     <div className="h-full w-full bg-primary pt-5 z-999999">
       <header className="flex justify-around">
         <div className="flex gap-6 items-center">
-          {Object.keys(state.user).length !== 0 && (
+          {state.authToken && (
             <div
               onClick={(e) => {
                 e.stopPropagation();
@@ -133,7 +137,7 @@ const Header = () => {
           </div>
         </div>
 
-        {Object.keys(state.user).length !== 0 ? (
+        {state.authToken ? (
           <div className="flex rounded-[10px] border border-[#252633]">
             <div className="flex justify-center items-center w-24 text-sm text-white">
               $50.97
@@ -194,7 +198,7 @@ const Header = () => {
             </div>
           </div>
         )}
-        {Object.keys(state.user).length !== 0 ? (
+        {state.authToken ? (
           <div className="flex gap-3 items-center">
             <div
               onClick={() => setFreeModal(true)}
@@ -211,7 +215,7 @@ const Header = () => {
             </Link>
             <Link to="/profile">
               <img
-                src={state.user.photos[0].value}
+                src={state.userData.avatar || "/image/icons/unknown-user.jpg"}
                 alt=""
                 className="!rounded-full w-10 h-10"
               />
