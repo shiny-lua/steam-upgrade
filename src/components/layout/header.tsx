@@ -35,7 +35,7 @@ const Header = () => {
   }, [])
 
   const onSignIn = async () => {
-    window.location.href = 'http://localhost:5000/auth/steam';
+    window.location.href = 'http://159.223.206.180:5000/auth/steam';
   }
 
   return (
