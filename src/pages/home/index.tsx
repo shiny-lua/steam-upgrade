@@ -31,7 +31,7 @@ const Home = () => {
   }, []);
 
   const onSignIn = async () => {
-    window.location.href = 'http://159.223.206.180:5000/auth/steam';
+    window.location.href = 'https://steamupgrade.com/auth/steam';
   }
   
   return (
