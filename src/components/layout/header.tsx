@@ -35,7 +35,7 @@ const Header = () => {
   }, [])
 
   const onSignIn = async () => {
-    window.location.href = 'https://steamupgrade.com';
+    window.location.href = 'https://steamupgrade.com:5000/auth/steam';
   }
 
   return (
