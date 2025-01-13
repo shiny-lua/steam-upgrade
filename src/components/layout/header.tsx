@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import WalletModal from "./wallet-modal";
 import FreeModal from "./free-modal";
-import { useGlobalContext } from "../../context";
+import { config, useGlobalContext } from "../../context";
 import { Button } from "@material-tailwind/react";
 import Icon from "../icon";
 import { restApi } from "../../context/restApi";
@@ -35,7 +35,7 @@ const Header = () => {
   }, [])
 
   const onSignIn = async () => {
-    window.location.href = 'https://steamupgrade.com/auth/steam';
+    window.location.href = config.REDIRECT_URL;
   }
 
   return (

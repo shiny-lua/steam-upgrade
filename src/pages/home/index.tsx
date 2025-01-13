@@ -2,7 +2,7 @@ import React from "react";
 import Layout from "../../components/layout";
 import WalletModal from "../../components/layout/wallet-modal";
 import LevelUpModal from "./components/level-up-modal";
-import { useGlobalContext } from "../../context";
+import { config, useGlobalContext } from "../../context";
 import { Button } from "@material-tailwind/react";
 import Icon from "../../components/icon";
 import { restApi } from "../../context/restApi";
@@ -10,7 +10,22 @@ import { restApi } from "../../context/restApi";
 const Home = () => {
   const [state, { dispatch }]: GlobalContextType = useGlobalContext();
 
+  const [status, setStatus] = React.useState({
+    currentSteamLevel: 0,
+    dreamSteamLevel: 0
+  })
+
   const [showLevelUpModal, setShowLevelUpModal] = React.useState(false);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const res = await restApi.postRequest("get-steam-level")
+      
+      setStatus({...status, currentSteamLevel: res.data})
+    }
+
+    fetchData()
+  }, [state.authToken])
 
   React.useEffect(() => {
 
@@ -30,10 +45,14 @@ const Home = () => {
     }
   }, []);
 
-  const onSignIn = async () => {
-    window.location.href = 'https://steamupgrade.com/auth/steam';
+  const onLevelUp = (n: number) => {
+    setStatus({...status, dreamSteamLevel: status.dreamSteamLevel + n})
   }
-  
+
+  const onSignIn = async () => {
+    window.location.href = config.REDIRECT_URL;
+  }
+
   return (
     <Layout>
       <div className="mx-auto w-[868px] mt-5 md:mt-20">
@@ -102,24 +121,27 @@ const Home = () => {
                     Dream Steam Level
                   </span>
                   <div className="bg-primary-dark opacity-50 rounded-[10px] w-full px-4 py-3 flex justify-between items-center">
-                    <span className="text-[#EDEDED] text-sm">60</span>
-                    <div className="w-6 h-6 flex text-[10px] justify-center items-center rounded-full border border-[#7653C9] text-white">
-                      60
-                    </div>
+                    <input
+                      type="number"
+                      value={status.dreamSteamLevel}
+                      onChange={e => setStatus({...status, dreamSteamLevel: Number(e.target.value)})}
+                      className="text-[#EDEDED] text-sm border-none outline-none bg-transparent"
+                    />
+                    <div className="w-6 h-6 flex text-[10px] justify-center items-center rounded-full border border-[#7653C9] text-white">{status.dreamSteamLevel}</div>
                   </div>
                   <div className="flex gap-2 h-8">
-                    <div className="bg-[#3A3B54] rounded-md text-xs font-bold flex items-center justify-center text-primary-grey w-1/4">
+                    <button onClick={() => onLevelUp(1)} className="bg-[#3A3B54] rounded-md text-xs font-bold flex items-center justify-center text-primary-grey w-1/4">
                       +1
-                    </div>
-                    <div className="bg-[#3A3B54] rounded-md text-xs font-bold flex items-center justify-center text-primary-grey w-1/4">
+                    </button>
+                    <button onClick={() => onLevelUp(10)} className="bg-[#3A3B54] rounded-md text-xs font-bold flex items-center justify-center text-primary-grey w-1/4">
                       +10
-                    </div>
-                    <div className="bg-[#3A3B54] rounded-md text-xs font-bold flex items-center justify-center text-primary-grey w-1/4">
+                    </button>
+                    <button onClick={() => onLevelUp(100)} className="bg-[#3A3B54] rounded-md text-xs font-bold flex items-center justify-center text-primary-grey w-1/4">
                       +100
-                    </div>
-                    <div className="bg-[#3A3B54] rounded-md text-xs font-bold flex items-center justify-center text-primary-grey w-1/4">
+                    </button>
+                    <button onClick={() => setStatus({...status, dreamSteamLevel: 0})} className="bg-[#3A3B54] rounded-md text-xs font-bold flex items-center justify-center text-primary-grey w-1/4">
                       <Icon icon="Recycle" />
-                    </div>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -239,11 +261,9 @@ const Home = () => {
                 </div>
                 <div className="flex w-[45%]">
                   <div className="flex flex-col justify-center items-center gap-3 w-full">
-                    <div className="border-[2px] border-[#7652C9] rounded-full flex w-10 h-10 text-white text-sm justify-center items-center">
-                      0
-                    </div>
+                    <div className="border-[2px] border-[#7652C9] rounded-full flex w-10 h-10 text-white text-sm justify-center items-center">{status.dreamSteamLevel}</div>
                     <span className="text-primary-grey text-xs">
-                      Current Level
+                      Dream Level
                     </span>
                   </div>
                 </div>

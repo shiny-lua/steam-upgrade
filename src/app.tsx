@@ -14,7 +14,6 @@ import Profile from "./pages/profile";
 import Inventory from "./pages/inventory";
 
 import { GlobalContextProvider, useGlobalContext } from "./context";
-import { restApi } from "./context/restApi";
 
 function App() {
 
