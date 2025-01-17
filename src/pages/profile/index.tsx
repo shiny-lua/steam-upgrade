@@ -43,7 +43,7 @@ const Profile = () => {
 
     return (
         <Layout>
-            <div className="relative h-full mx-auto w-[700px] mt-5 md:mt-10">
+            <div className="relative px-3 sm:px-4 md:px-8 lg:px-0 mx-auto max-w-[1000px] mt-5 md:mt-20">
                 <div className="mb-5">
                     <div className="flex items-center justify-between mb-4">
                         <div className="space-y-3 ">
@@ -63,7 +63,7 @@ const Profile = () => {
                             </div>
                         </Button>
                     </div>
-                    <div className="bg-primary-lightDark rounded-md flex flex-col gap-5 w-full p-7">
+                    <div className="bg-primary-lightDark rounded-md flex flex-col gap-5 w-full px-3 sm:px-4 md:px-6 lg:px-7 p-7">
                         <div className="flex gap-2 items-center">
                             <div className="!rounded-full border border-[#222330] w-10 h-10 cursor-pointer z-10">
                                 <img src={state.userData.avatar} className="w-full h-full rounded-full" alt="" />

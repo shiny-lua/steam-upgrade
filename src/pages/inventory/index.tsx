@@ -12,11 +12,11 @@ const Inventory = () => {
 
     return (
         <Layout>
-            <div className="relative h-full mx-auto w-[868px] mt-5 md:mt-10">
+            <div className="relative px-3 sm:px-4 md:px-8 lg:px-0 mx-auto max-w-[1000px] mt-5 md:mt-20">
                 <Icon icon="Effort" />
 
-                <div className="mb-5">
-                    <div className="flex items-start justify-between mb-4">
+                <div className="mb-5 w-full">
+                    <div className="flex flex-col xsm:flex-row gap-3 items-start justify-between mb-4">
                         <div className="space-y-3 ">
                             <button onClick={() => navigate("/home")} className="relative flex gap-2 items-center">
                                 <Icon icon="Back" />
@@ -28,16 +28,18 @@ const Inventory = () => {
                                 <div className="bg-[#3A3B54] p-1 rounded-md text-xs font-bold flex items-center justify-center text-primary-grey w-1/4">256</div>
                             </div>
                         </div>
-                        <Button onClick={() => setShowModal(true)} className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-[170px] p-2.5 z-10 cursor-pointer" style={{ position: "relative", overflow: "hidden" }} placeholder=""  >
-                            <div className="w-full flex justify-between items-center">
-                                <span className="capitalize text-sm">Withdraw Cards</span>
-                                <div className="bg-[#3A3B54] text-primary-white py-1 px-1.5 rounded-md text-xs font-bold flex items-center justify-center">14</div>
-                            </div>
-                        </Button>
+                        <div className="w-full flex justify-end">
+                            <Button onClick={() => setShowModal(true)} className="align-middle select-none font-sans font-bold text-center uppercase transition-all text-xs rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 bg-primary-gradient w-[170px] p-2.5 z-10 cursor-pointer" style={{ position: "relative", overflow: "hidden" }} placeholder=""  >
+                                <div className="w-full flex justify-between items-center">
+                                    <span className="capitalize text-sm">Withdraw Cards</span>
+                                    <div className="bg-[#3A3B54] text-primary-white py-1 px-1.5 rounded-md text-xs font-bold flex items-center justify-center">14</div>
+                                </div>
+                            </Button>
+                        </div>
                     </div>
-                    <div className="flex gap-4 mt-10 relative z-10">
+                    <div className="flex gap-4 xsm:mt-10 relative z-10">
                         <div className="bg-primary-lightDark rounded-md flex flex-col gap-5 p-5 w-full">
-                            <div className="flex justify-between items-center">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
                                 <div className="relative">
                                     <Icon icon="Search" />
                                     <input id="searchRank" className="bg-transparent inline-block w-full h-full text-primary-grey px-6 py-2 placeholder:text-[14px] placeholder:font-[500] placeholder:leading-[14px] placeholder:text-[#A9ABCD] border-none focus:outline-none focus:ring-0 placeholder:pl-0 pl-7" placeholder="Search Game..." />
@@ -45,10 +47,18 @@ const Inventory = () => {
                                 <div className="flex gap-3 items-center">
                                     <div>
                                         <div className="inline-flex items-center">
-                                            <label className="relative flex items-center cursor-pointer p-3 rounded-full">
-                                                <input type="checkbox" className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 flex items-center gap-0 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark" />
-                                                <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity"></span>
-                                            </label>
+                                            <div className="inline-flex items-center">
+                                                <label className="relative flex items-center cursor-pointer p-3 rounded-full">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark"
+                                                        id=":rj:"
+                                                    />
+                                                    <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
+                                                        <Icon icon="CheckedBox" />
+                                                    </span>
+                                                </label>
+                                            </div>
                                             <label className="text-gray-700 font-light select-none cursor-pointer mt-px">
                                                 <span className="-mt-1 -ml-1 text-primary-grey text-sm flex items-center">Select All</span>
                                             </label>
@@ -63,14 +73,17 @@ const Inventory = () => {
                             <div className="rounded-md bg-primary-semiDark flex p-5 flex-col">
                                 <div className="flex justify-between items-center w-full">
                                     <div className="flex items-center gap-1">
-                                        <div>
-                                            <div className="inline-flex items-center">
-                                                <label className="relative flex items-center cursor-pointer p-3 rounded-full" style={{ position: "relative", overflow: "hidden" }}>
-                                                    <input type="checkbox" className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 flex items-center gap-0 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark" />
-                                                    <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
-                                                    </span>
-                                                </label>
-                                            </div>
+                                        <div className="inline-flex items-center">
+                                            <label className="relative flex items-center cursor-pointer p-3 rounded-full">
+                                                <input
+                                                    type="checkbox"
+                                                    className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark"
+                                                    id=":rj:"
+                                                />
+                                                <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
+                                                    <Icon icon="CheckedBox" />
+                                                </span>
+                                            </label>
                                         </div>
                                         <div className="flex flex-col gap-1">
                                             <span className="text-white font-bold text-sm">Counter-Strike 2</span>
@@ -119,14 +132,17 @@ const Inventory = () => {
                             <div className="rounded-md bg-primary-semiDark flex p-5 flex-col">
                                 <div className="flex justify-between items-center w-full">
                                     <div className="flex items-center gap-1">
-                                        <div>
-                                            <div className="inline-flex items-center">
-                                                <label className="relative flex items-center cursor-pointer p-3 rounded-full" style={{ position: "relative", overflow: "hidden" }}>
-                                                    <input type="checkbox" className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 flex items-center gap-0 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark" />
-                                                    <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
-                                                    </span>
-                                                </label>
-                                            </div>
+                                        <div className="inline-flex items-center">
+                                            <label className="relative flex items-center cursor-pointer p-3 rounded-full">
+                                                <input
+                                                    type="checkbox"
+                                                    className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark"
+                                                    id=":rj:"
+                                                />
+                                                <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
+                                                    <Icon icon="CheckedBox" />
+                                                </span>
+                                            </label>
                                         </div>
                                         <div className="flex flex-col gap-1">
                                             <span className="text-white font-bold text-sm">Counter-Strike 2</span>
@@ -175,14 +191,17 @@ const Inventory = () => {
                             <div className="rounded-md bg-primary-semiDark flex p-5 flex-col">
                                 <div className="flex justify-between items-center w-full">
                                     <div className="flex items-center gap-1">
-                                        <div>
-                                            <div className="inline-flex items-center">
-                                                <label className="relative flex items-center cursor-pointer p-3 rounded-full" style={{ position: "relative", overflow: "hidden" }}>
-                                                    <input type="checkbox" className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 flex items-center gap-0 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark" />
-                                                    <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
-                                                    </span>
-                                                </label>
-                                            </div>
+                                        <div className="inline-flex items-center">
+                                            <label className="relative flex items-center cursor-pointer p-3 rounded-full">
+                                                <input
+                                                    type="checkbox"
+                                                    className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark"
+                                                    id=":rj:"
+                                                />
+                                                <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
+                                                    <Icon icon="CheckedBox" />
+                                                </span>
+                                            </label>
                                         </div>
                                         <div className="flex flex-col gap-1">
                                             <span className="text-white font-bold text-sm">Counter-Strike 2</span>

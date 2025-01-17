@@ -32,7 +32,7 @@ const WithdrawCardModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
                 className="grid place-items-center fixed w-screen h-screen bg-black bg-opacity-60 backdrop-blur-sm fade-in"
                 style={{ opacity: 1 }}
             >
-                <div ref={modalRef} className="relative m-4 shadow-2xl text-blue-gray-500 antialiased font-sans text-base font-light leading-relaxed w-full md:w-3/4 lg:w-3/5 2xl:w-2/5 min-w-[90%] md:min-w-[75%] lg:min-w-[60%] 2xl:min-w-[40%] max-w-[90%] md:max-w-[75%] lg:max-w-[60%] 2xl:max-w-[40%] !w-[584px] !min-w-[584px] bg-[#252633] rounded-xl flex flex-col gap-6 p-6 border-0 overflow-auto my-16" aria-labelledby=":r1t:-label" aria-describedby=":r1t:-description" id=":r1u:" role="dialog" style={{ opacity: 1, transform: "none" }}>
+                <div ref={modalRef} className="relative m-4 shadow-2xl text-blue-gray-500 font-sans text-base font-light leading-relaxed w-[98%] max-w-[556px] bg-[#252633] rounded-xl flex flex-col gap-6 p-6 border-0 overflow-auto my-16" >
                     <div className="flex justify-between items-center">
                         <div className="flex gap-2 items-center">
                             <Icon icon="SquareGridCircle" />
@@ -49,7 +49,7 @@ const WithdrawCardModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
                             <div className="text-sm bg-[#3A3B54] p-2 rounded-lg text-primary-grey font-bold justify-center items-center flex">+100 XP</div>
                         </div>
                         <hr className="bg-primary-dark border-primary-dark" />
-                        <div className="flex justify-between">
+                        <div className="flex flex-wrap justify-between">
                             <img src="image/cs.png" alt="" />
                             <img src="image/cs.png" alt="" />
                             <img src="image/cs.png" alt="" />

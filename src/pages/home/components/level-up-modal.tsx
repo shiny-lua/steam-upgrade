@@ -34,7 +34,7 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
         style={{ opacity: 1 }}
       >
         <div ref={modalRef}
-          className="relative m-4 shadow-2xl text-blue-gray-500 antialiased font-sans text-base font-light leading-relaxed w-full md:w-3/4 lg:w-3/5 2xl:w-2/5 min-w-[90%] md:min-w-[75%] lg:min-w-[60%] 2xl:min-w-[40%] max-w-[90%] md:max-w-[75%] lg:max-w-[60%] 2xl:max-w-[40%] !w-[584px] !min-w-[584px] min-h-[80vh] h-[80vh] bg-[#252633] rounded-xl flex flex-col gap-6 p-6 border-0 overflow-auto my-16"
+          className="relative m-4 shadow-2xl text-blue-gray-500 antialiased w-[96%] max-w-[590px] font-sans text-base font-light leading-relaxed bg-[#252633] rounded-xl flex flex-col gap-6 px-3 md:px-6 p-6 border-0 overflow-auto my-16"
           style={{ opacity: 1, transform: "none" }}
         >
           <div className="flex justify-between items-center">
@@ -46,9 +46,8 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
               <Icon icon="Cancel" />
             </div>
           </div>
-
-          <div className="rounded-r-full rounded-l-full bg-primary-dark flex gap-[14px] px-2 py-4 overflow-hidden">
-            <div className="flex gap-2 items-center w-[120px]">
+          <div className="rounded-r-full rounded-l-full bg-primary-dark flex gap-[14px] p-3 overflow-x-scroll">
+            <div className="flex gap-2 items-center  min-w-32">
               <div
                 className={`flex items-center justify-center bg-primary-lightDark  text-primary-white w-5 h-5 rounded-full text-xs`}
               >
@@ -56,7 +55,7 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
               </div>
               <span className="text-primary-grey text-xs">Choose Level</span>
             </div>
-            <div className="flex gap-2 items-center w-[120px]">
+            <div className="flex gap-2 items-center  min-w-32">
               <div
                 className={`flex items-center justify-center ${tabIdx !== 0 ? "bg-primary-lightDark text-primary-grey" : "bg-primary-gradient text-primary-white"}  w-5 h-5 rounded-full text-xs`}
               >
@@ -64,7 +63,7 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
               </div>
               <span className="text-primary-white text-xs">Review Order</span>
             </div>
-            <div className="flex gap-2 items-center w-1/4">
+            <div className="flex gap-2 items-center  min-w-32">
               <div
                 className={`flex items-center justify-center ${tabIdx == 1 || tabIdx == 2 ? "bg-primary-gradient text-primary-white " : "bg-primary-lightDark text-primary-grey"}  w-5 h-5 rounded-full text-xs`}
               >
@@ -72,7 +71,7 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
               </div>
               <span className="text-primary-grey text-xs">Choose Payment</span>
             </div>
-            <div className="flex gap-2 items-center w-1/4">
+            <div className="flex gap-2 items-center  min-w-32">
               <div
                 className={`flex items-center justify-center ${tabIdx !== 3 ? "bg-primary-lightDark text-primary-grey" : "bg-primary-gradient text-primary-white "}  w-5 h-5 rounded-full text-xs`}
               >
@@ -195,7 +194,7 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
               <div className="flex justify-between gap-4 mt-6">
                 <Button
                   onClick={onClose}
-                  className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] w-1/6 normal-case"
+                  className="align-middle select-none font-sans font-bold text-center transition-all text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 bg-[#3A3B54] "
                   type="button" placeholder=""                  >
                   Cancel
                 </Button>
@@ -292,18 +291,20 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
                     </span>
                   </div>
                 </div>
-                <div className="p-6 bg-primary-dark bg-opacity-50 rounded-lg flex gap-6 mt-8">
-                  <img src="image/bitcoin.png" alt="" width={100} />
+                <div className="p-6 bg-primary-dark bg-opacity-50 rounded-lg flex flex-col xsm:flex-row gap-6 mt-8">
+                  <div className="flex justify-center items-center">
+                    <img src="image/bitcoin.png" alt="" width={100} className="w-30 xsm:w-50" />
+                  </div>
                   <div className="flex flex-col gap-2">
-                    <span className="font-bold text-sm text-white">
+                    <span className="font-bold text-sm text-white text-center xsm:text-left">
                       Bitcoin (BTC)
                     </span>
-                    <span className="text-xs text-primary-grey">
+                    <span className="text-xs text-primary-grey text-center xsm:text-left">
                       Make sure to verify the address and the amount before you
                       send anything. Funds sent to an incorrect address cannot
                       be retrieved.
                     </span>
-                    <div className="mt-2 flex gap-1 items-center">
+                    <div className="mt-2 flex gap-1 items-center justify-center xsm:justify-start">
                       <Icon icon="Bit" />
                       <span className="font-bold text-sm text-white mt-[1px]">
                         0.0493847
@@ -318,7 +319,7 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
                   Your Deposit Address
                 </span>
                 <div className="p-1 bg-primary-dark bg-opacity-50 items-center rounded-lg flex justify-between mt-1">
-                  <span className="text-white text-sm font-bold mx-2">
+                  <span className="text-white text-sm font-bold mx-2 overflow-hidden text-ellipsis">
                     bc1qwpnt9cvl8dsx2hjhz4h3v0v98z9l5vk2srqas2
                   </span>
                   <div className="bg-[#252633] p-2 rounded-md">

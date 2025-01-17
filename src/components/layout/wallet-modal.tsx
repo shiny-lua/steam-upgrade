@@ -3,6 +3,92 @@ import Modal from "../modal";
 import { Button } from "@material-tailwind/react";
 import Icon from "../icon";
 
+const wallets = {
+  steam: [
+    {
+      name: "CS2",
+      icon: "/image/icons/cs2.png",
+      category: "Steam",
+    },
+    {
+      name: "TF2",
+      icon: "/image/icons/tf2.png",
+      category: "Steam",
+    },
+    {
+      name: "Rust",
+      icon: "/image/icons/rust.png",
+      category: "Steam",
+    }
+  ],
+  cryptocurrency: [
+    {
+      name: "Bitcoin",
+      icon: "/image/icons/bitcoin.png",
+      category: "Cryptocurrency",
+    },
+    {
+      name: "Ethereum",
+      icon: "/image/icons/ethereum.png",
+      category: "Cryptocurrency",
+    },
+    {
+      name: "USDC",
+      icon: "/image/icons/usdc.png",
+      category: "Cryptocurrency",
+    },
+    {
+      name: "USDT",
+      icon: "/image/icons/usdt.png",
+      category: "Cryptocurrency",
+    },
+    {
+      name: "Litecoin",
+      icon: "/image/icons/litecoin.png",
+      category: "Cryptocurrency",
+    },
+    {
+      name: "Solana",
+      icon: "/image/icons/solana.png",
+      category: "Cryptocurrency",
+    }
+  ],
+  bank: [
+    {
+      name: "Bank",
+      icon: "/image/icons/bank.png",
+      category: "Bank",
+    },
+    {
+      name: "Visa",
+      icon: "/image/icons/visa.png",
+      category: "Bank",
+    },
+    {
+      name: "Mastercard",
+      icon: "/image/icons/mastercard.png",
+      category: "Bank",
+    },
+    {
+      name: "Paypal",
+      icon: "/image/icons/paypal.png",
+      category: "Bank",
+    }
+  ]
+}
+
+const Item = ({ item }: { item: { name: string, icon: string, category: string } }) => {
+  return (
+    <div className="bg-[#3A3B54]/50 hover:bg-[#3A3B54] rounded-lg p-4 flex flex-row xsm:flex-col px-10 xsm:px-4 gap-4">
+      <img src={item.icon} alt={item.name} className="w-9 h-9" />
+      <div className="flex flex-col">
+        <div className="text-primary-white font-bold text-sm">{item.name}</div>
+        <div className="text-primary-grey text-xs">{item.category}</div>
+      </div>
+    </div>
+  )
+}
+
 const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFunction }) => {
 
   const modalRef = React.useRef<HTMLDivElement | null>(null);
@@ -32,7 +118,7 @@ const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFuncti
         style={{ opacity: 1 }}
       >
         <div ref={modalRef}
-          className="relative m-4 shadow-2xl text-blue-gray-500 antialiased font-sans text-base font-light leading-relaxed w-full md:w-3/4 lg:w-3/5 2xl:w-2/5 min-w-[90%] md:min-w-[75%] lg:min-w-[60%] 2xl:min-w-[40%] max-w-[90%] md:max-w-[75%] lg:max-w-[60%] 2xl:max-w-[40%] !w-[584px] !min-w-[584px] min-h-[80vh] h-[80vh] bg-[#252633] rounded-xl flex flex-col gap-6 p-6 border-0 overflow-auto my-16"
+          className="relative m-4 shadow-2xl text-blue-gray-500 font-sans text-base font-light leading-relaxed w-full md:w-3/4 lg:w-3/5 2xl:w-2/5 min-w-[90%] md:min-w-[75%] lg:min-w-[60%] 2xl:min-w-[40%] max-w-[90%] md:max-w-[75%] lg:max-w-[60%] 2xl:max-w-[40%] min-h-[80vh] h-[80vh] bg-[#252633] rounded-xl flex flex-col gap-6 p-6 border-0 overflow-auto my-16"
           style={{ opacity: 1, transform: "none" }}
         >
           <div className="flex justify-between items-center">
@@ -42,32 +128,36 @@ const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFuncti
             </div>
             <span onClick={onClose}><Icon icon="Cancel" /></span>
           </div>
-          <div className="flex flex-col gap-4">
-            <span className="text-primary-grey text-xs">Steam</span>
-            <div className="flex gap-2">
-              <Icon icon="CS2" />
-              <Icon icon="TF2" />
-              <Icon icon="Rust" />
+          <div className="flex flex-col gap-4 h-[1200px] overflow-y-auto">
+            <div className="flex flex-col gap-4">
+              <span className="text-primary-grey text-xs">Steam</span>
+              <div className="flex flex-wrap gap-2">
+                {wallets.steam.map((item, key) => (
+                  <div key={key} className="w-full xsm:w-[130px]">
+                    <Item item={item} />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col gap-4">
-            <span className="text-primary-grey text-xs">Cryptocurrency</span>
-            <div className="flex flex-wrap gap-2">
-              <Icon icon="Bitcoin" />
-              <Icon icon="Ethereum" />
-              <Icon icon="USDC" />
-              <Icon icon="USDT" />
-              <Icon icon="Litecoin" />
-              <Icon icon="Solana" />
+            <div className="flex flex-col gap-4">
+              <span className="text-primary-grey text-xs">Cryptocurrency</span>
+              <div className="flex flex-wrap gap-2">
+                {wallets.cryptocurrency.map((item, key) => (
+                  <div key={key} className="w-full xsm:w-[130px]">
+                    <Item item={item} />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col gap-4">
-            <span className="text-primary-grey text-xs">Bank</span>
-            <div className="flex gap-2">
-              <Icon icon="Bank" />
-              <Icon icon="Visa" />
-              <Icon icon="Mastercard" />
-              <Icon icon="Paypal" />
+            <div className="flex flex-col gap-4">
+              <span className="text-primary-grey text-xs">Bank</span>
+              <div className="flex flex-wrap gap-2">
+                {wallets.bank.map((item, key) => (
+                  <div key={key} className="w-full xsm:w-[130px]">
+                    <Item item={item} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
           <div className="flex flex-col gap-1">
@@ -75,7 +165,7 @@ const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFuncti
               Claim 5% Bonus
             </span>
             <span className="text-[13px] text-primary-grey font-bold">
-              Claim a Top Up Bonus by using a partner’s or friend’s referral
+              Claim a Top Up Bonus by using a partner's or friend's referral
               code.
             </span>
             <div className="p-1 bg-primary-dark bg-opacity-50 items-center rounded-lg flex justify-between mt-1">
