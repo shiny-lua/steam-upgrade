@@ -64,27 +64,65 @@ const Header = () => {
       {state.authToken ? (
         <header className="flex justify-between md:justify-around px-3 sm:px-5 md:px-0">
           <div className="flex gap-6 items-center">
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                dispatch({
-                  type: "isOpenedMenu",
-                  payload: !state.isOpenedMenu,
-                });
-              }}
-              className="flex md:hidden w-9 h-9 rounded-lg bg-[#252633] bg-opacity-90 flex items-center justify-center z-10 cursor-pointer"
-            >
-              <span className="relative block h-5.5 w-5.5 cursor-pointer">
-                <span className="du-block absolute px-[2.5px] right-0 h-full w-full">
-                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-[0] duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-300"}`}></span>
-                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-150 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "delay-400 !w-full"}`}></span>
-                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-200 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-500"}`}></span>
+            <div className="relative flex md:hidden" ref={menuRef} >
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  dispatch({
+                    type: "isOpenedMenu",
+                    payload: !state.isOpenedMenu,
+                  });
+                }}
+                className="w-9 h-9 rounded-lg bg-[#252633] bg-opacity-90 flex items-center justify-center z-10 cursor-pointer"
+              >
+                <span className="relative block h-5.5 w-5.5 cursor-pointer">
+                  <span className="du-block absolute px-[2.5px] right-0 h-full w-full">
+                    <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-[0] duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-300"}`}></span>
+                    <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-150 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "delay-400 !w-full"}`}></span>
+                    <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-200 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-500"}`}></span>
+                  </span>
+                  <span className="absolute right-0 h-full w-full rotate-45">
+                    <span className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-smdelay-300 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-[0]"}`}></span>
+                    <span className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-200"}`}></span>
+                  </span>
                 </span>
-                <span className="absolute right-0 h-full w-full rotate-45">
-                  <span className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-smdelay-300 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-[0]"}`}></span>
-                  <span className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-200"}`}></span>
-                </span>
-              </span>
+              </div>
+              {state.isOpenedMenu && (
+                <div className={`absolute w-screen flex md:hidden top-18 -left-3 bg-primary-dark shadow-lg shadow-gray-900/10 flex items-center rounded-lg flex flex-col gap-4 p-2 z-50 duration-300 ease-linear pb-4`}>
+                  <Link
+                    className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("home") ? "text-primary-white" : "text-primary-grey"}`}
+                    to="/home"
+                    onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
+                  >
+                    <Icon className="w-5" icon="LevelUp" />
+                    <span className="text-[13.5px]">Level Up</span>
+                  </Link>
+                  <Link
+                    className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("orders") ? "text-primary-white" : "text-primary-grey"}`}
+                    to="/orders"
+                    onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
+                  >
+                    <Icon className="w-5" icon="Orders" />
+                    <span className="text-[13.5px] ">Orders</span>
+                  </Link>
+                  <Link
+                    className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("ranks") ? "text-primary-white" : "text-primary-grey"}`}
+                    to="/ranks"
+                    onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
+                  >
+                    <Icon className="w-5" icon="Ranks" />
+                    <span className="text-[13.5px]">Ranks</span>
+                  </Link>
+                  <Link
+                    className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("affiliates") ? "text-primary-white" : "text-primary-grey"}`}
+                    to="/affiliates"
+                    onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
+                  >
+                    <Icon className="w-5" icon="Affiliates" />
+                    <span className="text-[13.5px]">Affiliates</span>
+                  </Link>
+                </div>
+              )}
             </div>
             <div
               onClick={(e) => {
@@ -95,13 +133,13 @@ const Header = () => {
             >
               <span className="relative block h-5.5 w-5.5 cursor-pointer">
                 <span className="du-block absolute px-[2.5px] right-0 h-full w-full">
-                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-[0] duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-300"}`}></span>
-                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-150 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "delay-400 !w-full"}`}></span>
-                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-200 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-500"}`}></span>
+                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-[0] duration-200 ease-in-out bg-white ${!isOpenedMenuMobile && "!w-full delay-300"}`}></span>
+                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-150 duration-200 ease-in-out bg-white ${!isOpenedMenuMobile && "delay-400 !w-full"}`}></span>
+                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-200 duration-200 ease-in-out bg-white ${!isOpenedMenuMobile && "!w-full delay-500"}`}></span>
                 </span>
                 <span className="absolute right-0 h-full w-full rotate-45">
-                  <span className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-smdelay-300 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-[0]"}`}></span>
-                  <span className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-200"}`}></span>
+                  <span className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-smdelay-300 duration-200 ease-in-out bg-white ${!isOpenedMenuMobile && "!h-0 !delay-[0]"}`}></span>
+                  <span className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm duration-200 ease-in-out bg-white ${!isOpenedMenuMobile && "!h-0 !delay-200"}`}></span>
                 </span>
               </span>
             </div>
@@ -243,7 +281,7 @@ const Header = () => {
       ) : (
         <header className="flex justify-between lg:justify-around px-3 sm:px-5 md:px-10">
           <div className="flex gap-6 items-center">
-            <div className="relative flex md:hidden">
+            <div className="relative flex md:hidden" ref={menuRef} >
               <div
                 onClick={(e) => {
                   e.stopPropagation();
@@ -266,6 +304,42 @@ const Header = () => {
                   </span>
                 </span>
               </div>
+              {state.isOpenedMenu && (
+                <div className={`absolute w-screen flex md:hidden top-18 -left-3 bg-primary-dark shadow-lg shadow-gray-900/10 flex items-center rounded-lg flex flex-col gap-4 p-2 z-50 duration-300 ease-linear pb-4`}>
+                  <Link
+                    className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("home") ? "text-primary-white" : "text-primary-grey"}`}
+                    to="/home"
+                    onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
+                  >
+                    <Icon className="w-5" icon="LevelUp" />
+                    <span className="text-[13.5px]">Level Up</span>
+                  </Link>
+                  <Link
+                    className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("orders") ? "text-primary-white" : "text-primary-grey"}`}
+                    to="/orders"
+                    onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
+                  >
+                    <Icon className="w-5" icon="Orders" />
+                    <span className="text-[13.5px] ">Orders</span>
+                  </Link>
+                  <Link
+                    className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("ranks") ? "text-primary-white" : "text-primary-grey"}`}
+                    to="/ranks"
+                    onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
+                  >
+                    <Icon className="w-5" icon="Ranks" />
+                    <span className="text-[13.5px]">Ranks</span>
+                  </Link>
+                  <Link
+                    className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("affiliates") ? "text-primary-white" : "text-primary-grey"}`}
+                    to="/affiliates"
+                    onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
+                  >
+                    <Icon className="w-5" icon="Affiliates" />
+                    <span className="text-[13.5px]">Affiliates</span>
+                  </Link>
+                </div>
+              )}
             </div>
             <Link to="/" className="flex items-center gap-2">
               <img src="/image/icons/logo.png" alt="logo" />
@@ -323,42 +397,7 @@ const Header = () => {
           </Button>
         </header>
       )}
-      {state.isOpenedMenu && (
-        <div ref={menuRef} className={`absolute flex md:hidden top-18 left-0 w-full bg-primary-dark shadow-lg shadow-gray-900/10 flex items-center rounded-lg flex flex-col gap-4 p-2 z-50 duration-300 ease-linear pb-4`}>
-          <Link
-            className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("home") ? "text-primary-white" : "text-primary-grey"}`}
-            to="/home"
-            onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
-          >
-            <Icon className="w-5" icon="LevelUp" />
-            <span className="text-[13.5px]">Level Up</span>
-          </Link>
-          <Link
-            className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("orders") ? "text-primary-white" : "text-primary-grey"}`}
-            to="/orders"
-            onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
-          >
-            <Icon className="w-5" icon="Orders" />
-            <span className="text-[13.5px] ">Orders</span>
-          </Link>
-          <Link
-            className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("ranks") ? "text-primary-white" : "text-primary-grey"}`}
-            to="/ranks"
-            onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
-          >
-            <Icon className="w-5" icon="Ranks" />
-            <span className="text-[13.5px]">Ranks</span>
-          </Link>
-          <Link
-            className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("affiliates") ? "text-primary-white" : "text-primary-grey"}`}
-            to="/affiliates"
-            onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
-          >
-            <Icon className="w-5" icon="Affiliates" />
-            <span className="text-[13.5px]">Affiliates</span>
-          </Link>
-        </div>
-      )}
+
       {showWalletModal && <WalletModal isOpen={showWalletModal} onClose={() => setWalletModal(false)} />}
       {showFreeModal && <FreeModal isOpen={showFreeModal} onClose={() => setFreeModal(false)} />}
     </div>
