@@ -1,5 +1,5 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useRef, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import WalletModal from "./wallet-modal";
 import FreeModal from "./free-modal";
@@ -7,36 +7,57 @@ import { config, useGlobalContext } from "../../context";
 import { Button } from "@material-tailwind/react";
 import Icon from "../icon";
 import { restApi } from "../../context/restApi";
+
 const Header = () => {
   const [state, { dispatch, storeData }] = useGlobalContext();
+  const navigate = useNavigate();
 
   const [showWalletModal, setWalletModal] = React.useState(false);
   const [showFreeModal, setFreeModal] = React.useState(false);
   const [showProfileDropdown, setProfileDropdown] = React.useState(false);
   const location = useLocation();
   const { pathname } = location;
+  const [isOpenedMenuMobile, setIsOpenedMenuMobile] = React.useState(false);
+
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setProfileDropdown(false);
+      }
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        dispatch({ type: "isOpenedMenu", payload: false });
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef, menuRef]);
 
   React.useEffect(() => {
     const fetchData = async () => {
       if (!state.authToken) {
-        const res = await restApi.postRequest("get-token")
+        const res = await restApi.postRequest("get-token");
         if (res.status === 200) {
-
-          dispatch({ type: "authToken", payload: res.authToken })
-          storeData(res.authToken)
-          restApi.setAuthToken(res.authToken)
-          const resp = await restApi.postRequest("get-user")
-          dispatch({ type: "userData", payload: resp.data })
+          dispatch({ type: "authToken", payload: res.authToken });
+          storeData(res.authToken);
+          restApi.setAuthToken(res.authToken);
+          const resp = await restApi.postRequest("get-user");
+          dispatch({ type: "userData", payload: resp.data });
           console.log(resp.data, "data");
         }
       }
-    }
-    fetchData()
-  }, [])
+    };
+    fetchData();
+  }, [state.authToken, dispatch, storeData]);
 
   const onSignIn = async () => {
     window.location.href = config.REDIRECT_URL;
-  }
+  };
 
   return (
     <div className="w-full bg-primary fixed top-0 left-0 py-5 z-999999">
@@ -48,45 +69,51 @@ const Header = () => {
                 e.stopPropagation();
                 dispatch({
                   type: "isOpenedMenu",
-                  payload: !state.isOpenedMenu
-                })
+                  payload: !state.isOpenedMenu,
+                });
               }}
-              className="w-9 h-9 rounded-lg bg-[#252633] bg-opacity-90 flex items-center justify-center z-10 cursor-pointer"
+              className="flex md:hidden w-9 h-9 rounded-lg bg-[#252633] bg-opacity-90 flex items-center justify-center z-10 cursor-pointer"
             >
               <span className="relative block h-5.5 w-5.5 cursor-pointer">
                 <span className="du-block absolute px-[2.5px] right-0 h-full w-full">
-                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-[0] duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-300"}`}
-                  ></span>
-                  <span
-                    className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-150 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "delay-400 !w-full"
-                      }`}
-                  ></span>
-                  <span
-                    className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-200 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-500"
-                      }`}
-                  ></span>
+                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-[0] duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-300"}`}></span>
+                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-150 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "delay-400 !w-full"}`}></span>
+                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-200 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-500"}`}></span>
                 </span>
                 <span className="absolute right-0 h-full w-full rotate-45">
-                  <span
-                    className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-smdelay-300 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-[0]"
-                      }`}
-                  ></span>
-                  <span
-                    className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-200"
-                      }`}
-                  ></span>
+                  <span className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-smdelay-300 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-[0]"}`}></span>
+                  <span className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-200"}`}></span>
                 </span>
               </span>
             </div>
-            {state.isOpenedMenu && (
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsOpenedMenuMobile(!isOpenedMenuMobile);
+              }}
+              className="hidden md:flex w-9 h-9 rounded-lg bg-[#252633] bg-opacity-90 flex items-center justify-center z-10 cursor-pointer"
+            >
+              <span className="relative block h-5.5 w-5.5 cursor-pointer">
+                <span className="du-block absolute px-[2.5px] right-0 h-full w-full">
+                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-[0] duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-300"}`}></span>
+                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-150 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "delay-400 !w-full"}`}></span>
+                  <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-200 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-500"}`}></span>
+                </span>
+                <span className="absolute right-0 h-full w-full rotate-45">
+                  <span className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-smdelay-300 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-[0]"}`}></span>
+                  <span className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-200"}`}></span>
+                </span>
+              </span>
+            </div>
+            {isOpenedMenuMobile && (
               <div
-                className={`hidden sm:flex bg-primary-lightDark items-center rounded-lg flex gap-4 p-2 z-50 duration-300 ease-linear ${state.isOpenedMenu ? "fade-in" : "fade-out"
-                  }`}
+                className={`hidden md:flex bg-primary-lightDark items-center rounded-lg flex gap-4 p-2 z-50 duration-300 ease-linear ${isOpenedMenuMobile ? "fade-in" : "fade-out"}`}
               >
                 <div>
                   <Link
-                    className={`flex gap-2 items-center ${pathname.includes("home") ? "text-primary-white" : "text-primary-grey"} `}
+                    className={`flex gap-2 items-center ${pathname.includes("home") ? "text-primary-white" : "text-primary-grey"}`}
                     to="/home"
+                    onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
                   >
                     <Icon className="w-4" icon="LevelUp" />
                     <span className="text-sm">Level Up</span>
@@ -94,28 +121,31 @@ const Header = () => {
                 </div>
                 <div>
                   <Link
-                    className={`flex gap-2 items-center ${pathname.includes("orders") ? "text-primary-white" : "text-primary-grey"} `}
+                    className={`flex gap-2 items-center ${pathname.includes("orders") ? "text-primary-white" : "text-primary-grey"}`}
                     to="/orders"
+                    onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
                   >
-                    <Icon icon="Orders" className="w-4" />
-                    <span className="text-sm ">Orders</span>
+                    <Icon className="w-4" icon="Orders" />
+                    <span className="text-sm">Orders</span>
                   </Link>
                 </div>
                 <div className="flex gap-2 items-center">
                   <Link
-                    className={`flex gap-2 items-center ${pathname.includes("ranks") ? "text-primary-white" : "text-primary-grey"} `}
+                    className={`flex gap-2 items-center ${pathname.includes("ranks") ? "text-primary-white" : "text-primary-grey"}`}
                     to="/ranks"
+                    onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
                   >
-                    <Icon icon="Ranks" className="w-4" />
+                    <Icon className="w-4" icon="Ranks" />
                     <span className="text-sm">Ranks</span>
                   </Link>
                 </div>
                 <div>
                   <Link
-                    className={`flex gap-2 items-center ${pathname.includes("affiliates") ? "text-primary-white" : "text-primary-grey"} `}
+                    className={`flex gap-2 items-center ${pathname.includes("affiliates") ? "text-primary-white" : "text-primary-grey"}`}
                     to="/affiliates"
+                    onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
                   >
-                    <Icon icon="Affiliates" className="w-4" />
+                    <Icon className="w-4" icon="Affiliates" />
                     <span className="text-sm">Affiliates</span>
                   </Link>
                 </div>
@@ -126,15 +156,13 @@ const Header = () => {
               {!state.isOpenedMenu && (
                 <div className="flex flex-col mt-1">
                   <p className="text-[#A942E7] font-bold text-[20px] leading-none">Steam</p>
-                  <p className="text-[#A942E7] font-bold text-sm leading-none">
-                    Upgrade
-                  </p>
+                  <p className="text-[#A942E7] font-bold text-sm leading-none">Upgrade</p>
                 </div>
               )}
             </Link>
           </div>
 
-          <div className="hidden md:flex rounded-[text-red-500252633]">
+          <div className="hidden md:flex rounded-[10px] border border-[#252633]">
             <div className="flex justify-center items-center w-24 text-sm text-white">
               $50.97
             </div>
@@ -174,7 +202,7 @@ const Header = () => {
                   className="hidden lg:block !rounded-full w-10 h-10"
                 />
               </Link>
-              <div className="relative lg:hidden block flex items-center justify-center cursor-pointer">
+              <div className="relative lg:hidden block flex items-center justify-center cursor-pointer" ref={dropdownRef}>
                 <button onClick={() => setProfileDropdown(!showProfileDropdown)}>
                   <img
                     src={state.userData.avatar || "/image/icons/unknown-user.jpg"}
@@ -221,77 +249,61 @@ const Header = () => {
                   e.stopPropagation();
                   dispatch({
                     type: "isOpenedMenu",
-                    payload: !state.isOpenedMenu
-                  })
+                    payload: !state.isOpenedMenu,
+                  });
                 }}
                 className="w-9 h-9 rounded-lg bg-[#252633] bg-opacity-90 flex items-center justify-center z-10 cursor-pointer"
               >
                 <span className="relative block h-5.5 w-5.5 cursor-pointer">
                   <span className="du-block absolute px-[2.5px] right-0 h-full w-full">
-                    <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-[0] duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-300"}`}
-                    ></span>
-                    <span
-                      className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-150 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "delay-400 !w-full"
-                        }`}
-                    ></span>
-                    <span
-                      className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-200 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-500"
-                        }`}
-                    ></span>
+                    <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-[0] duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-300"}`}></span>
+                    <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-150 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "delay-400 !w-full"}`}></span>
+                    <span className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-smdelay-200 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!w-full delay-500"}`}></span>
                   </span>
                   <span className="absolute right-0 h-full w-full rotate-45">
-                    <span
-                      className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-smdelay-300 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-[0]"
-                        }`}
-                    ></span>
-                    <span
-                      className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-200"
-                        }`}
-                    ></span>
+                    <span className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-smdelay-300 duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-[0]"}`}></span>
+                    <span className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm duration-200 ease-in-out bg-white ${!state.isOpenedMenu && "!h-0 !delay-200"}`}></span>
                   </span>
                 </span>
               </div>
-
             </div>
             <Link to="/" className="flex items-center gap-2">
               <img src="/image/icons/logo.png" alt="logo" />
               <div className="flex flex-col mt-1">
                 <p className="text-[#A942E7] font-bold text-[20px] leading-none">Steam</p>
-                <p className="text-[#A942E7] font-bold text-sm leading-none">
-                  Upgrade
-                </p>
+                <p className="text-[#A942E7] font-bold text-sm leading-none">Upgrade</p>
               </div>
             </Link>
           </div>
 
-          <div className={`hidden md:flex items-center rounded-lg flex gap-4 p-2 z-50 duration-300 ease-linear`} >
+          <div className={`hidden md:flex items-center rounded-lg flex gap-4 p-2 z-50 duration-300 ease-linear`}>
             <div>
-              <Link className={`flex gap-2 items-center ${pathname.includes("home") ? "text-primary-white" : "text-primary-grey"} `} to="/home" >
+              <Link className={`flex gap-2 items-center ${pathname.includes("home") ? "text-primary-white" : "text-primary-grey"}`} to="/home">
                 <Icon className="w-4" icon="LevelUp" />
                 <span className="text-sm">Level Up</span>
               </Link>
             </div>
             <div>
               <Link
-                className={`flex gap-2 items-center ${pathname.includes("orders") ? "text-primary-white" : "text-primary-grey"} `}
+                className={`flex gap-2 items-center ${pathname.includes("orders") ? "text-primary-white" : "text-primary-grey"}`}
                 to="/orders"
               >
-                <Icon icon="Orders" className="w-4" />
+                <Icon className="w-4" icon="Orders" />
                 <span className="text-sm ">Orders</span>
               </Link>
             </div>
             <div className="flex gap-2 items-center">
               <Link
-                className={`flex gap-2 items-center ${pathname.includes("ranks") ? "text-primary-white" : "text-primary-grey"} `}
+                className={`flex gap-2 items-center ${pathname.includes("ranks") ? "text-primary-white" : "text-primary-grey"}`}
                 to="/ranks"
               >
-                <Icon icon="Ranks" className="w-4" />
+                <Icon className="w-4" icon="Ranks" />
                 <span className="text-sm">Ranks</span>
               </Link>
             </div>
             <div>
-              <Link className={`flex gap-2 items-center ${pathname.includes("affiliates") ? "text-primary-white" : "text-primary-grey"} `} to="/affiliates" >
-                <Icon icon="Affiliates" className="w-4" />
+              <Link className={`flex gap-2 items-center ${pathname.includes("affiliates") ? "text-primary-white" : "text-primary-grey"}`} to="/affiliates">
+                <Icon className="w-4" icon="Affiliates" />
                 <span className="text-sm">Affiliates</span>
               </Link>
             </div>
@@ -309,31 +321,40 @@ const Header = () => {
               <span className="text-white normal-case">Sign In</span>
             </div>
           </Button>
-
         </header>
       )}
       {state.isOpenedMenu && (
-        <div className={`absolute flex sm:hidden top-18 left-0 w-full bg-primary-dark shadow-lg shadow-gray-900/10 flex items-center rounded-lg flex flex-col gap-4 p-2 z-50 duration-300 ease-linear pb-4`} >
-          <Link className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("home") ? "text-primary-white" : "text-primary-grey"} `} to="/home" >
+        <div ref={menuRef} className={`absolute flex md:hidden top-18 left-0 w-full bg-primary-dark shadow-lg shadow-gray-900/10 flex items-center rounded-lg flex flex-col gap-4 p-2 z-50 duration-300 ease-linear pb-4`}>
+          <Link
+            className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("home") ? "text-primary-white" : "text-primary-grey"}`}
+            to="/home"
+            onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
+          >
             <Icon className="w-5" icon="LevelUp" />
             <span className="text-[13.5px]">Level Up</span>
           </Link>
           <Link
-            className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("orders") ? "text-primary-white" : "text-primary-grey"} `}
+            className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("orders") ? "text-primary-white" : "text-primary-grey"}`}
             to="/orders"
+            onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
           >
-            <Icon icon="Orders" className="w-5" />
+            <Icon className="w-5" icon="Orders" />
             <span className="text-[13.5px] ">Orders</span>
           </Link>
           <Link
-            className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("ranks") ? "text-primary-white" : "text-primary-grey"} `}
+            className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("ranks") ? "text-primary-white" : "text-primary-grey"}`}
             to="/ranks"
+            onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
           >
-            <Icon icon="Ranks" className="w-5" />
+            <Icon className="w-5" icon="Ranks" />
             <span className="text-[13.5px]">Ranks</span>
           </Link>
-          <Link className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("affiliates") ? "text-primary-white" : "text-primary-grey"} `} to="/affiliates" >
-            <Icon icon="Affiliates" className="w-5" />
+          <Link
+            className={`flex gap-2 items-center hover:text-white w-full px-2 sm:px-4 ${pathname.includes("affiliates") ? "text-primary-white" : "text-primary-grey"}`}
+            to="/affiliates"
+            onClick={() => dispatch({ type: "isOpenedMenu", payload: false })}
+          >
+            <Icon className="w-5" icon="Affiliates" />
             <span className="text-[13.5px]">Affiliates</span>
           </Link>
         </div>
