@@ -1,30 +1,12 @@
 import React from "react";
+
 import Modal from "../../../components/modal";
-import { Button } from "@material-tailwind/react";
 import Icon from "../../../components/icon";
+import { useClickOutside } from "../../../hooks/use-modal";
 
 const WithdrawCardModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
-    const [tabIdx, setTabIdx] = React.useState(0);
 
-    const modalRef = React.useRef<HTMLDivElement | null>(null);
-
-    React.useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-                onClose();
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        } else {
-            document.removeEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isOpen, onClose]);
+    const modalRef = useClickOutside({ isOpen, onClose });
 
     return (
         <Modal>

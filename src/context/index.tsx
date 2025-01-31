@@ -12,6 +12,7 @@ const INIT_STATE: InitStateObject = {
         joinDate: "",
         tradeLink: ""
     },
+    steamLevel: 0,
     isOpenedMenu: false,
     authToken: ""
 }

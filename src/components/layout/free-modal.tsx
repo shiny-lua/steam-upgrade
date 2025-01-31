@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import Modal from "../modal";
 import { Button } from "@material-tailwind/react";
 import Icon from "../icon";
+import { useClickOutside } from "../../hooks/use-modal";
 const CASE_ITEMS = [
   {
     id: 1,
@@ -96,25 +97,7 @@ const FreeModal = ({
   onClose: VoidFunction;
 }) => {
 
-  const modalRef = React.useRef<HTMLDivElement | null>(null);
-
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, onClose]);
+  const modalRef = useClickOutside({ isOpen, onClose });
 
   return (
     <Modal>

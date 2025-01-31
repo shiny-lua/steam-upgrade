@@ -4,7 +4,7 @@ import withReactContent from 'sweetalert2-react-content';
 
 export const showToast = (html: string, type: 'info' | 'success' | 'warning' | 'error' | 'default') => {
     toast(html, {
-        position: "top-right",
+        position: "bottom-right",
         autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -12,7 +12,7 @@ export const showToast = (html: string, type: 'info' | 'success' | 'warning' | '
         draggable: true,
         progress: undefined,
         type,
-        theme: 'colored',
+        theme: 'dark',
     });
 }
 

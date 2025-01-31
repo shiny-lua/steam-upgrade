@@ -1,39 +1,17 @@
 import React from "react";
-import Layout from "../../components/layout";
-import WalletModal from "../../components/layout/wallet-modal";
-import LevelUpModal from "./components/level-up-modal";
-import { config, useGlobalContext } from "../../context";
 import { Button } from "@material-tailwind/react";
+
+import { config, useGlobalContext } from "../../context";
+import Layout from "../../components/layout";
+import LevelUpModal from "./components/level-up-modal";
 import Icon from "../../components/icon";
 import { restApi } from "../../context/restApi";
-import Carousel from "react-multi-carousel"
-
-const responsive = {
-  desktop: {
-    breakpoint: {
-      max: 3000,
-      min: 1024
-    },
-    items: 2,
-  },
-  mobile: {
-    breakpoint: {
-      max: 464,
-      min: 0
-    },
-    items: 1,
-  },
-  tablet: {
-    breakpoint: {
-      max: 1024,
-      min: 464
-    },
-    items: 4,
-  }
-}
+import { showToast } from "../../context/helper";
+import SetTradeUrlModal from "./components/set-stade-url-modal";
+import CsGoModal from "./components/cs-go-modal";
 
 const Home = () => {
-  const [state, { dispatch }]: GlobalContextType = useGlobalContext();
+  const [state, { dispatch }] = useGlobalContext();
 
   const [status, setStatus] = React.useState({
     currentSteamLevel: 0,
@@ -41,12 +19,15 @@ const Home = () => {
   })
 
   const [showLevelUpModal, setShowLevelUpModal] = React.useState(false);
+  const [showTradeUrlModal, setShowTradeUrlModal] = React.useState(false);
+  const [showCsGoModal, setShowCsGoModal] = React.useState(false);
 
   React.useEffect(() => {
     const fetchData = async () => {
       const res = await restApi.postRequest("get-steam-level")
 
       setStatus({ ...status, currentSteamLevel: res.data })
+      dispatch({ type: "steamLevel", payload: res.data })
     }
 
     fetchData()
@@ -72,10 +53,22 @@ const Home = () => {
 
   const onLevelUp = (n: number) => {
     setStatus({ ...status, dreamSteamLevel: status.dreamSteamLevel + n })
+    dispatch({ type: "steamLevel", payload: status.dreamSteamLevel + n })
   }
 
   const onSignIn = async () => {
     window.location.href = config.REDIRECT_URL;
+  }
+
+  const onShowLevelUpModal = () => {
+    if (status.dreamSteamLevel <= status.currentSteamLevel) {
+      return showToast("Desired level should be higher than current level", "warning")
+    }
+    if (!state.userData.tradeLink) {
+      setShowTradeUrlModal(true)
+      return
+    }
+    setShowLevelUpModal(true)
   }
 
   return (
@@ -127,13 +120,13 @@ const Home = () => {
                 <div className="flex flex-col gap-3 w-full sm:w-[45%]">
                   <span className="text-primary-grey text-xs">Your Level</span>
                   <div className="bg-primary-dark opacity-50 rounded-[10px] w-full px-4 py-3 flex justify-between items-center">
-                    <span className="text-[#EDEDED] text-sm">0</span>
+                    <span className="text-[#EDEDED] text-sm">{status.currentSteamLevel} </span>
                     <div className="w-6 h-6 flex text-[10px] justify-center items-center rounded-full border border-[#828385] text-white">
-                      0
+                      {status.currentSteamLevel}
                     </div>
                   </div>
                   <Button
-                    className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 flex items-center justify-center gap-1" type="button" placeholder=""  >
+                    className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 flex items-center justify-center gap-1">
                     <Icon icon="Refresh" />
                     <span className="text-primary-grey normal-case">
                       Refresh
@@ -202,8 +195,7 @@ const Home = () => {
               {!state.authToken ? (
                 <Button
                   onClick={onSignIn}
-                  className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4"
-                  type="button" placeholder=""                  >
+                  className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4">
                   <div className="flex gap-1 justify-center items-center">
                     <Icon icon="Steam" />
                     <span className="text-white normal-case text-sm">
@@ -214,9 +206,8 @@ const Home = () => {
                 </Button>
               ) : (
                 <Button
-                  onClick={() => setShowLevelUpModal(true)}
-                  className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4"
-                  type="button" placeholder=""                  >
+                  onClick={onShowLevelUpModal}
+                  className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4">
                   <div className="flex gap-2 justify-center items-center">
                     Continue{" "}
                     <Icon icon="TriangleRight" />
@@ -263,9 +254,7 @@ const Home = () => {
               <div className="flex justify-between">
                 <div className="flex w-[45%]">
                   <div className="flex flex-col justify-center items-center gap-3 w-full">
-                    <div className="border-[2px] border-[#828385] rounded-full w-10 h-10 text-white text-sm flex justify-center items-center">
-                      0
-                    </div>
+                    <div className="border-[2px] border-[#828385] rounded-full w-10 h-10 text-white text-sm flex justify-center items-center">{status.currentSteamLevel}</div>
                     <span className="text-primary-grey text-xs">
                       Current Level
                     </span>
@@ -445,8 +434,7 @@ const Home = () => {
               you may have!
             </span>
             <Button
-              className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-28 mt-2"
-              type="button" placeholder=""              >
+              className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-28 mt-2">
               <div className="flex items-center gap-1">
                 <Icon icon="Discord" />
                 <span className="normal-case text-white">Contact</span>
@@ -455,8 +443,10 @@ const Home = () => {
           </div>
         </div>
         {showLevelUpModal && (
-          <LevelUpModal isOpen={showLevelUpModal} onClose={() => setShowLevelUpModal(false)} />
+          <LevelUpModal isOpen={showLevelUpModal} showCsGoModal={() => setShowCsGoModal(true)} onClose={() => setShowLevelUpModal(false)} />
         )}
+        {showTradeUrlModal && <SetTradeUrlModal isOpen={showTradeUrlModal} onClose={() => setShowTradeUrlModal(false)} />}
+        {showCsGoModal && <CsGoModal isOpen={showCsGoModal} onClose={() => setShowCsGoModal(false)} />}
       </div>
 
     </Layout>

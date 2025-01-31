@@ -60,7 +60,7 @@ const Header = () => {
   };
 
   return (
-    <div className="w-full bg-primary fixed top-0 left-0 py-5 z-999999">
+    <div className="w-full bg-primary fixed top-0 left-0 py-5 z-9999">
       {state.authToken ? (
         <header className="flex justify-between md:justify-around px-3 sm:px-5 md:px-0">
           <div className="flex gap-6 items-center">

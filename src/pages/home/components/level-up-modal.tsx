@@ -1,88 +1,164 @@
 import React from "react";
 import { Button } from "@material-tailwind/react";
 
+
 import Modal from "../../../components/modal";
 import Icon from "../../../components/icon";
+import { wallets } from "../../../const/data.d";
+import { useClickOutside } from "../../../hooks/use-modal";
+import { restApi } from "../../../context/restApi";
 
-const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+interface ItemProps {
+  item: {
+    name: string;
+    icon: string;
+    category: string;
+    currency?: string;
+  };
+  onHandleItem: (name: string, currency?: string) => void;
+}
+
+const ProductDisplay = () => (
+  <section>
+    <div className="product">
+      <img
+        src="https://i.imgur.com/EHyR2nP.png"
+        alt="The cover of Stubborn Attachments"
+      />
+      <div className="description">
+      <h3>Stubborn Attachments</h3>
+      <h5>$20.00</h5>
+      </div>
+    </div>
+    <form action="https://b308-185-135-76-89.ngrok-free.app/api/create-payment-intent" method="POST">
+      <button type="submit">
+        Checkout
+      </button>
+    </form>
+  </section>
+);
+
+const Item: React.FC<ItemProps> = ({ item, onHandleItem }) => (
+  <button
+    onClick={() => onHandleItem(item.name, item.currency)}
+    className="w-full bg-[#3A3B54]/50 hover:bg-[#3A3B54] rounded-lg p-4 flex flex-row xsm:flex-col px-10 xsm:px-4 gap-4"
+  >
+    <img src={item.icon} alt={item.name} className="w-9 h-9" />
+    <div className="flex flex-col">
+      <div className="text-left text-primary-white font-bold text-sm">{item.name}</div>
+      <div className="text-left text-primary-grey text-xs">{item.category}</div>
+    </div>
+  </button>
+);
+
+interface LevelUpModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  showCsGoModal: () => void;
+}
+
+const LevelUpModal: React.FC<LevelUpModalProps> = ({ isOpen, onClose, showCsGoModal }) => {
   const [tabIdx, setTabIdx] = React.useState(0);
+  const modalRef = useClickOutside({ isOpen, onClose });
 
-  const modalRef = React.useRef<HTMLDivElement | null>(null);
-
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+  const onPrevTab = (n: number) => {
+    if (tabIdx > n) {
+      setTabIdx(n);
     }
+  };
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, onClose]);
+  const onHandleItem = (type: string, currency: string) => {
+    switch (type) {
+      case "CS2":
+        showCsGoModal();
+        onClose();
+        break;
+      case "Bitcoin":
+      case "Ethereum":
+      case "USDC":
+      case "USDT":
+      case "Litecoin":
+      case "Solana":
+        onPayCryptomus(currency);
+        break;
+      default:
+        console.log("Unknown payment type:", type);
+        break;
+    }
+  };
+
+  const onPayCryptomus = async (currency: string) => {
+    const res = await restApi.postRequest("pay-cryptomus", {
+      amount: 1,
+      currency: currency
+    })
+
+    if (res.status === 200) {
+      console.log(res.data.url, "data");
+      window.open(res.data.url, '_blank', 'noopener,noreferrer');
+      onClose();
+    }
+  }
 
   return (
     <Modal>
       <div
-        className="grid place-items-center fixed w-screen h-screen bg-black bg-opacity-60 backdrop-blur-sm fade-in"
-        style={{ opacity: 1 }}
+        className="grid place-items-center fixed w-screen h-screen bg-black bg-opacity-60 backdrop-blur-sm fade-in modal-backdrop"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            onClose();
+          }
+        }}
       >
-        <div ref={modalRef}
-          className="relative m-4 shadow-2xl text-blue-gray-500 antialiased w-[96%] max-w-[590px] font-sans text-base font-light leading-relaxed bg-[#252633] rounded-xl flex flex-col gap-6 px-3 md:px-6 p-6 border-0 overflow-auto my-16"
-          style={{ opacity: 1, transform: "none" }}
+        <div
+          ref={modalRef}
+          className="relative m-4 shadow-2xl text-blue-gray-500 font-sans text-base font-light leading-relaxed w-full md:w-3/4 lg:w-3/5 2xl:w-2/5 min-w-[90%] md:min-w-[75%] lg:min-w-[60%] 2xl:min-w-[40%] max-w-[90%] md:max-w-[75%] lg:max-w-[60%] 2xl:max-w-[40%] bg-[#252633] rounded-xl flex flex-col gap-6 p-6 border-0 overflow-auto my-16"
+          onClick={e => e.stopPropagation()}
         >
-          <div className="flex justify-between items-center">
-            <div className="flex gap-2 items-center">
-              <Icon className="w-4" icon="LevelUp" />
-              <span className="text-sm text-primary-white">Level Up</span>
-            </div>
-            <div onClick={onClose}>
-              <Icon icon="Cancel" />
-            </div>
-          </div>
+          <button onClick={onClose} className="absolute top-4 right-4">
+            <Icon icon="Cancel" />
+          </button>
+          {/* <ProductDisplay /> */}
+          {/* Navigation Tabs */}
           <div className="rounded-r-full rounded-l-full bg-primary-dark flex gap-[14px] p-3 overflow-x-scroll">
-            <div className="flex gap-2 items-center  min-w-32">
+            <button onClick={onClose} className="flex gap-2 items-center  min-w-32">
               <div
                 className={`flex items-center justify-center bg-primary-lightDark  text-primary-white w-5 h-5 rounded-full text-xs`}
               >
                 1
               </div>
               <span className="text-primary-grey text-xs">Choose Level</span>
-            </div>
-            <div className="flex gap-2 items-center  min-w-32">
+            </button>
+            <button onClick={() => onPrevTab(0)} className="flex gap-2 items-center  min-w-32">
               <div
                 className={`flex items-center justify-center ${tabIdx !== 0 ? "bg-primary-lightDark text-primary-grey" : "bg-primary-gradient text-primary-white"}  w-5 h-5 rounded-full text-xs`}
               >
                 2
               </div>
-              <span className="text-primary-white text-xs">Review Order</span>
-            </div>
-            <div className="flex gap-2 items-center  min-w-32">
+              <span className={`text-xs ${tabIdx !== 0 ? "text-primary-grey" : "text-primary-white"}`}>Review Order</span>
+            </button>
+            <button onClick={() => onPrevTab(1)} className="flex gap-2 items-center  min-w-32">
               <div
                 className={`flex items-center justify-center ${tabIdx == 1 || tabIdx == 2 ? "bg-primary-gradient text-primary-white " : "bg-primary-lightDark text-primary-grey"}  w-5 h-5 rounded-full text-xs`}
               >
                 3
               </div>
-              <span className="text-primary-grey text-xs">Choose Payment</span>
-            </div>
-            <div className="flex gap-2 items-center  min-w-32">
+              <span className={`text-xs ${tabIdx == 1 || tabIdx == 2 ? "text-primary-white" : "text-primary-grey"}`}>Choose Payment</span>
+            </button>
+            <button onClick={() => onPrevTab(2)} className="flex gap-2 items-center  min-w-32">
               <div
                 className={`flex items-center justify-center ${tabIdx !== 3 ? "bg-primary-lightDark text-primary-grey" : "bg-primary-gradient text-primary-white "}  w-5 h-5 rounded-full text-xs`}
               >
                 {" "}
                 4
               </div>
-              <span className="text-primary-grey text-xs">
+              <span className={`text-xs ${tabIdx !== 3 ? "text-primary-grey" : "text-primary-white"}`}>
                 Enjoy Your Level
               </span>
-            </div>
+            </button>
           </div>
+
+          {/* Tab Content */}
           {tabIdx == 0 && (
             <div>
               <div className="rounded-md  bg-primary-dark flex p-5 flex-col mb-5">
@@ -194,25 +270,21 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
               <div className="flex justify-between gap-4 mt-6">
                 <Button
                   onClick={onClose}
-                  className="align-middle select-none font-sans font-bold text-center transition-all text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 bg-[#3A3B54] "
-                  type="button" placeholder=""                  >
+                  className="align-middle select-none font-sans font-bold text-center transition-all text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 bg-[#3A3B54] ">
                   Cancel
                 </Button>
                 <Button
                   onClick={() => setTabIdx(1)}
-                  className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-5/6 normal-case flex gap-2 items-center justify-center"
-                  type="button" placeholder=""                  >
+                  className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-5/6 normal-case flex gap-2 items-center justify-center">
                   Continue{" "}
-                  <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 320 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" >
-                    <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"></path>
-                  </svg>
+                  <Icon icon="TriangleRight" />
                 </Button>
               </div>
             </div>
           )}
           {tabIdx == 1 && (
             <div>
-              <div className="bg-[#161620] p-6 flex justify-between items-center">
+              <div className="bg-[#161620] p-6 mb-5 flex justify-between items-center rounded-lg">
                 <div className="flex flex-col gap-2">
                   <span className="text-xl font-bold text-primary-white">
                     $50.97
@@ -226,52 +298,44 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
                   </span>
                 </div>
               </div>
-              <div className="flex flex-col gap-4">
-                <span className="text-primary-grey text-xs">Steam</span>
-                <div className="flex gap-2">
-                  <Icon icon="CS2" />
-                  <Icon icon="TF2" />
-                  <Icon icon="Rust" />
+              <div className="flex flex-col gap-4 h-[40vh] overflow-y-auto">
+                <div className="flex flex-col gap-4">
+                  <span className="text-primary-grey text-xs">Steam</span>
+                  <div className="flex flex-wrap gap-2">
+                    {wallets.steam.map((item, key) => (
+                      <div key={key} className="w-full xsm:w-[130px]">
+                        <Item item={item} onHandleItem={onHandleItem} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-col gap-4">
-                <span className="text-primary-grey text-xs">Cryptocurrency</span>
-                <div className="flex flex-wrap gap-2">
-                  <Icon icon="Bitcoin" />
-                  <Icon icon="Ethereum" />
-                  <Icon icon="USDC" />
-                  <Icon icon="USDT" />
-                  <Icon icon="Litecoin" />
-                  <Icon icon="Solana" />
+                <div className="flex flex-col gap-4">
+                  <span className="text-primary-grey text-xs">Cryptocurrency</span>
+                  <div className="flex flex-wrap gap-2">
+                    {wallets.cryptocurrency.map((item, key) => (
+                      <div key={key} className="w-full xsm:w-[130px]">
+                        <Item item={item} onHandleItem={onHandleItem} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-col gap-4">
-                <span className="text-primary-grey text-xs">Bank</span>
-                <div className="flex gap-2">
-                  <Icon icon="Bank" />
-                  <Icon icon="Visa" />
-                  <Icon icon="Mastercard" />
-                  <Icon icon="Paypal" />
+                <div className="flex flex-col gap-4">
+                  <span className="text-primary-grey text-xs">Bank</span>
+                  <div className="flex flex-wrap gap-2">
+                    {wallets.bank.map((item, key) => (
+                      <div key={key} className="w-full xsm:w-[130px]">
+                        <Item item={item} onHandleItem={onHandleItem} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
               <div className="flex justify-between gap-4 mt-6">
                 <Button
                   onClick={() => setTabIdx(2)}
-                  className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-full normal-case flex gap-2 items-center justify-center"
-                  type="button"
-                  style={{ position: "relative", overflow: "hidden" }} placeholder=""                  >
+                  className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-full normal-case flex gap-2 items-center justify-center">
                   Continue{" "}
-                  <svg
-                    stroke="currentColor"
-                    fill="currentColor"
-                    strokeWidth="0"
-                    viewBox="0 0 320 512"
-                    height="1em"
-                    width="1em"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"></path>
-                  </svg>
+                  <Icon icon="TriangleRight" />
                 </Button>
               </div>
             </div>
@@ -330,21 +394,9 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
               <div className="flex justify-between gap-4 mt-6">
                 <Button
                   onClick={() => setTabIdx(3)}
-                  className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-full normal-case flex gap-2 items-center justify-center"
-                  type="button"
-                  style={{ position: "relative", overflow: "hidden" }} placeholder=""                  >
+                  className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-full normal-case flex gap-2 items-center justify-center">
                   Continue{" "}
-                  <svg
-                    stroke="currentColor"
-                    fill="currentColor"
-                    strokeWidth="0"
-                    viewBox="0 0 320 512"
-                    height="1em"
-                    width="1em"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"></path>
-                  </svg>
+                  <Icon icon="TriangleRight" />
                 </Button>
               </div>
             </div>
@@ -360,8 +412,7 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
                   benefits, and bragging rights with an enhanced Steam profile!
                 </span>
                 <Button
-                  className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] w-full mt-2 bg-opacity-75 text-primary-grey flex gap-2 justify-center items-center"
-                  type="button" placeholder=""                  >
+                  className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] w-full mt-2 bg-opacity-75 text-primary-grey flex gap-2 justify-center items-center">
                   <Icon icon="Tutorial" />
                   Tutorial
                 </Button>
@@ -369,8 +420,7 @@ const LevelUpModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => voi
               <div className="flex justify-between gap-4 mt-6">
                 <Button
                   onClick={onClose}
-                  className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-full normal-case flex gap-2 items-center justify-center"
-                  type="button" placeholder=""                  >
+                  className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-full normal-case flex gap-2 items-center justify-center">
                   <Icon icon="WhiteBag" />{" "}
                   Check Inventory
                 </Button>

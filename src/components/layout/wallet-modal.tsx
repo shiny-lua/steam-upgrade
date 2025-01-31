@@ -1,125 +1,82 @@
 import React from "react";
-import Modal from "../modal";
 import { Button } from "@material-tailwind/react";
+
+import Modal from "../modal";
 import Icon from "../icon";
+import { restApi } from "../../context/restApi";
+import { useGlobalContext } from "../../context";
+import { wallets } from "../../const/data.d";
+import { useClickOutside } from "../../hooks/use-modal";
 
-const wallets = {
-  steam: [
-    {
-      name: "CS2",
-      icon: "/image/icons/cs2.png",
-      category: "Steam",
-    },
-    {
-      name: "TF2",
-      icon: "/image/icons/tf2.png",
-      category: "Steam",
-    },
-    {
-      name: "Rust",
-      icon: "/image/icons/rust.png",
-      category: "Steam",
-    }
-  ],
-  cryptocurrency: [
-    {
-      name: "Bitcoin",
-      icon: "/image/icons/bitcoin.png",
-      category: "Cryptocurrency",
-    },
-    {
-      name: "Ethereum",
-      icon: "/image/icons/ethereum.png",
-      category: "Cryptocurrency",
-    },
-    {
-      name: "USDC",
-      icon: "/image/icons/usdc.png",
-      category: "Cryptocurrency",
-    },
-    {
-      name: "USDT",
-      icon: "/image/icons/usdt.png",
-      category: "Cryptocurrency",
-    },
-    {
-      name: "Litecoin",
-      icon: "/image/icons/litecoin.png",
-      category: "Cryptocurrency",
-    },
-    {
-      name: "Solana",
-      icon: "/image/icons/solana.png",
-      category: "Cryptocurrency",
-    }
-  ],
-  bank: [
-    {
-      name: "Bank",
-      icon: "/image/icons/bank.png",
-      category: "Bank",
-    },
-    {
-      name: "Visa",
-      icon: "/image/icons/visa.png",
-      category: "Bank",
-    },
-    {
-      name: "Mastercard",
-      icon: "/image/icons/mastercard.png",
-      category: "Bank",
-    },
-    {
-      name: "Paypal",
-      icon: "/image/icons/paypal.png",
-      category: "Bank",
-    }
-  ]
-}
 
-const Item = ({ item }: { item: { name: string, icon: string, category: string } }) => {
+const Item = ({ item, onPay }: { item: { name: string, icon: string, category: string, currency?: string }, onPay?: (currency: string) => void }) => {
   return (
-    <div className="bg-[#3A3B54]/50 hover:bg-[#3A3B54] rounded-lg p-4 flex flex-row xsm:flex-col px-10 xsm:px-4 gap-4">
+    <button onClick={() => onPay && item.currency && onPay(item.currency)} className="w-full bg-[#3A3B54]/50 hover:bg-[#3A3B54] rounded-lg p-4 flex flex-row xsm:flex-col px-10 xsm:px-4 gap-4">
       <img src={item.icon} alt={item.name} className="w-9 h-9" />
       <div className="flex flex-col">
-        <div className="text-primary-white font-bold text-sm">{item.name}</div>
-        <div className="text-primary-grey text-xs">{item.category}</div>
+        <div className="text-left text-primary-white font-bold text-sm">{item.name}</div>
+        <div className="text-left text-primary-grey text-xs">{item.category}</div>
       </div>
-    </div>
+    </button>
   )
 }
 
 const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFunction }) => {
+  const modalRef = useClickOutside({ isOpen, onClose });
+  const [state, { dispatch }] = useGlobalContext();
 
-  const modalRef = React.useRef<HTMLDivElement | null>(null);
-
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+  const onCloseModal = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    if (e.target === e.currentTarget) {
+      onClose();
     }
+  }
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, onClose]);
+  const onPay = async (currency: string) => {
+    const res = await restApi.postRequest("/pay-cryptomus", { currency, amount: state.steamLevel })
+    console.log(res)
+    if (res.status === 200) {
+      console.log(res.data.url, "data");
+      window.location.href = res.data.url;
+
+      const CHECK_INTERVAL = 3 * 1000;
+      const MAX_DURATION = 30 * 60 * 1000;
+      const startTime = Date.now();
+
+      const checkInterval = setInterval(async () => {
+        try {
+          const resp = await restApi.postRequest("/check-cryptomus", { 
+            uuid: res.data.uuid, 
+            order_id: res.data.order_id 
+          });
+          console.log(resp, "resp");
+
+          // Stop checking after 30 minutes
+          if (Date.now() - startTime >= MAX_DURATION) {
+            clearInterval(checkInterval);
+          }
+        } catch (error) {
+          console.error("Error checking payment:", error);
+          clearInterval(checkInterval);
+        }
+      }, CHECK_INTERVAL);
+
+      // Cleanup on component unmount
+      return () => clearInterval(checkInterval);
+    }
+  }
 
   return (
     <Modal>
       <div
         className="grid place-items-center fixed w-screen h-screen bg-black bg-opacity-60 backdrop-blur-sm fade-in"
-        style={{ opacity: 1 }}
+        onClick={onCloseModal}
       >
-        <div ref={modalRef}
+        <div
+          ref={modalRef}
           className="relative m-4 shadow-2xl text-blue-gray-500 font-sans text-base font-light leading-relaxed w-full md:w-3/4 lg:w-3/5 2xl:w-2/5 min-w-[90%] md:min-w-[75%] lg:min-w-[60%] 2xl:min-w-[40%] max-w-[90%] md:max-w-[75%] lg:max-w-[60%] 2xl:max-w-[40%] min-h-[80vh] h-[80vh] bg-[#252633] rounded-xl flex flex-col gap-6 p-6 border-0 overflow-auto my-16"
           style={{ opacity: 1, transform: "none" }}
+          onClick={(e) => e.stopPropagation()}
         >
           <div className="flex justify-between items-center">
             <div className="flex gap-2 items-center">
@@ -144,7 +101,7 @@ const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFuncti
               <div className="flex flex-wrap gap-2">
                 {wallets.cryptocurrency.map((item, key) => (
                   <div key={key} className="w-full xsm:w-[130px]">
-                    <Item item={item} />
+                    <Item item={item} onPay={onPay} />
                   </div>
                 ))}
               </div>
