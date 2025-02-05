@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 
 import { config, useGlobalContext } from "../../context";
@@ -17,7 +18,6 @@ const Home = () => {
     currentSteamLevel: 0,
     dreamSteamLevel: 0
   })
-
   const [showLevelUpModal, setShowLevelUpModal] = React.useState(false);
   const [showTradeUrlModal, setShowTradeUrlModal] = React.useState(false);
   const [showCsGoModal, setShowCsGoModal] = React.useState(false);
@@ -57,7 +57,7 @@ const Home = () => {
   }
 
   const onSignIn = async () => {
-    window.location.href = config.REDIRECT_URL;
+    window.location.href = config.BACKEND_URL + "/auth/steam";
   }
 
   const onShowLevelUpModal = () => {

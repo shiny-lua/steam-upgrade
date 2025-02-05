@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 import WalletModal from "./wallet-modal";
 import FreeModal from "./free-modal";
@@ -21,6 +22,7 @@ const Header = () => {
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const cookie = Cookies.get("authToken")
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -40,23 +42,19 @@ const Header = () => {
 
   React.useEffect(() => {
     const fetchData = async () => {
-      if (!state.authToken) {
-        const res = await restApi.postRequest("get-token");
-        if (res.status === 200) {
-          dispatch({ type: "authToken", payload: res.authToken });
-          storeData(res.authToken);
-          restApi.setAuthToken(res.authToken);
-          const resp = await restApi.postRequest("get-user");
-          dispatch({ type: "userData", payload: resp.data });
-          console.log(resp.data, "data");
-        }
+      const resp = await restApi.postRequest("get-user");
+
+      if (resp.status === 200) {
+        dispatch({ type: "userData", payload: resp.data });
+        dispatch({ type: "authToken", payload: cookie })
+        storeData(resp.data)
       }
-    };
+    }
     fetchData();
-  }, [state.authToken, dispatch, storeData]);
+  }, [])
 
   const onSignIn = async () => {
-    window.location.href = config.REDIRECT_URL;
+    window.location.href = config.BACKEND_URL + "/auth/steam";
   };
 
   return (
@@ -210,8 +208,6 @@ const Header = () => {
                 style={{ position: "relative", overflow: "hidden" }}
                 onClick={() => setWalletModal(true)}
                 placeholder=""
-                onPointerEnterCapture={() => { }}
-                onPointerLeaveCapture={() => { }}
               >
                 <Icon icon="Wallet" />
                 <span className="normal-case text-white text-sm">Wallet</span>
@@ -387,8 +383,6 @@ const Header = () => {
             className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4 z-10"
             onClick={onSignIn}
             placeholder=""
-            onPointerEnterCapture={() => { }}
-            onPointerLeaveCapture={() => { }}
           >
             <div className="flex gap-1">
               <Icon icon="Steam" />
