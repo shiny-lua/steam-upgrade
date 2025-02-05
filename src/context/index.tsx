@@ -1,4 +1,6 @@
 import React from "react";
+import Cookies from "js-cookie";
+
 import { config } from "../config/config";
 import { restApi } from "./restApi";
 
@@ -31,7 +33,7 @@ function useGlobalContext() {
 }
 
 const storeData = async (value: any) => {
-    return window.localStorage.setItem("authToken", value)
+    return window.localStorage.setItem("userData", JSON.stringify(value))
 }
 
 const getData = async () => {
@@ -41,45 +43,24 @@ const getData = async () => {
 const GlobalContextProvider = ({ children }: any) => {
     const [state, dispatch] = React.useReducer(reducer, INIT_STATE);
 
-    React.useEffect(() => {
-        initSessionSetting()
-    }, [])
+    // React.useEffect(() => {
+    //     initSessionSetting()
+    // }, [])
 
-    const initSessionSetting = async () => {
-        try {
-            const authToken = await getData() || "";
-            // console.log("authToken", authToken)
-            restApi.setAuthToken(authToken)
-            if (!!authToken) {
-                const loginStatus = await restApi.loginStatus(authToken);
-                console.log("loginStatus", loginStatus);
-
-                if (!!loginStatus?.status) {
-                    const userData = {
-                        fullName: loginStatus.fullName,
-                        email: loginStatus.email,
-                        id: loginStatus.id,
-                        avatar: loginStatus.avatar,
-                        joinedDate: loginStatus.joinedDate,
-                        tradeLink: loginStatus.tradeLink
-                    }
-
-                    // console.log("userData::", userData)
-                    dispatch({ type: "authToken", payload: authToken });
-                    dispatch({ type: "userData", payload: userData });
-
-                    // setTimeout(() => { dispatch({ type: "showLoadingPage", payload: false }) }, 1000);
-                } else {
-                    console.log("Invalid authToken!");
-                }
-            } else {
-                console.log("Invalid authToken!");
-            }
-        } catch (err: any) {
-            console.log("auth_token_invalid::", err.message);
-            // setTimeout(() => { dispatch({ type: "showLoadingPage", payload: false }) }, 1000);
-        }
-    }
+    // const initSessionSetting = async () => {
+    //     try {
+    //         const authToken = Cookies.get("authToken") || "";
+    //         // console.log("authToken", authToken)
+    //         if (!!authToken) {
+    //             const userData = JSON.parse(window.localStorage.getItem("userData") || "{}")
+    //             dispatch({ type: "userData", payload: userData });
+    //             dispatch({ type: "authToken", payload: authToken });
+    //         }  
+    //     } catch (err: any) {
+    //         console.log("auth_token_invalid::", err.message);
+    //         // setTimeout(() => { dispatch({ type: "showLoadingPage", payload: false }) }, 1000);
+    //     }
+    // }
 
     return (
         <GlobalContext.Provider

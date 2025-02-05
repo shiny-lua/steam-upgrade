@@ -18,26 +18,6 @@ interface ItemProps {
   onHandleItem: (name: string, currency?: string) => void;
 }
 
-const ProductDisplay = () => (
-  <section>
-    <div className="product">
-      <img
-        src="https://i.imgur.com/EHyR2nP.png"
-        alt="The cover of Stubborn Attachments"
-      />
-      <div className="description">
-      <h3>Stubborn Attachments</h3>
-      <h5>$20.00</h5>
-      </div>
-    </div>
-    <form action="https://b308-185-135-76-89.ngrok-free.app/api/create-payment-intent" method="POST">
-      <button type="submit">
-        Checkout
-      </button>
-    </form>
-  </section>
-);
-
 const Item: React.FC<ItemProps> = ({ item, onHandleItem }) => (
   <button
     onClick={() => onHandleItem(item.name, item.currency)}
@@ -67,7 +47,7 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ isOpen, onClose, showCsGoMo
     }
   };
 
-  const onHandleItem = (type: string, currency: string) => {
+  const onHandleItem = (type: string, currency?: string) => {
     switch (type) {
       case "CS2":
         showCsGoModal();
@@ -79,10 +59,12 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ isOpen, onClose, showCsGoMo
       case "USDT":
       case "Litecoin":
       case "Solana":
-        onPayCryptomus(currency);
+        if (!!currency) {
+          onPayCryptomus(currency);
+        }
         break;
       default:
-        console.log("Unknown payment type:", type);
+        onPayBank();
         break;
     }
   };
@@ -96,6 +78,15 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ isOpen, onClose, showCsGoMo
     if (res.status === 200) {
       console.log(res.data.url, "data");
       window.open(res.data.url, '_blank', 'noopener,noreferrer');
+      onClose();
+    }
+  }
+
+  const onPayBank = async () => {
+    console.log("onPayBank");
+    const res = await restApi.postRequest("create-payment-intent")
+    if (res.status === 200) {
+      window.open(res.data, '_blank', 'noopener,noreferrer');
       onClose();
     }
   }
@@ -118,7 +109,6 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ isOpen, onClose, showCsGoMo
           <button onClick={onClose} className="absolute top-4 right-4">
             <Icon icon="Cancel" />
           </button>
-          {/* <ProductDisplay /> */}
           {/* Navigation Tabs */}
           <div className="rounded-r-full rounded-l-full bg-primary-dark flex gap-[14px] p-3 overflow-x-scroll">
             <button onClick={onClose} className="flex gap-2 items-center  min-w-32">

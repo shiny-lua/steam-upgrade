@@ -1,6 +1,8 @@
 import React from "react";
 import Layout from "../../components/layout";
 import { Button } from "@material-tailwind/react";
+import Cookies from "js-cookie";
+
 import { useGlobalContext } from "../../context";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Icon from "../../components/icon";
@@ -15,22 +17,18 @@ const Profile = () => {
     const [status, setStatus] = React.useState({ email: "", tradeLink: "" } as { email: string, tradeLink: string })
 
     React.useEffect(() => {
-        console.log('12345789', state.userData);
         setStatus({
             email: state.userData.email,
             tradeLink: state.userData.tradeLink,
         });
-    }, [state])
+        console.log(state.userData)
+    }, [state.userData])
 
     const onLogout = async () => {
-        const res = await restApi.postRequest("logout");
-        if (res.status === 200) {
-            dispatch({ type: "userData", payload: {} })
-            dispatch({ type: "authToken", payload: "" })
-            dispatch({ type: "isOpenedMenu", payload: false })
-            storeData({})
-            window.localStorage.setItem("authToken", "")
-        }
+        Cookies.remove("authToken")
+        dispatch({ type: "authToken", payload: "" })
+        storeData({})
+        navigate("/")
     }
 
     const onSave = async () => {
