@@ -8,15 +8,43 @@ import LevelUpModal from "./components/level-up-modal";
 import Icon from "../../components/icon";
 import { restApi } from "../../context/restApi";
 import { showToast } from "../../context/helper";
-import SetTradeUrlModal from "./components/set-stade-url-modal";
+import { getXPForLevel } from "../../hooks/get-user-xp";
+import SetTradeUrlModal from "./components/set-trade-url-modal";
 import CsGoModal from "./components/cs-go-modal";
+import Loading from "../../components/loading";
+
+interface Status {
+  currentSteamLevel: number;
+  dreamSteamLevel: number;
+  xp: number;
+  sets: number;
+  gameCoupons: number;
+  emotes: number;
+  backgrounds: number;
+  showcases: number;
+  friendCap: number;
+  boosterPackRate: number;
+  estimatedCost: number;
+  worldRank: number;
+}
 
 const Home = () => {
   const [state, { dispatch }] = useGlobalContext();
 
-  const [status, setStatus] = React.useState({
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [status, setStatus] = React.useState<Status>({
     currentSteamLevel: 0,
-    dreamSteamLevel: 0
+    dreamSteamLevel: 0,
+    xp: 0,
+    sets: 0,
+    gameCoupons: 0,
+    emotes: 0,
+    backgrounds: 0,
+    showcases: 0,
+    friendCap: 0,
+    boosterPackRate: 0,
+    worldRank: 0,
+    estimatedCost: 0,
   })
   const [showLevelUpModal, setShowLevelUpModal] = React.useState(false);
   const [showTradeUrlModal, setShowTradeUrlModal] = React.useState(false);
@@ -26,7 +54,34 @@ const Home = () => {
     const fetchData = async () => {
       const res = await restApi.postRequest("get-steam-level")
 
-      setStatus({ ...status, currentSteamLevel: res.data })
+      const {
+        xp,
+        gameCoupons,
+        sets,
+        emotes,
+        backgrounds,
+        showcases,
+        friendCap,
+        boosterPackRate,
+        estimatedCost
+      } = getXPForLevel(res.data + 1, res.data);
+
+      // Update status and global state
+      setStatus({
+        ...status,
+        currentSteamLevel: res.data,
+        dreamSteamLevel: res.data + 1,
+        xp,
+        sets,
+        gameCoupons,
+        emotes,
+        backgrounds,
+        showcases,
+        friendCap,
+        boosterPackRate,
+        estimatedCost: Number(estimatedCost)
+      });
+
       dispatch({ type: "steamLevel", payload: res.data })
     }
 
@@ -38,7 +93,7 @@ const Home = () => {
     const scrollContainer = document.querySelector(".scroll-container");
 
     if (scrollContainer) {
-      const handleWheel = (e) => {
+      const handleWheel = (e: any) => {
         e.preventDefault();
         scrollContainer.scrollLeft += e.deltaY;
       };
@@ -51,16 +106,99 @@ const Home = () => {
     }
   }, []);
 
+  const onLevelChange = (n: number) => {
+    // Validate input
+    if (n < 0) {
+      n = 0;
+      showToast("Level cannot be negative", "warning");
+    } else if (n > 6199) {
+      n = 6199;
+      showToast("We are only able to level up to 6199", "warning");
+    }
+
+    // Calculate XP and related stats
+    const {
+      xp,
+      gameCoupons,
+      sets,
+      emotes,
+      backgrounds,
+      showcases,
+      friendCap,
+      boosterPackRate,
+      estimatedCost
+    } = getXPForLevel(n, status.currentSteamLevel);
+
+    // Update status and global state
+    setStatus({
+      ...status,
+      dreamSteamLevel: Number(n),
+      xp,
+      sets,
+      gameCoupons,
+      emotes,
+      backgrounds,
+      showcases,
+      friendCap,
+      boosterPackRate,
+      estimatedCost: Number(estimatedCost)
+    });
+
+    dispatch({ type: "steamLevel", payload: n });
+  }
+
   const onLevelUp = (n: number) => {
-    setStatus({ ...status, dreamSteamLevel: status.dreamSteamLevel + n })
+
+    // Validate input
+    if (n < 0) {
+      n = 0;
+      showToast("Level cannot be negative", "warning");
+    } else if (n > 6199) {
+      n = 6199;
+      showToast("We are only able to level up to 6199", "warning");
+    }
+
+    // Calculate XP and related stats
+    const {
+      xp,
+      gameCoupons,
+      sets,
+      emotes,
+      backgrounds,
+      showcases,
+      friendCap,
+      boosterPackRate,
+      estimatedCost
+    } = getXPForLevel(status.dreamSteamLevel + n, status.currentSteamLevel);
+
+    // Update status and global state
+    setStatus({
+      ...status,
+      dreamSteamLevel: status.dreamSteamLevel + n,
+      xp,
+      sets,
+      gameCoupons,
+      emotes,
+      backgrounds,
+      showcases,
+      friendCap,
+      boosterPackRate,
+      estimatedCost: Number(estimatedCost)
+    });
     dispatch({ type: "steamLevel", payload: status.dreamSteamLevel + n })
   }
 
   const onSignIn = async () => {
+    setIsLoading(true);
     window.location.href = config.BACKEND_URL + "/auth/steam";
   }
 
   const onShowLevelUpModal = () => {
+
+    if (state.userData.balance < status.estimatedCost) {
+      return showToast("You don't have enough balance, please add more balance to your wallet", "warning")
+    }
+
     if (status.dreamSteamLevel <= status.currentSteamLevel) {
       return showToast("Desired level should be higher than current level", "warning")
     }
@@ -71,9 +209,22 @@ const Home = () => {
     setShowLevelUpModal(true)
   }
 
+  React.useEffect(() => {
+    if (state.isLoading) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [state.isLoading]);
+
   return (
     <Layout>
-      <div className="px-3 sm:px-4 md:px-8 lg:px-0 mx-auto max-w-[1000px] mt-5 md:mt-20">
+      {state.isLoading && (
+        <div className="fixed top-0 left-0 z-[50000000000] w-[100vw] h-[100vh] bg-black/10 backdrop-blur-sm flex justify-center -mt-10 items-center">
+          <Loading />
+        </div>
+      )}
+      <div className={`px-3 relative sm:px-4 md:px-8 lg:px-0 mx-auto max-w-[1000px] mt-5 md:mt-20 ${state.isLoading ? "pointer-events-none" : ""}`}>
         <div className="relative">
           <Icon icon="Effort" />
           <div className="flex flex-col lg:flex-row gap-4 relative z-10">
@@ -99,12 +250,12 @@ const Home = () => {
                     Review Order
                   </span>
                 </div>
-                <div className="flex gap-2 items-center min-w-32">
+                <div className="flex gap-2 items-center min-w-28">
                   <div className="flex items-center justify-center bg-primary-lightDark w-5 h-5 rounded-full text-primary-grey text-xs">
                     3
                   </div>
                   <span className="text-primary-grey text-xs">
-                    Choose Payment
+                    Send Order
                   </span>
                 </div>
                 <div className="flex gap-2 items-center min-w-32">
@@ -125,8 +276,7 @@ const Home = () => {
                       {status.currentSteamLevel}
                     </div>
                   </div>
-                  <Button
-                    className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 flex items-center justify-center gap-1">
+                  <Button className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 flex items-center justify-center gap-1" >
                     <Icon icon="Refresh" />
                     <span className="text-primary-grey normal-case">
                       Refresh
@@ -144,8 +294,9 @@ const Home = () => {
                   <div className="bg-primary-dark opacity-50 rounded-[10px] w-full px-4 py-3 flex justify-between items-center">
                     <input
                       type="number"
-                      value={status.dreamSteamLevel}
-                      onChange={e => setStatus({ ...status, dreamSteamLevel: Number(e.target.value) })}
+                      value={status.dreamSteamLevel || ''}
+                      placeholder="0"
+                      onChange={e => onLevelChange(parseInt(e.target.value) || 0)}
                       className="text-[#EDEDED] text-sm border-none outline-none bg-transparent"
                     />
                     <div className="w-6 h-6 flex text-[10px] justify-center items-center rounded-full border border-[#7653C9] text-white">{status.dreamSteamLevel}</div>
@@ -169,25 +320,25 @@ const Home = () => {
               <hr className="bg-primary-dark border-primary-dark" />
               <div className="flex flex-col xsm:flex-row justify-between gap-2 items-start xsm:items-center">
                 <span className="text-[13px] font-bold text-white">
-                  $406.55
+                  ${status.estimatedCost}
                 </span>
                 <div className="flex gap-[14px]">
                   <div className="flex gap-[6px] items-center">
                     <Icon icon="Set" />
                     <span className="text-primary-grey text-[13px]">
-                      3 Sets
+                      0 Sets
                     </span>
                   </div>
                   <div className="flex gap-[6px] items-center">
                     <Icon icon="Card" />
                     <span className="text-primary-grey text-[13px]">
-                      248 Cards
+                      0 Cards
                     </span>
                   </div>
                   <div className="flex gap-[6px] items-center">
                     <Icon icon="Game" className="w-4" />
                     <span className="text-primary-grey text-[13px]">
-                      13 Games
+                      0 Emotes
                     </span>
                   </div>
                 </div>
@@ -197,7 +348,11 @@ const Home = () => {
                   onClick={onSignIn}
                   className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4">
                   <div className="flex gap-1 justify-center items-center">
-                    <Icon icon="Steam" />
+                    {isLoading ? (
+                      <div className="animate-spin rounded-full border-2 border-solid border-white border-t-transparent w-4 h-4" />
+                    ) : (
+                      <Icon icon="Steam" />
+                    )}
                     <span className="text-white normal-case text-sm">
                       Sign In with Steam
                     </span>
@@ -288,11 +443,11 @@ const Home = () => {
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between items-center">
                   <span className="text-primary-grey text-xs">Sets</span>
-                  <span className="text-white text-xs font=bold">121</span>
+                  <span className="text-white text-xs font-bold">{status.sets}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-primary-grey text-xs">XP</span>
-                  <span className="text-white text-xs font=bold">10,490</span>
+                  <span className="text-white text-xs font-bold">{status.xp}</span>
                 </div>
               </div>
               <div className="flex flex-col gap-3">
@@ -300,31 +455,31 @@ const Home = () => {
                   <span className="text-primary-grey text-xs">
                     Game Coupons
                   </span>
-                  <span className="text-white text-xs font=bold">0</span>
+                  <span className="text-white text-xs font-bold">{status.gameCoupons}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-primary-grey text-xs">Emotes</span>
-                  <span className="text-white text-xs font=bold">0</span>
+                  <span className="text-white text-xs font-bold">{status.emotes}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-primary-grey text-xs">Backgrounds</span>
-                  <span className="text-white text-xs font=bold">5</span>
+                  <span className="text-white text-xs font-bold">{status.backgrounds}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-primary-grey text-xs">Showcases</span>
-                  <span className="text-white text-xs font=bold">
-                    0
+                  <span className="text-white text-xs font-bold">
+                    {status.showcases}
                     <span className="text-primary-grey text-xs text-bold">
-                      /20
+                      {" "} / {" "} 20
                     </span>
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-primary-grey text-xs">Friend Cap</span>
-                  <span className="text-white text-xs font=bold">
-                    10
+                  <span className="text-white text-xs font-bold">
+                    {250 + status.friendCap}
                     <span className="text-primary-grey text-xs text-bold">
-                      /2,000
+                      {" "} / {" "} 2,000
                     </span>
                   </span>
                 </div>
@@ -332,11 +487,11 @@ const Home = () => {
                   <span className="text-primary-grey text-xs">
                     Booster Pack Rate
                   </span>
-                  <span className="text-white text-xs font=bold">+0%</span>
+                  <span className="text-white text-xs font-bold">+{status.boosterPackRate}%</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-primary-grey text-xs">World Rank</span>
-                  <span className="text-white text-xs font=bold">#2997856</span>
+                  <span className="text-white text-xs font-bold">#{status.worldRank}</span>
                 </div>
               </div>
             </div>
@@ -442,13 +597,12 @@ const Home = () => {
             </Button>
           </div>
         </div>
-        {showLevelUpModal && (
-          <LevelUpModal isOpen={showLevelUpModal} showCsGoModal={() => setShowCsGoModal(true)} onClose={() => setShowLevelUpModal(false)} />
+        {(state.isLoading || showLevelUpModal) && (
+          <LevelUpModal amount={status.estimatedCost} dreamLevel={status.dreamSteamLevel} isOpen={showLevelUpModal} showCsGoModal={() => setShowCsGoModal(true)} onClose={() => setShowLevelUpModal(false)} />
         )}
         {showTradeUrlModal && <SetTradeUrlModal isOpen={showTradeUrlModal} onClose={() => setShowTradeUrlModal(false)} />}
         {showCsGoModal && <CsGoModal isOpen={showCsGoModal} onClose={() => setShowCsGoModal(false)} />}
       </div>
-
     </Layout>
   );
 };

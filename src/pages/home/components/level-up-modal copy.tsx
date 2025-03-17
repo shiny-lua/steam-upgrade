@@ -1,73 +1,124 @@
 import React from "react";
 import { Button } from "@material-tailwind/react";
-import Cookies from "js-cookie";
-import { Link } from "react-router-dom";
-import { config, useGlobalContext } from "../../../context";
+
+
 import Modal from "../../../components/modal";
 import Icon from "../../../components/icon";
+import { wallets } from "../../../const/data.d";
 import { useClickOutside } from "../../../hooks/use-modal";
 import { restApi } from "../../../context/restApi";
+import { useGlobalContext } from "../../../context";
+import { showToast } from "../../../context/helper";
+import { fetchRates } from "../../../context/helper";
+
+interface ItemProps {
+  type: string;
+  item: {
+    name: string;
+    icon: string;
+    category: string;
+    currency?: string;
+  };
+  onHandleItem: (name: string, currency?: string) => void;
+}
+
+const Item: React.FC<ItemProps> = ({ type, item, onHandleItem }) => (
+  <button
+    onClick={() => onHandleItem(item.name, item.currency)}
+    className={`w-full hover:bg-[#515270] rounded-lg p-4 flex flex-row xsm:flex-col px-10 xsm:px-4 gap-4 ${type == item.name ? "bg-[#515270]" : "bg-[#3A3B54]/50"}`}
+  >
+    <img src={item.icon} alt={item.name} className="w-9 h-9" />
+    <div className="flex flex-col">
+      <div className="text-left text-primary-white font-bold text-sm">{item.name}</div>
+      <div className="text-left text-primary-grey text-xs">{item.category}</div>
+    </div>
+  </button>
+);
 
 interface LevelUpModalProps {
   amount: number;
   isOpen: boolean;
   onClose: () => void;
   showCsGoModal: () => void;
-  dreamLevel: number;
 }
 
-const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, isOpen, dreamLevel, onClose, showCsGoModal }) => {
+const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, isOpen, onClose, showCsGoModal }) => {
 
-  const [state, { dispatch }]: GlobalContextType = useGlobalContext()
-
+  const [state]: GlobalContextType = useGlobalContext()
+  const [tabIdx, setTabIdx] = React.useState(0);
   const [status, setStatus] = React.useState({
-    errorMessage: "",
-    showInfo: true,
-    offerId: "",
-    orderId: "",
-    tabIdx: 0,
+    type: "",
+    currency: ""
   })
+
+  const [useBalance, setUseBalance] = React.useState(false);
 
   const modalRef = useClickOutside({ isOpen, onClose });
 
   const onPrevTab = (n: number) => {
-    if (status.tabIdx > n) {
-      setStatus({ ...status, tabIdx: n });
+    if (tabIdx > n) {
+      setTabIdx(n);
     }
   };
 
-  React.useEffect(() => {
-    if (state.isLoading) {
-      setStatus({ ...status, tabIdx: 1 });
+  const onHandlePayment = (n: number) => {
+    switch (status.type) {
+      case "CS2":
+        showCsGoModal();
+        onClose();
+        break;
+      case "Bitcoin":
+      case "Ethereum":
+      case "USDC":
+      case "USDT":
+      case "Litecoin":
+      case "Solana":
+        if (!!status.currency) {
+          onPayCryptomus(status.currency);
+        }
+        break;
+      default:
+        onPayBank(); break;
     }
-  }, [state.isLoading]);
+  }
 
-  const onOffer = async () => {
-    dispatch({ type: "isLoading", payload: true });
-    Cookies.set("isLoading", "true");
+  const onHandleItem = (type: string, currency?: string) => {
+    setStatus({ type, currency: currency ? currency : "" })
+  };
 
-    const res = await restApi.postRequest("level-up", {
-      dreamLevel: dreamLevel
-    });
+  const onPayCryptomus = async (currency: string) => {
+
+    const btcLimit = 0.00002
+    const ltcLimit = 0.02
+
+    if (currency == "BTC") {
+      const rate = await fetchRates(`BTC`)
+      if (amount * 1 / rate < btcLimit) {
+        showToast(`The minimum amount for replenishing your account via Cryptomus is now $ ${(btcLimit * rate).toFixed(2)}`, "warning")
+        return
+      }
+    } else if (currency == "LTC") {
+      const rate = await fetchRates(`LTC`)
+      if (amount * 1 / rate < ltcLimit) {
+        showToast(`The minimum amount for replenishing your account via Cryptomus is now $ ${(ltcLimit * rate).toFixed(2)}`, "warning")
+        return
+      }
+    }
+    const res = await restApi.postRequest("pay-cryptomus", {
+      amount: amount,
+      currency: currency
+    })
 
     if (res.status === 200) {
-      dispatch({ type: "isLoading", payload: false });
-      Cookies.remove("isLoading");
-      setStatus({
-        ...status,
-        offerId: res.data.offerId,
-        showInfo: false,
-        tabIdx: 3,
-      });
-    } else {
-      setStatus({
-        ...status,
-        errorMessage: res.message,
-        orderId: res.orderId,
-        showInfo: false,
-      });
-      dispatch({ type: "isLoading", payload: false });
-      Cookies.remove("isLoading");
+      window.open(res.data.url, '_blank', 'noopener,noreferrer');
+      onClose();
+    }
+  }
+
+  const onPayBank = async () => {
+    const res = await restApi.postRequest("create-payment-intent")
+    if (res.status === 200) {
+      window.open(res.data, '_blank', 'noopener,noreferrer');
     }
   }
 
@@ -101,35 +152,35 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, isOpen, dreamLevel,
             </button>
             <button onClick={() => onPrevTab(0)} className="flex gap-2 items-center  min-w-32">
               <div
-                className={`flex items-center justify-center ${status.tabIdx !== 0 ? "bg-primary-lightDark text-primary-grey" : "bg-primary-gradient text-primary-white"}  w-5 h-5 rounded-full text-xs`}
+                className={`flex items-center justify-center ${tabIdx !== 0 ? "bg-primary-lightDark text-primary-grey" : "bg-primary-gradient text-primary-white"}  w-5 h-5 rounded-full text-xs`}
               >
                 2
               </div>
-              <span className={`text-xs ${status.tabIdx !== 0 ? "text-primary-grey" : "text-primary-white"}`}>Review Order</span>
+              <span className={`text-xs ${tabIdx !== 0 ? "text-primary-grey" : "text-primary-white"}`}>Review Order</span>
             </button>
-            <button onClick={() => onPrevTab(1)} className="flex gap-2 items-center  min-w-28">
+            <button onClick={() => onPrevTab(1)} className="flex gap-2 items-center  min-w-32">
               <div
-                className={`flex items-center justify-center ${status.tabIdx == 1 || status.tabIdx == 2 ? "bg-primary-gradient text-primary-white " : "bg-primary-lightDark text-primary-grey"}  w-5 h-5 rounded-full text-xs`}
+                className={`flex items-center justify-center ${tabIdx == 1 || tabIdx == 2 ? "bg-primary-gradient text-primary-white " : "bg-primary-lightDark text-primary-grey"}  w-5 h-5 rounded-full text-xs`}
               >
                 3
               </div>
-              <span className={`text-xs ${status.tabIdx == 1 || status.tabIdx == 2 ? "text-primary-white" : "text-primary-grey"}`}>Send Order</span>
+              <span className={`text-xs ${tabIdx == 1 || tabIdx == 2 ? "text-primary-white" : "text-primary-grey"}`}>Choose Payment</span>
             </button>
             <button onClick={() => onPrevTab(2)} className="flex gap-2 items-center  min-w-32">
               <div
-                className={`flex items-center justify-center ${status.tabIdx !== 3 ? "bg-primary-lightDark text-primary-grey" : "bg-primary-gradient text-primary-white "}  w-5 h-5 rounded-full text-xs`}
+                className={`flex items-center justify-center ${tabIdx !== 3 ? "bg-primary-lightDark text-primary-grey" : "bg-primary-gradient text-primary-white "}  w-5 h-5 rounded-full text-xs`}
               >
                 {" "}
                 4
               </div>
-              <span className={`text-xs ${status.tabIdx !== 3 ? "text-primary-grey" : "text-primary-white"}`}>
+              <span className={`text-xs ${tabIdx !== 3 ? "text-primary-grey" : "text-primary-white"}`}>
                 Enjoy Your Level
               </span>
             </button>
           </div>
 
           {/* Tab Content */}
-          {status.tabIdx == 0 && (
+          {tabIdx == 0 && (
             <div>
               <div className="rounded-md  bg-primary-dark flex p-5 flex-col mb-5">
                 <div className="flex justify-between items-center w-full">
@@ -244,7 +295,7 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, isOpen, dreamLevel,
                   Cancel
                 </Button>
                 <Button
-                  onClick={() => { setStatus({ ...status, tabIdx: 1, showInfo: true, errorMessage: "", orderId: "" }); }}
+                  onClick={() => setTabIdx(1)}
                   className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-5/6 normal-case flex gap-2 items-center justify-center">
                   Continue{" "}
                   <Icon icon="TriangleRight" />
@@ -252,61 +303,69 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, isOpen, dreamLevel,
               </div>
             </div>
           )}
-          {status.tabIdx == 1 && (
+          {tabIdx == 1 && (
             <div>
-
-              <div className="bg-[#161620] drop-shadow-[0_2px_0_rgba(0,0,0,0.15)] p-6 mb-5 flex flex-col gap-2 rounded-lg">
-                <div className="flex items-center gap-2 text-2xl font-bold text-primary-grey">Order to
-                  <Link to={`https://steamcommunity.com/profiles/${config.STEAM_BOT_STEAM_ID}`} target="_blank" className="underline text-blue-400">
-                    {config.STEAM_BOT_NAME}
-                  </Link >
+              <div className="bg-[#161620] drop-shadow-[0_2px_0_rgba(0,0,0,0.15)] p-6 mb-5 flex justify-between items-center rounded-lg">
+                <div className="flex flex-col gap-2">
+                  <span className="text-xl font-bold text-primary-white">
+                    $ {state.userData.balance}
+                  </span>
+                  <span className="text-base text-primary-grey">Balance</span>
                 </div>
-                <div className="text-lg text-primary-grey">
-                  {status.orderId && (
-                    <div>Order ID: <span className="text-blue-600 font-semibold">{status.orderId}</span></div>
-                  )}
-                  <div>Bot Name: <span className="text-blue-600 font-semibold">{config.STEAM_BOT_NAME}</span></div>
-                  <div>Bot Steam ID: <span className="text-blue-600 font-semibold">{config.STEAM_BOT_STEAM_ID}</span></div>
-                  <div>Dream Level: <span className="text-blue-600 font-semibold">{dreamLevel}</span></div>
-                  <div>Price: <span className="text-blue-600 font-semibold">${amount}</span></div>
-                  {status.errorMessage && (
-                    <div>
-                      <div>Status: <span className="text-blue-600 font-semibold">Failed</span></div>
-                      <div className="flex flex-col" >
-                        Error Reason:
-                        <span className="text-red-500 font-semibold ">
-                          There was an issue with your trade submission. Please check that your profile and inventory settings are set to public and that your profile contains a valid trade URL. Once you update these settings, you can place a new order without needing to make another payment, as your balance will be applied automatically.
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
+                <div onClick={() => setUseBalance(!useBalance)} className="flex gap-1 items-center p-3 bg-[#3A3B54] cursor-pointer bg-opacity-50 rounded-md">
+                  {useBalance ? <Icon icon="CheckedBox" /> : <div className="w-[15px] h-[15px] rounded-sm border-2 border-primary-grey"></div>}
+                  <span className="font-bold text-sm mt-[1px] text-primary-grey">
+                    Use Balance
+                  </span>
                 </div>
-                {status.showInfo && (
-                  <div className="text-md text-orange-700">
-                    <div>* Make sure you have crafted all your sets before buying from us (or buying again from us). This ensures that we only send the sets you need.</div>
-                    <div>* You can participate in all our promotions to get more bonuses!</div>
-                    <div>* We recommend using our plugin to quickly craft received sets.</div>
-                    <div>* Make sure you have an active Steam <Link to={`https://help.steampowered.com/en/faqs/view/71D3-35C2-AD96-AA3A`} target="_blank" className="underline">account</Link> before exchanging.</div>
-                  </div>
-                )}
               </div>
-
-              <div className="flex justify-between mt-6">
+              <div className="flex flex-col gap-4 h-[40vh] overflow-y-auto">
+                <div className="flex flex-col gap-4">
+                  <span className="text-primary-grey text-sm">Steam</span>
+                  <div className="flex flex-wrap gap-2">
+                    {wallets.steam.map((item, key) => (
+                      <div key={key} className="w-full xsm:w-[130px]">
+                        <Item type={status.type} item={item} onHandleItem={onHandleItem} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <span className="text-primary-grey text-sm">Cryptocurrency</span>
+                  <div className="flex flex-wrap gap-2">
+                    {wallets.cryptocurrency.map((item, key) => (
+                      <div key={key} className="w-full xsm:w-[130px]">
+                        <Item type={status.type} item={item} onHandleItem={onHandleItem} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <span className="text-primary-grey text-sm">Bank</span>
+                  <div className="flex flex-wrap gap-2">
+                    {wallets.bank.map((item, key) => (
+                      <div key={key} className="w-full xsm:w-[130px]">
+                        <Item type={status.type} item={item} onHandleItem={onHandleItem} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-between gap-4 mt-6">
                 <Button
-                  onClick={onOffer}
-                  className="align-middle select-none font-sans font-bold text-center bg-primary-gradient w-full normal-case flex gap-1 items-center justify-center">
-                  Send Order
+                  onClick={() => onHandlePayment(2)}
+                  className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-full normal-case flex gap-2 items-center justify-center">
+                  Continue{" "}
                   <Icon icon="TriangleRight" />
                 </Button>
               </div>
             </div>
           )}
-          {status.tabIdx == 2 && (
+          {tabIdx == 2 && (
             <div>
               <div className="flex flex-col gap-4">
                 <div className="flex justify-between items-center">
-                  <button onClick={() => setStatus({ ...status, tabIdx: 1 })} className="flex gap-1 items-center">
+                  <button onClick={() => setTabIdx(1)} className="flex gap-1 items-center">
                     <Icon icon="Back" />
                     <span className="text-primary-grey text-xs">Back</span>
                   </button>
@@ -355,7 +414,7 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, isOpen, dreamLevel,
               </div>
               <div className="flex justify-between gap-4 mt-6">
                 <Button
-                  onClick={() => setStatus({ ...status, tabIdx: 3 })}
+                  onClick={() => setTabIdx(3)}
                   className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-full normal-case flex gap-2 items-center justify-center">
                   Continue{" "}
                   <Icon icon="TriangleRight" />
@@ -363,7 +422,7 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, isOpen, dreamLevel,
               </div>
             </div>
           )}
-          {status.tabIdx == 3 && (
+          {tabIdx == 3 && (
             <div>
               <div className="bg-[#161620] p-8 flex flex-col justify-center items-center gap-6">
                 <Icon icon="Redbeet" />
@@ -381,7 +440,7 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, isOpen, dreamLevel,
               </div>
               <div className="flex justify-between gap-4 mt-6">
                 <Button
-                  onClick={() => window.open(`https://steamcommunity.com/tradeoffer/${status.offerId}`, "_blank")}
+                  onClick={onClose}
                   className="align-middle select-none font-sans font-bold text-center transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-full normal-case flex gap-2 items-center justify-center">
                   <Icon icon="WhiteBag" />{" "}
                   Check Inventory

@@ -60,21 +60,25 @@ export const wallets = {
             name: "Bank",
             icon: "/image/icons/bank.png",
             category: "Bank",
+            currency: "us_bank_account",
         },
         {
             name: "Visa",
             icon: "/image/icons/visa.png",
             category: "Bank",
+            currency: "card",
         },
         {
             name: "Mastercard",
             icon: "/image/icons/mastercard.png",
             category: "Bank",
+            currency: "card",
         },
         {
             name: "Paypal",
             icon: "/image/icons/paypal.png",
             category: "Bank",
+            currency: "paypal",
         }
     ]
 }

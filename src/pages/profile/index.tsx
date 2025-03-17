@@ -7,7 +7,7 @@ import { useGlobalContext } from "../../context";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Icon from "../../components/icon";
 import { restApi } from "../../context/restApi";
-import { getFormattedDate } from "../../context/helper";
+import { getFormattedDate, showToast } from "../../context/helper";
 
 const Profile = () => {
     const [state, { dispatch, storeData }]: GlobalContextType = useGlobalContext();
@@ -21,7 +21,6 @@ const Profile = () => {
             email: state.userData.email,
             tradeLink: state.userData.tradeLink,
         });
-        console.log(state.userData)
     }, [state.userData])
 
     const onLogout = async () => {
@@ -36,6 +35,7 @@ const Profile = () => {
 
         if (res.status === 200) {
             dispatch({ type: "userData", payload: res.data })
+            showToast("Settings updated successfully", "success")
         }
     }
 
@@ -71,7 +71,7 @@ const Profile = () => {
                             </div>
                         </div>
                         <hr className="bg-primary-dark border-primary-dark my-2" />
-                        <div className="space-y-2">
+                        {/* <div className="space-y-2">
                             <div className="flex justify-between items-center text-primary-grey text-[0.75rem] font-[700]">
                                 <span>Your Email</span><span>Verified</span>
                             </div>
@@ -87,9 +87,9 @@ const Profile = () => {
                                     <Icon icon="Checked" />
                                 </Button>
                             </div>
-                        </div>
+                        </div> */}
                         <div className="space-y-1.5 mt-2">
-                            <span className="text-primary-grey text-[0.75rem] font-[700]">Your Trade URL</span>
+                            <span className="text-primary-grey text-[0.9rem] font-[700]">Your Trade URL</span>
                             <div className="flex items-center text-[0.85rem] text-primary-white text-sm bg-primary-dark/50 rounded-[10px] pr-1 py-1">
                                 <input
                                     type="text"

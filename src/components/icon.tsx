@@ -6330,6 +6330,85 @@ const icons = {
             <path fillRule="evenodd" clipRule="evenodd" d="M9.91586 8.56689C8.62798 8.56689 7.58398 9.61089 7.58398 10.8988C7.58398 12.1866 8.62798 13.2306 9.91586 13.2306C11.2037 13.2306 12.2477 12.1866 12.2477 10.8988C12.2477 9.61089 11.2037 8.56689 9.91586 8.56689ZM8.74773 10.8988C8.74773 10.2536 9.27075 9.73064 9.91586 9.73064C10.561 9.73064 11.084 10.2536 11.084 10.8988C11.084 11.5439 10.561 12.0669 9.91586 12.0669C9.27075 12.0669 8.74773 11.5439 8.74773 10.8988Z" fill="#A9ABCD" />
         </svg>
 
+    ),
+    Info: (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            x="0px"
+            y="0px"
+            className="w-6 h-6"
+            viewBox="0,0,256,256"
+        >
+            <defs>
+                <linearGradient
+                    x1="9.899"
+                    y1="9.98"
+                    x2="38.183"
+                    y2="38.264"
+                    gradientUnits="userSpaceOnUse"
+                    id="color-1_VQOfeAx5KWTK_gr1"
+                >
+                    <stop offset={0} stopColor="#ffa900" />
+                    <stop offset={1} stopColor="#ed550b" />
+                </linearGradient>
+                <radialGradient
+                    cx="23.9992"
+                    cy="15.4016"
+                    r="3.98833"
+                    gradientUnits="userSpaceOnUse"
+                    id="color-2_VQOfeAx5KWTK_gr2"
+                >
+                    <stop offset="0.516" stopColor="#340202" />
+                    <stop offset={1} stopColor="#000000" stopOpacity={0} />
+                </radialGradient>
+            </defs>
+            <g
+                fill="none"
+                fillRule="nonzero"
+                stroke="none"
+                strokeWidth={1}
+                strokeLinecap="butt"
+                strokeLinejoin="miter"
+                strokeMiterlimit={10}
+                strokeDasharray=""
+                strokeDashoffset={0}
+                fontFamily="none"
+                fontWeight="none"
+                fontSize="none"
+                textAnchor="none"
+                style={{ mixBlendMode: "normal" }}
+            >
+                <g transform="scale(5.33333,5.33333)">
+                    <path
+                        d="M44.041,24.122c0,11.045 -8.955,20 -20,20c-11.045,0 -20,-8.955 -20,-20c0,-11.045 8.955,-20 20,-20c11.045,0 20,8.955 20,20z"
+                        fill="url(#color-1_VQOfeAx5KWTK_gr1)"
+                    />
+                    <path
+                        d="M22,36h4c0.552,0 1,-0.448 1,-1v-15c0,-0.552 -0.448,-1 -1,-1h-4c-0.552,0 -1,0.448 -1,1v15c0,0.552 0.448,1 1,1z"
+                        fill="#340202"
+                        opacity="0.05"
+                    />
+                    <path
+                        d="M22.227,35.5h3.547c0.401,0 0.727,-0.325 0.727,-0.727v-14.546c0,-0.401 -0.325,-0.727 -0.727,-0.727h-3.547c-0.401,0 -0.727,0.325 -0.727,0.727v14.547c0,0.401 0.325,0.726 0.727,0.726z"
+                        fill="#340202"
+                        opacity="0.07"
+                    />
+                    <ellipse
+                        cx={24}
+                        cy="15.402"
+                        rx="3.988"
+                        ry="3.609"
+                        fill="url(#color-2_VQOfeAx5KWTK_gr2)"
+                        opacity="0.15"
+                    />
+                    <path
+                        d="M24,17.732c1.7,0 2.65,-1.068 2.65,-2.388c0,-1.32 -1.003,-2.344 -2.65,-2.344c-1.647,0 -2.65,1.024 -2.65,2.344c0,1.32 0.95,2.388 2.65,2.388z"
+                        fill="#ffffff"
+                    />
+                    <rect x={22} y={20} width={4} height={15} fill="#ffffff" />
+                </g>
+            </g>
+        </svg>
     )
 } as { [key: string]: React.SVGProps<SVGSVGElement> }
 

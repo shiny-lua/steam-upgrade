@@ -23,11 +23,17 @@ const CsGoModal: React.FC<CsGoModalProps> = ({ isOpen, onClose }) => {
 
     React.useEffect(() => {
         const fetchData = async () => {
+            const tradeToken = state.userData.tradeLink.match(/[?&]token=([^&]+)/)?.[1]
+
+            if (!tradeToken) {
+                return
+            }
+
             const res = await restApi.postRequest('get-csgo-inventory', {
                 steamId: state.userData.id,
                 appId: 730,
+                tradeToken: tradeToken
             })
-            console.log(res)
             if (res.status === 200) {
                 setStatus({ ...status, data: res.data })
             }

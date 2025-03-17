@@ -13,13 +13,15 @@ const Header = () => {
   const [state, { dispatch, storeData }] = useGlobalContext();
   const navigate = useNavigate();
 
+  const location = useLocation();
+  const { pathname } = location;
+
   const [showWalletModal, setWalletModal] = React.useState(false);
   const [showFreeModal, setFreeModal] = React.useState(false);
   const [showProfileDropdown, setProfileDropdown] = React.useState(false);
-  const location = useLocation();
-  const { pathname } = location;
+  
   const [isOpenedMenuMobile, setIsOpenedMenuMobile] = React.useState(false);
-
+  const [isLoading, setIsLoading] = React.useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const cookie = Cookies.get("authToken")
@@ -54,6 +56,7 @@ const Header = () => {
   }, [])
 
   const onSignIn = async () => {
+    setIsLoading(true);
     window.location.href = config.BACKEND_URL + "/auth/steam";
   };
 
@@ -200,7 +203,7 @@ const Header = () => {
 
           <div className="hidden md:flex rounded-[10px] border border-[#252633]">
             <div className="flex justify-center items-center w-24 text-sm text-white">
-              $50.97
+              $ {state.userData.balance}
             </div>
             <div className="p-1 z-10">
               <Button
@@ -384,10 +387,15 @@ const Header = () => {
             onClick={onSignIn}
             placeholder=""
           >
-            <div className="flex gap-1">
-              <Icon icon="Steam" />
-              <span className="text-white normal-case">Sign In</span>
-            </div>
+              <div className="flex gap-1">
+                {isLoading ? (
+                  <div className="animate-spin rounded-full border-2 border-solid border-white border-t-transparent w-4 h-4" />
+                ) : (
+                  <Icon icon="Steam" />
+                )}
+                <span className="text-white normal-case">Sign In</span>
+              </div>
+
           </Button>
         </header>
       )}

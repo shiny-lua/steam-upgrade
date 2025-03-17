@@ -6,6 +6,8 @@ import {
   Navigate,
 } from "react-router-dom";
 
+import Cookies from "js-cookie";
+
 import Home from "./pages/home";
 import Rank from "./pages/ranks";
 import Orders from "./pages/orders";
@@ -26,12 +28,20 @@ function App() {
 
 const Routers = () => {
   
-  const [state]: GlobalContextType = useGlobalContext();
+  const [state, { dispatch }]: GlobalContextType = useGlobalContext();
 
   // React.useEffect(() => {
   //   console.log("state.authToken", state.authToken)
   //   restApi.setAuthToken(state.authToken);
   // }, [state.authToken])
+
+  React.useEffect(() => {
+    const isLoading = Cookies.get("isLoading");
+
+    if (isLoading) {
+      dispatch({ type: "isLoading", payload: true });
+    }
+  }, [])
 
   return (
       <Routes>

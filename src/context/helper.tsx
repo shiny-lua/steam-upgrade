@@ -185,3 +185,9 @@ export const getFormattedDate = (date: number) => {
 export const getCaseSensitive = (v: string) => {
     return v.slice(0, 1).toUpperCase() + v.slice(1)
 }
+
+export const fetchRates = async (pair: string) => {
+    const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${pair}USDT`);
+    const data = await response.json();
+    return data.price;
+}

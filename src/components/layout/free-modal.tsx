@@ -156,8 +156,8 @@ const FreeModal = ({
             </div>
             <div className="flex gap-2 flex-wrap justify-between">
               {CASE_ITEMS.map((item) => (
-                <div className="w-full sm:w-[49%] lg:w-60">
-                  <CaseItem key={item.id} item={item} />
+                <div key={item.id} className="w-full sm:w-[49%] lg:w-60">
+                  <CaseItem item={item} />
                 </div>
               ))}
             </div>

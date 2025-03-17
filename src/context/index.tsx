@@ -11,12 +11,15 @@ const INIT_STATE: InitStateObject = {
         email: "",
         id: "",
         avatar: "",
-        joinDate: "",
-        tradeLink: ""
+        tradeLink: "",
+        joinedDate: 0,
+        balance: 0
     },
+    lsLoading: false,
     steamLevel: 0,
     isOpenedMenu: false,
-    authToken: ""
+    authToken: "",
+    paymentStatus: ""
 }
 
 const GlobalContext = React.createContext<any>(null);

@@ -6,9 +6,19 @@ interface ReducerObject {
 interface InitStateObject {
     isLoggedIn: boolean
     isOpenedMenu: boolean
-    userData: any 
+    userData: {
+        fullName: string
+        email: string
+        id: string
+        avatar: string
+        joinedDate: number
+        tradeLink: string
+        balance: number
+    }
     authToken: string
     steamLevel: number
+    paymentStatus: string
+    isLoading: boolean
 }
 
 type GlobalContextType = [
