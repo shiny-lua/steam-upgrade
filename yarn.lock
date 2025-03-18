@@ -2128,6 +2128,11 @@ fill-range@^7.1.1:
   dependencies:
     to-regex-range "^5.0.1"
 
+flag-icons@^7.3.2:
+  version "7.3.2"
+  resolved "https://registry.yarnpkg.com/flag-icons/-/flag-icons-7.3.2.tgz#c5ffaf25fb2be97498703a068fa699416bca9629"
+  integrity sha512-QkaZ6Zvai8LIjx+UNAHUJ5Dhz9OLZpBDwCRWxF6YErxIcR16jTkIFm3bFu54EkvKQy4+wicW+Gm7/0631wVQyQ==
+
 flatpickr@^4.6.13:
   version "4.6.13"
   resolved "https://registry.yarnpkg.com/flatpickr/-/flatpickr-4.6.13.tgz#8a029548187fd6e0d670908471e43abe9ad18d94"

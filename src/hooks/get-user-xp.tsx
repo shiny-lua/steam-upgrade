@@ -57,7 +57,7 @@ export const getXPForLevel = (desiredLevel: number, currentLevel: number): Level
         emotes: Math.floor(xp / 100) * 2,
         backgrounds: Math.floor(xp / 100) * 2,
         showcases: Math.min(tenthLevel, 20),
-        friendCap: Math.min(desiredLevel * 5, 2000),
+        friendCap: Math.min(desiredLevel * 5, 1750),
         boosterPackRate: tenthLevel * 20,
         estimatedCost: Number(totalCost.toFixed(2))
     };

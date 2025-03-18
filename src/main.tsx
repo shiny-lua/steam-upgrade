@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import App from './app';
 import './index.css';
 // import 'jsvectormap/dist/css/jsvectormap.css';
-
+import "./../node_modules/flag-icons/css/flag-icons.min.css";
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   // <React.StrictMode>
   <ThemeProvider>

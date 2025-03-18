@@ -6,14 +6,14 @@ interface LoadingProps {
   className?: string;
 }
 
-const Loading: React.FC<LoadingProps> = ({ size = 64, className = "" }) => {
+const Loading: React.FC<LoadingProps> = ({ size, className = "" }) => {
   return (
     <svg 
       viewBox="0 0 64 64" 
       fill="none" 
       xmlns="http://www.w3.org/2000/svg" 
       className={`loader ${className}`}
-      style={{ width: 200, height: 200 }}
+      style={{ width: size ? size : 200, height: size ? size : 200 }}
     >
       <g className="dash">
         <path 

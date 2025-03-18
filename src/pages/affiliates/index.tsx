@@ -2,12 +2,30 @@ import React from "react";
 import Layout from "../../components/layout";
 import { Button } from "@material-tailwind/react";
 import Icon from "../../components/icon";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { restApi } from "../../context/restApi";
+import updateLevelBadge from "../../hooks/get-level-badge";
+import Loading from "../../components/loading";
 
 const tempArray = Array.from({ length: 10 }, (_, index) => index + 1);
 
 const Affiliates = () => {
   const navigate = useNavigate()
+
+  const [ranks, setRanks] = React.useState<any>(null);
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const res = await restApi.postRequest("get-ranks");
+      setRanks(res.data);
+      setIsLoading(false);
+    };
+    fetchData();
+  }, []);
+
+
 
   return (
     <Layout>
@@ -57,7 +75,7 @@ const Affiliates = () => {
                     type="text"
                     className="inline-block bg-transparent focus:outline-none focus:ring-0 rounded-[10px] w-full px-4 py-1.5 items-center"
                     value="madness"
-                    onChange={() => {}}
+                    onChange={() => { }}
                   />
                   <button
                     className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 px-3 flex items-center justify-center">
@@ -74,7 +92,7 @@ const Affiliates = () => {
                     type="text"
                     className="inline-block bg-transparent focus:outline-none focus:ring-0 rounded-[10px] w-full px-4 py-1.5 items-center"
                     value="https://steamupgrade.com/a/madness"
-                    onChange={() => {}}
+                    onChange={() => { }}
                   />
                   <button
                     className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 px-3 flex items-center justify-center">
@@ -186,7 +204,7 @@ const Affiliates = () => {
             </div>
             <div>
               <Button
-                className="mt-5 sm:mt-0 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4 inline-block w-full opacity-50"disabled placeholder=""                >
+                className="mt-5 sm:mt-0 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4 inline-block w-full opacity-50" disabled placeholder=""                >
                 <div className="flex gap-1 justify-center items-center">
                   <span className="text-white normal-case text-sm">
                     Claim discount
@@ -197,118 +215,111 @@ const Affiliates = () => {
           </div>
         </div>
 
-        <div className="relative mt-10 overflow-hidden">
-          <div className="bg-primary-lightDark/90 rounded-lg p-4 md:p-8 overflow-x-auto">
-            <table className="w-full text-left table-auto min-w-[800px]">
-              <thead>
-                <tr>
-                  <th className="pt-1 pb-5 whitespace-nowrap">
-                    <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
-                      <p>#</p>
-                    </div>
-                  </th>
-                  <th className="pt-1 pb-5 whitespace-nowrap">
-                    <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
-                      <p>Stream ID</p>
-                    </div>
-                  </th>
-                  <th className="pt-1 pb-5 whitespace-nowrap">
-                    <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
-                      <button className="flex items-center gap-2">
-                        <p>level</p>
-                        <span>
-                          <Icon icon="CheckedBox" />
-                        </span>
-                      </button>
-                    </div>
-                  </th>
-                  <th className="pt-1 pb-5 whitespace-nowrap">
-                    <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
-                      <p>country</p>
-                    </div>
-                  </th>
-                  <th className="pt-1 pb-5 whitespace-nowrap">
-                    <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
-                      <button className="flex items-center gap-2">
-                        <p>games</p>
-                        <Icon icon="CheckedBox" />
-                      </button>
-                    </div>
-                  </th>
-                  <th className="pt-1 pb-5 whitespace-nowrap">
-                    <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
-                      <button className="flex items-center gap-2">
-                        <p>badges</p>
-                        <Icon icon="CheckedBox" />
-                      </button>
-                    </div>
-                  </th>
-                  <th className="pt-1 pb-5 whitespace-nowrap">
-                    <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
-                      <button className="flex items-center gap-2">
-                        <p>playtime</p>
-                        <Icon icon="CheckedBox" />
-                      </button>
-                    </div>
-                  </th>
-                  <th className="pt-1 pb-5 whitespace-nowrap">
-                    <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
-                      <button className="flex items-center gap-2">
-                        <p>year</p>
-                        <Icon icon="CheckedBox" />
-                      </button>
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {tempArray.map((_, k) => (
-                  <tr key={k} className="border-b border-[#161620E5]">
-                    <td className="pr-3 py-5 whitespace-nowrap">
-                      <p className="text-sm text-primary-grey">{k + 1}</p>
-                    </td>
-                    <td className="flex items-center gap-3  py-5">
-                      <img src="/image/icons/user1.png" alt="" />
-                      <p className="text-sm text-white"> 💢stasik💢</p>
-                    </td>
-                    <td className="py-5">
-                      <div className="relative">
-                        <img
-                          className="absolute -top-1.5 left-0  translate-x-0"
-                          src="/image/icons/cycle.png"
-                          alt=""
-                        />
-                        <p className="relative text-sm text-white z-10"> 1432</p>
+        <div className="relative flex flex-col justify-center items-center min-h-[400px] w-full h-full overflow-hidden bg-primary-lightDark/90 shadow-inner-[0_0px_0px_1px_rgba(0,0,0,0.3)] rounded-lg md:p-8 mt-5">
+          {isLoading ? <Loading /> : (
+            <div className="w-full overflow-x-auto">
+              <table className="w-full text-left table-auto min-w-[800px]">
+                <thead>
+                  <tr>
+                    <th className="pt-1 pb-5 whitespace-nowrap">
+                      <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
+                        <p>#</p>
                       </div>
-                    </td>
-                    <td className="pr-3 py-5">
-                      <div className="flex items-center gap-2">
-                        <img src="/image/icons/user1.png" alt="" />
-                        <p className="text-sm text-white"> AUS</p>
+                    </th>
+                    <th className="pt-1 pb-5 whitespace-nowrap">
+                      <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
+                        <p>Stream ID</p>
                       </div>
-                    </td>
-                    <td className="py-5">
-                      <div className="flex items-center gap-2">
-                        <img src="/image/icons/game.png" alt="" />
-                        <p className="text-sm text-white"> 4,589</p>
+                    </th>
+                    <th className="pt-1 pb-5 whitespace-nowrap">
+                      <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
+                        <p>country</p>
                       </div>
-                    </td>
-                    <td className="py-5">
-                      <p className="text-sm text-white">12,100</p>
-                    </td>
-                    <td className="py-5">
-                      <p className="text-sm text-white">
-                        3,400<span className="text-primary-grey"> (H)</span>
-                      </p>
-                    </td>
-                    <td className="py-5 pl-6">
-                      <p className="text-sm text-white">14</p>
-                    </td>
+                    </th>
+                    <th className="pt-1 pb-5 whitespace-nowrap">
+                      <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
+                        <button className="flex items-center gap-2">
+                          <p>level</p>
+                          <Icon icon="Sort" />
+                        </button>
+                      </div>
+                    </th>
+                    <th className="pt-1 pb-5 whitespace-nowrap">
+                      <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
+                        <button className="flex items-center gap-2">
+                          <p>games</p>
+                          <Icon icon="Sort" />
+                        </button>
+                      </div>
+                    </th>
+                    <th className="pt-1 pb-5 whitespace-nowrap">
+                      <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
+                        <button className="flex items-center gap-2">
+                          <p>badges</p>
+                          <Icon icon="Sort" />
+                        </button>
+                      </div>
+                    </th>
+                    <th className="pt-1 pb-5 whitespace-nowrap">
+                      <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
+                        <button className="flex items-center gap-2">
+                          <p>playtime</p>
+                          <Icon icon="Sort" />
+                        </button>
+                      </div>
+                    </th>
+                    <th className="pt-1 pb-5 whitespace-nowrap">
+                      <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
+                        <button className="flex items-center gap-2">
+                          <p>year</p>
+                          <Icon icon="Sort" />
+                        </button>
+                      </div>
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {ranks?.map((rank: any, k: number) => (
+                    <tr key={k} className="border-b border-[#161620E5]">
+                      <td className="pr-1 py-5">
+                        <p className="text-sm text-primary-grey">{k + 1}</p>
+                      </td>
+                      <td className="flex items-center gap-3 py-5 max-w-[170px]">
+                        <Link to={`https://steamcommunity.com/profiles/${rank?.steamId}`} className="flex items-center gap-3">
+                          <img src={rank?.avatar} alt="" className="w-8 h-8 rounded-full" />
+                          <p className="text-sm underline text-white">{rank?.steamName}</p>
+                        </Link>
+                      </td>
+                      <td className="pr-3 py-5">
+                        <span className={`fi fi-${rank?.country.toLowerCase()} w-8`} title={rank?.country}></span>
+                      </td>
+                      <td className="py-5 max-w-[1px]">
+                        <div
+                          className="text-white text-sm relative w-8 h-8 bg-no-repeat flex justify-center items-center"
+                          style={{
+                            backgroundImage: updateLevelBadge(rank?.level).levelBadge ? `url(${updateLevelBadge(rank?.level).levelBadge})` : 'none',
+                            backgroundPosition: `center ${updateLevelBadge(rank?.level).levelBadgeOffset}px`,
+                            border: updateLevelBadge(rank?.level).levelBadgeBorder,
+                            borderRadius: updateLevelBadge(rank?.level).levelBadgeBorder ? '50%' : 'none'
+                          }}
+                        >
+                          {rank?.level}
+                        </div>
+                      </td>
+                      <td className="py-5">
+                        <div className="flex items-center gap-2">
+                          {rank?.games !== "Private" ? <img src={rank?.games} alt={rank?.games} className="w-7 h-7" /> : <Icon icon="Lock" className="w-4 h-4" />}
+                        </div>
+                      </td>
+                      <td className="py-5"><p className="text-sm text-white"> {rank?.badges}</p></td>
+                      <td className="py-5">{rank?.playtime === "Private" ? <Icon icon="Lock" className="w-4 h-4" /> : <p className="text-sm text-white"> {rank?.playtime} <span className="text-primary-grey">(H)</span></p>}</td>
+                      <td className="py-5 pl-6"><p className="text-sm text-white"> {rank?.years}</p></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </Layout>

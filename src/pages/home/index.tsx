@@ -26,6 +26,9 @@ interface Status {
   boosterPackRate: number;
   estimatedCost: number;
   worldRank: number;
+  levelBadge: string;
+  levelBadgeBorder: string;
+  levelBadgeOffset: number;
 }
 
 const Home = () => {
@@ -45,6 +48,9 @@ const Home = () => {
     boosterPackRate: 0,
     worldRank: 0,
     estimatedCost: 0,
+    levelBadge: "",
+    levelBadgeOffset: 0,
+    levelBadgeBorder: ""
   })
   const [showLevelUpModal, setShowLevelUpModal] = React.useState(false);
   const [showTradeUrlModal, setShowTradeUrlModal] = React.useState(false);
@@ -147,14 +153,56 @@ const Home = () => {
     dispatch({ type: "steamLevel", payload: n });
   }
 
-  const onLevelUp = (n: number) => {
+  React.useEffect(() => {
+    const updateLevelBadge = () => {
+      if (status.dreamSteamLevel < 100) {
+        if (status.dreamSteamLevel < 10) {
+          setStatus(prev => ({ ...prev, levelBadgeBorder: '2px solid rgb(130, 131, 133)' }));
+        } else if (status.dreamSteamLevel < 20) {
+          setStatus(prev => ({ ...prev, levelBadgeBorder: '2px solid rgb(201, 43, 69)' }));
+        } else if (status.dreamSteamLevel < 30) {
+          setStatus(prev => ({ ...prev, levelBadgeBorder: '2px solid rgb(228, 96, 70)' }));
+        } else if (status.dreamSteamLevel < 40) {
+          setStatus(prev => ({ ...prev, levelBadgeBorder: '2px solid rgb(255, 214, 37)' }));
+        } else if (status.dreamSteamLevel < 50) {
+          setStatus(prev => ({ ...prev, levelBadgeBorder: '2px solid rgb(74, 128, 63)' }));
+        } else if (status.dreamSteamLevel < 60) {
+          setStatus(prev => ({ ...prev, levelBadgeBorder: '2px solid rgb(82, 148, 231)' }));
+        } else if (status.dreamSteamLevel < 70) {
+          setStatus(prev => ({ ...prev, levelBadgeBorder: '2px solid rgb(123, 87, 210)' }));
+        } else if (status.dreamSteamLevel < 80) {
+          setStatus(prev => ({ ...prev, levelBadgeBorder: '2px solid rgb(205, 87, 212)' }));
+        } else if (status.dreamSteamLevel < 90) {
+          setStatus(prev => ({ ...prev, levelBadgeBorder: '2px solid rgb(88, 38, 58)' }));
+        } else if (status.dreamSteamLevel < 100) {
+          setStatus(prev => ({ ...prev, levelBadgeBorder: '2px solid rgb(161, 130, 87)' }));
+        }
+        setStatus(prev => ({ ...prev, levelBadge: '' }));
 
+      } else if (status.dreamSteamLevel < 6200) {
+        const baseLevel = Math.floor(status.dreamSteamLevel / 100) * 100;
+        const remainder = Math.floor((status.dreamSteamLevel - baseLevel) / 10); // Get the tens digit
+        const yOffset = -(remainder * 32); // Each 10-level badge is 32px tall
+        const badgePath = `/image/badges/${baseLevel}.png`;
+        setStatus(prev => ({
+          ...prev,
+          levelBadge: badgePath,
+          levelBadgeOffset: yOffset,
+          levelBadgeBorder: 'none'
+        }));
+      }
+    };
+
+    updateLevelBadge();
+  }, [status.dreamSteamLevel]);
+
+  const onLevelUp = (n: number) => {
     // Validate input
-    if (n < 0) {
+    if (status.dreamSteamLevel + n < 0) {
       n = 0;
       showToast("Level cannot be negative", "warning");
-    } else if (n > 6199) {
-      n = 6199;
+    } else if (status.dreamSteamLevel + n > 6199) {
+      n = 6199 - status.dreamSteamLevel;
       showToast("We are only able to level up to 6199", "warning");
     }
 
@@ -299,7 +347,17 @@ const Home = () => {
                       onChange={e => onLevelChange(parseInt(e.target.value) || 0)}
                       className="text-[#EDEDED] text-sm border-none outline-none bg-transparent"
                     />
-                    <div className="w-6 h-6 flex text-[10px] justify-center items-center rounded-full border border-[#7653C9] text-white">{status.dreamSteamLevel}</div>
+                    <div
+                      className="text-white text-sm relative w-8 h-8 bg-no-repeat flex justify-center items-center"
+                      style={{
+                        backgroundImage: status.levelBadge ? `url(${status.levelBadge})` : 'none',
+                        backgroundPosition: `center ${status.levelBadgeOffset}px`,
+                        border: status.levelBadgeBorder,
+                        borderRadius: status.levelBadgeBorder ? '50%' : 'none'
+                      }}
+                    >
+                      {status.dreamSteamLevel}
+                    </div>
                   </div>
                   <div className="flex gap-2 h-8">
                     <button onClick={() => onLevelUp(1)} className="bg-[#3A3B54] rounded-md text-xs font-bold flex items-center justify-center text-primary-grey w-1/4">
@@ -409,7 +467,7 @@ const Home = () => {
               <div className="flex justify-between">
                 <div className="flex w-[45%]">
                   <div className="flex flex-col justify-center items-center gap-3 w-full">
-                    <div className="border-[2px] border-[#828385] rounded-full w-10 h-10 text-white text-sm flex justify-center items-center">{status.currentSteamLevel}</div>
+                    <div className="border-[2px] border-[#828385] rounded-full w-8 h-8 text-white text-sm flex justify-center items-center">{status.currentSteamLevel}</div>
                     <span className="text-primary-grey text-xs">
                       Current Level
                     </span>
@@ -433,7 +491,17 @@ const Home = () => {
                 </div>
                 <div className="flex w-[45%]">
                   <div className="flex flex-col justify-center items-center gap-3 w-full">
-                    <div className="border-[2px] border-[#7652C9] rounded-full flex w-10 h-10 text-white text-sm justify-center items-center">{status.dreamSteamLevel}</div>
+                    <div
+                      className="text-white text-sm relative w-8 h-8 bg-no-repeat flex justify-center items-center"
+                      style={{
+                        backgroundImage: status.levelBadge ? `url(${status.levelBadge})` : 'none',
+                        backgroundPosition: `center ${status.levelBadgeOffset}px`,
+                        border: status.levelBadgeBorder,
+                        borderRadius: status.levelBadgeBorder ? '50%' : 'none'
+                      }}
+                    >
+                      {status.dreamSteamLevel}
+                    </div>
                     <span className="text-primary-grey text-xs">
                       Dream Level
                     </span>
