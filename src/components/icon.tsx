@@ -5707,12 +5707,10 @@ const icons = {
     ),
     Effort: (
         <svg
-            width="1141"
-            height="842"
             viewBox="0 0 1141 842"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-auto absolute left-0 top-0 scale-[1.3]"
+            className="w-full h-auto absolute left-0 top-0 right-0 scale-[1.3]"
         >
             <g opacity="0.33" filter="url(#filter0_f_570_13090)">
                 <ellipse
@@ -6047,6 +6045,41 @@ const icons = {
                 d="M4.66667 4.5C4.66667 3.11929 5.78595 2 7.16667 2H11.5C12.8807 2 14 3.11929 14 4.5V8.84C14 10.2207 12.8807 11.34 11.5 11.34H11.3333V11.5C11.3333 12.8807 10.2141 14 8.83333 14H4.5C3.11929 14 2 12.8807 2 11.5V7.16667C2 5.78595 3.11929 4.66667 4.5 4.66667H4.66667V4.5ZM11.3333 10.34V7.16667C11.3333 5.78595 10.2141 4.66667 8.83333 4.66667H5.66667V4.5C5.66667 3.67157 6.33824 3 7.16667 3H11.5C12.3284 3 13 3.67157 13 4.5V8.84C13 9.6684 12.3284 10.34 11.5 10.34H11.3333Z"
                 fill="#A9ABCD"
             ></path>
+        </svg>
+    ),
+    Copied: (
+        <svg
+            className="w-4 h-4 text-primary-grey"
+            width={24}
+            height={24}
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            {" "}
+            <path
+                stroke="none"
+                d="M0 0h24v24H0z"
+            /> <polyline points="9 11 12 14 20 6" />{" "}
+            <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+        </svg>
+    ),
+    Save: (
+        <svg
+            className="w-4 h-4 text-primary-grey"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            {" "}
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />{" "}
+            <polyline points="17 21 17 13 7 13 7 21" /> <polyline points="7 3 7 8 15 8" />
         </svg>
     ),
     CheckedUser: (

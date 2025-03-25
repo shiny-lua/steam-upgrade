@@ -19,7 +19,7 @@ const Header = () => {
   const [showWalletModal, setWalletModal] = React.useState(false);
   const [showFreeModal, setFreeModal] = React.useState(false);
   const [showProfileDropdown, setProfileDropdown] = React.useState(false);
-  
+
   const [isOpenedMenuMobile, setIsOpenedMenuMobile] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -42,26 +42,13 @@ const Header = () => {
     };
   }, [dropdownRef, menuRef]);
 
-  React.useEffect(() => {
-    const fetchData = async () => {
-      const resp = await restApi.postRequest("get-user");
-
-      if (resp.status === 200) {
-        dispatch({ type: "userData", payload: resp.data });
-        dispatch({ type: "authToken", payload: cookie })
-        storeData(resp.data)
-      }
-    }
-    fetchData();
-  }, [])
-
   const onSignIn = async () => {
     setIsLoading(true);
     window.location.href = config.BACKEND_URL + "/auth/steam";
   };
 
   return (
-    <div className="w-full bg-primary fixed top-0 left-0 py-5 z-9999">
+    <div className="w-full bg-primary fixed top-0 left-0 right-0 py-5 z-9999">
       {state.authToken ? (
         <header className="flex justify-between md:justify-around px-3 sm:px-5 md:px-0">
           <div className="flex gap-6 items-center">
@@ -190,7 +177,7 @@ const Header = () => {
                 </div>
               </div>
             )}
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/home" className="flex items-center gap-2">
               <img src="/image/icons/logo.png" alt="logo" />
               {!state.isOpenedMenu && (
                 <div className="flex flex-col mt-1">
@@ -203,7 +190,7 @@ const Header = () => {
 
           <div className="hidden md:flex rounded-[10px] border border-[#252633]">
             <div className="flex justify-center items-center w-24 text-sm text-white">
-              $ {state.userData.balance}
+              $ {state.userData.balance.toFixed(2)}
             </div>
             <div className="p-1 z-10">
               <Button
@@ -340,7 +327,7 @@ const Header = () => {
                 </div>
               )}
             </div>
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/home" className="flex items-center gap-2">
               <img src="/image/icons/logo.png" alt="logo" />
               <div className="flex flex-col mt-1">
                 <p className="text-[#A942E7] font-bold text-[20px] leading-none">Steam</p>
@@ -387,14 +374,14 @@ const Header = () => {
             onClick={onSignIn}
             placeholder=""
           >
-              <div className="flex gap-1">
-                {isLoading ? (
-                  <div className="animate-spin rounded-full border-2 border-solid border-white border-t-transparent w-4 h-4" />
-                ) : (
-                  <Icon icon="Steam" />
-                )}
-                <span className="text-white normal-case">Sign In</span>
-              </div>
+            <div className="flex gap-1">
+              {isLoading ? (
+                <div className="animate-spin rounded-full border-2 border-solid border-white border-t-transparent w-4 h-4" />
+              ) : (
+                <Icon icon="Steam" />
+              )}
+              <span className="text-white normal-case">Sign In</span>
+            </div>
 
           </Button>
         </header>

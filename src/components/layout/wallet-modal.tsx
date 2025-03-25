@@ -246,7 +246,7 @@ const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFuncti
               {(status.type === "CS2" || status.type === "TF2" || status.type === "Rust") ? "Pay with " + status.type : "Pay $" + status.amount }
             </Button>
           </div>
-          <div className="flex flex-col gap-1">
+          {/* <div className="flex flex-col gap-1">
             <span className="text-white text-[15px] font-bold">
               Claim 5% Bonus
             </span>
@@ -263,7 +263,7 @@ const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFuncti
                 Claim
               </Button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </Modal>

@@ -1,8 +1,11 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 import { config } from "../config/config";
 import { restApi } from "./restApi";
+import { showToast } from "./helper";
 
 const INIT_STATE: InitStateObject = {
     isLoggedIn: false,
@@ -13,9 +16,15 @@ const INIT_STATE: InitStateObject = {
         avatar: "",
         tradeLink: "",
         joinedDate: 0,
-        balance: 0
+        balance: 0,
+        affiliateCode: "",
+        affiliate: {
+            referrals: 0,
+            buyers: 0,
+            totalProfit: 0
+        }
     },
-    lsLoading: false,
+    isLoading: false,
     steamLevel: 0,
     isOpenedMenu: false,
     authToken: "",
@@ -39,31 +48,80 @@ const storeData = async (value: any) => {
     return window.localStorage.setItem("userData", JSON.stringify(value))
 }
 
-const getData = async () => {
-    return window.localStorage.getItem("authToken")
-}
-
 const GlobalContextProvider = ({ children }: any) => {
     const [state, dispatch] = React.useReducer(reducer, INIT_STATE);
+    const cookie = Cookies.get("authToken")
+    const location = useLocation();
 
-    // React.useEffect(() => {
-    //     initSessionSetting()
-    // }, [])
+    const [ip, setIp] = React.useState("")
+    const [deviceID, setDeviceID] = React.useState("")
 
-    // const initSessionSetting = async () => {
-    //     try {
-    //         const authToken = Cookies.get("authToken") || "";
-    //         // console.log("authToken", authToken)
-    //         if (!!authToken) {
-    //             const userData = JSON.parse(window.localStorage.getItem("userData") || "{}")
-    //             dispatch({ type: "userData", payload: userData });
-    //             dispatch({ type: "authToken", payload: authToken });
-    //         }  
-    //     } catch (err: any) {
-    //         console.log("auth_token_invalid::", err.message);
-    //         // setTimeout(() => { dispatch({ type: "showLoadingPage", payload: false }) }, 1000);
-    //     }
-    // }
+    React.useEffect(() => {
+        const getIP = async () => {
+            try {
+                const response = await fetch("https://api.ipify.org?format=json");
+                const data = await response.json();
+                setIp(data.ip)
+                console.log("User's IP Address:", data.ip);
+            } catch (error) {
+                console.error("Error fetching IP address:", error);
+            }
+        };
+
+        const getDeviceId = async () => {
+            const fp = await FingerprintJS.load();
+            const result = await fp.get();
+            setDeviceID(result.visitorId);  // This is the unique device ID
+        };
+
+        getIP();
+        getDeviceId()
+    }, []);
+
+    React.useEffect(() => {
+        const updateRefCode = async () => {
+            const params = new URLSearchParams(location.search);
+            const refCode = params.get('ref');
+            console.log("refCode:", refCode)
+            if (refCode) {
+                const res = await restApi.postRequest("update-referrals", { ip, deviceID, refCode })
+
+                if (res.status === 200) {
+                    Cookies.set("refCode", res.data, { expires: 7 })
+                    const expirationDate = new Date();
+                    expirationDate.setTime(expirationDate.getTime() + (7 * 24 * 60 * 60 * 1000));
+                    Cookies.set("refCode_expires", expirationDate.toLocaleString())
+                } else if (res.status === 400) {
+                    return showToast(res.msg, "error")
+                }
+            }
+        }
+
+        updateRefCode()
+    }, [location]);
+
+    const fetchData = async () => {
+        const resp = await restApi.postRequest("get-user");
+
+        if (resp.status === 200) {
+            dispatch({ type: "userData", payload: resp.data });
+            dispatch({ type: "authToken", payload: cookie })
+            storeData(resp.data)
+        }
+    }
+
+    React.useEffect(() => {
+        fetchData()
+    }, [])
+
+    React.useEffect(() => {
+        (async () => {
+            console.log(ip, deviceID)
+            if (ip && deviceID) {
+                await restApi.postRequest("update-ip-and-deviceID", { ip, deviceID })
+            }
+        })()
+    }, [ip, deviceID])
 
     return (
         <GlobalContext.Provider
@@ -74,7 +132,6 @@ const GlobalContextProvider = ({ children }: any) => {
             {children}
         </GlobalContext.Provider>
     )
-
 }
 
 export { useGlobalContext, GlobalContextProvider, config };

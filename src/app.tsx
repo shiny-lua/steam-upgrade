@@ -30,11 +30,6 @@ const Routers = () => {
   
   const [state, { dispatch }]: GlobalContextType = useGlobalContext();
 
-  // React.useEffect(() => {
-  //   console.log("state.authToken", state.authToken)
-  //   restApi.setAuthToken(state.authToken);
-  // }, [state.authToken])
-
   React.useEffect(() => {
     const isLoading = Cookies.get("isLoading");
 
@@ -42,6 +37,11 @@ const Routers = () => {
       dispatch({ type: "isLoading", payload: true });
     }
   }, [])
+
+  // Scroll to top on route change
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [state]); // You can also add dependencies if needed
 
   return (
       <Routes>

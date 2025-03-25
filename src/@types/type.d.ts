@@ -14,6 +14,12 @@ interface InitStateObject {
         joinedDate: number
         tradeLink: string
         balance: number
+        affiliateCode: string
+        affiliate: {
+            referrals: number
+            buyers: number
+            totalProfit: number
+        }
     }
     authToken: string
     steamLevel: number

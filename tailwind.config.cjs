@@ -32,6 +32,7 @@ module.exports = withMT({
         'primary-dark': 'rgb(12 13 21 / 97%)',
         'primary-lightDark': '#252633E5',
         'primary-semiDark': '#161620E5',
+        'primary-animation': '#4b5563',
         success: '#219653',
         danger: '#D34053',
         warning: '#FFA70B',

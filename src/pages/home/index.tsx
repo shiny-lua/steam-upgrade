@@ -1,13 +1,14 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
+import Cookies from "js-cookie";
 
 import { config, useGlobalContext } from "../../context";
 import Layout from "../../components/layout";
 import LevelUpModal from "./components/level-up-modal";
 import Icon from "../../components/icon";
 import { restApi } from "../../context/restApi";
-import { showToast } from "../../context/helper";
+import { getDaysDifference, showToast } from "../../context/helper";
 import { getXPForLevel } from "../../hooks/get-user-xp";
 import SetTradeUrlModal from "./components/set-trade-url-modal";
 import CsGoModal from "./components/cs-go-modal";
@@ -29,6 +30,8 @@ interface Status {
   levelBadge: string;
   levelBadgeBorder: string;
   levelBadgeOffset: number;
+  discountedCost: number;
+  daysDiff: number;
 }
 
 const Home = () => {
@@ -48,9 +51,11 @@ const Home = () => {
     boosterPackRate: 0,
     worldRank: 0,
     estimatedCost: 0,
+    discountedCost: 0,
     levelBadge: "",
     levelBadgeOffset: 0,
-    levelBadgeBorder: ""
+    levelBadgeBorder: "",
+    daysDiff: 0
   })
   const [showLevelUpModal, setShowLevelUpModal] = React.useState(false);
   const [showTradeUrlModal, setShowTradeUrlModal] = React.useState(false);
@@ -71,7 +76,13 @@ const Home = () => {
         boosterPackRate,
         estimatedCost
       } = getXPForLevel(res.data + 1, res.data);
-
+      const refCode = Cookies.get("refCode");
+      const expireDays = Cookies.get("refCode_expires");
+      let daysDiff = 0;
+      if (expireDays) {
+        daysDiff = getDaysDifference(expireDays);
+      }
+      const discount = refCode ? 0.05 : 0;
       // Update status and global state
       setStatus({
         ...status,
@@ -85,7 +96,9 @@ const Home = () => {
         showcases,
         friendCap,
         boosterPackRate,
-        estimatedCost: Number(estimatedCost)
+        estimatedCost: Number(estimatedCost),
+        discountedCost: Number((estimatedCost * (1 - discount)).toFixed(2)),
+        daysDiff
       });
 
       dispatch({ type: "steamLevel", payload: res.data })
@@ -95,7 +108,6 @@ const Home = () => {
   }, [state.authToken])
 
   React.useEffect(() => {
-
     const scrollContainer = document.querySelector(".scroll-container");
 
     if (scrollContainer) {
@@ -135,6 +147,8 @@ const Home = () => {
       estimatedCost
     } = getXPForLevel(n, status.currentSteamLevel);
 
+    const refCode = Cookies.get("refCode");
+    const discount = refCode ? 0.05 : 0;
     // Update status and global state
     setStatus({
       ...status,
@@ -147,7 +161,8 @@ const Home = () => {
       showcases,
       friendCap,
       boosterPackRate,
-      estimatedCost: Number(estimatedCost)
+      estimatedCost: Number(estimatedCost),
+      discountedCost: Number((estimatedCost * (1 - discount)).toFixed(2)),
     });
 
     dispatch({ type: "steamLevel", payload: n });
@@ -218,7 +233,13 @@ const Home = () => {
       boosterPackRate,
       estimatedCost
     } = getXPForLevel(status.dreamSteamLevel + n, status.currentSteamLevel);
-
+    const refCode = Cookies.get("refCode");
+    const expireDays = Cookies.get("refCode_expires");
+    let daysDiff = 0;
+    if (expireDays) {
+      daysDiff = getDaysDifference(expireDays);
+    }
+    const discount = refCode ? 0.05 : 0;
     // Update status and global state
     setStatus({
       ...status,
@@ -231,7 +252,9 @@ const Home = () => {
       showcases,
       friendCap,
       boosterPackRate,
-      estimatedCost: Number(estimatedCost)
+      estimatedCost: Number(estimatedCost),
+      discountedCost: Number((estimatedCost * (1 - discount)).toFixed(2)),
+      daysDiff
     });
     dispatch({ type: "steamLevel", payload: status.dreamSteamLevel + n })
   }
@@ -265,11 +288,12 @@ const Home = () => {
     }
   }, [state.isLoading]);
 
+
   return (
     <Layout>
       {state.isLoading && (
         <div className="fixed top-0 left-0 z-[50000000000] w-[100vw] h-[100vh] bg-black/10 backdrop-blur-sm flex justify-center -mt-10 items-center">
-          <Loading />
+          <Loading size={150} />
         </div>
       )}
       <div className={`px-3 relative sm:px-4 md:px-8 lg:px-0 mx-auto max-w-[1000px] mt-5 md:mt-20 ${state.isLoading ? "pointer-events-none" : ""}`}>
@@ -378,7 +402,16 @@ const Home = () => {
               <hr className="bg-primary-dark border-primary-dark" />
               <div className="flex flex-col xsm:flex-row justify-between gap-2 items-start xsm:items-center">
                 <span className="text-[13px] font-bold text-white">
-                  ${status.estimatedCost}
+                  {status.estimatedCost === status.discountedCost && (<span>${status.estimatedCost}</span>)}
+                  {status.estimatedCost !== status.discountedCost && (
+                    <div className="flex flex-col gap-1">
+                      <div className="flex gap-1 items-center">
+                        <span className="text-primary-grey text-[13px] line-through decoration-white">${status.estimatedCost}</span> ${status.discountedCost}
+                        <span className="text-primary-grey text-[13px]">
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </span>
                 <div className="flex gap-[14px]">
                   <div className="flex gap-[6px] items-center">
@@ -401,6 +434,13 @@ const Home = () => {
                   </div>
                 </div>
               </div>
+              {status.discountedCost !== status.estimatedCost && (
+                <div className="flex gap-1 items-center -mt-5">
+                  <span className="text-deep-purple-300 text-[13px]">
+                    5% discount applied from referral code ({status.daysDiff} days left)
+                  </span>
+                </div>
+              )}
               {!state.authToken ? (
                 <Button
                   onClick={onSignIn}
@@ -666,7 +706,7 @@ const Home = () => {
           </div>
         </div>
         {(state.isLoading || showLevelUpModal) && (
-          <LevelUpModal amount={status.estimatedCost} dreamLevel={status.dreamSteamLevel} isOpen={showLevelUpModal} showCsGoModal={() => setShowCsGoModal(true)} onClose={() => setShowLevelUpModal(false)} />
+          <LevelUpModal amount={status.estimatedCost} discountedAmount={status.discountedCost} dreamLevel={status.dreamSteamLevel} isOpen={showLevelUpModal} showCsGoModal={() => setShowCsGoModal(true)} onClose={() => setShowLevelUpModal(false)} />
         )}
         {showTradeUrlModal && <SetTradeUrlModal isOpen={showTradeUrlModal} onClose={() => setShowTradeUrlModal(false)} />}
         {showCsGoModal && <CsGoModal isOpen={showCsGoModal} onClose={() => setShowCsGoModal(false)} />}

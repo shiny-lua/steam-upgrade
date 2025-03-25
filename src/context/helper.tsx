@@ -1,6 +1,9 @@
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import crypto from 'crypto';
+
+import { config } from "./../context"
 
 export const showToast = (html: string, type: 'info' | 'success' | 'warning' | 'error' | 'default') => {
     toast(html, {
@@ -190,4 +193,12 @@ export const fetchRates = async (pair: string) => {
     const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${pair}USDT`);
     const data = await response.json();
     return data.price;
+}
+
+export const getDaysDifference = (expireDays: string) => {
+    const expireDate = new Date(expireDays);
+    const currentDate = new Date();
+    const timeDiff = expireDate.getTime() - currentDate.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    return daysDiff;
 }

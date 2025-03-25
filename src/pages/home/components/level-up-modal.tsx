@@ -10,13 +10,14 @@ import { restApi } from "../../../context/restApi";
 
 interface LevelUpModalProps {
   amount: number;
+  discountedAmount: number;
   isOpen: boolean;
   onClose: () => void;
   showCsGoModal: () => void;
   dreamLevel: number;
 }
 
-const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, isOpen, dreamLevel, onClose, showCsGoModal }) => {
+const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, discountedAmount, isOpen, dreamLevel, onClose, showCsGoModal }) => {
 
   const [state, { dispatch }]: GlobalContextType = useGlobalContext()
 
@@ -42,23 +43,35 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, isOpen, dreamLevel,
     }
   }, [state.isLoading]);
 
+  const fetchData = async () => {
+    const res = await restApi.postRequest("get-user");
+    if (res.status === 200) {
+      dispatch({ type: "userData", payload: res.data });
+    }
+  }
+
   const onOffer = async () => {
     dispatch({ type: "isLoading", payload: true });
     Cookies.set("isLoading", "true");
-
+    const refCode = Cookies.get("refCode") || null;
     const res = await restApi.postRequest("level-up", {
-      dreamLevel: dreamLevel
+      dreamLevel: dreamLevel,
+      refCode: refCode
     });
 
     if (res.status === 200) {
       dispatch({ type: "isLoading", payload: false });
       Cookies.remove("isLoading");
+      Cookies.remove("refCode");
+      Cookies.remove("refCode_expires");
       setStatus({
         ...status,
         offerId: res.data.offerId,
         showInfo: false,
         tabIdx: 3,
       });
+
+      fetchData();
     } else {
       setStatus({
         ...status,
@@ -268,7 +281,15 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, isOpen, dreamLevel,
                   <div>Bot Name: <span className="text-blue-600 font-semibold">{config.STEAM_BOT_NAME}</span></div>
                   <div>Bot Steam ID: <span className="text-blue-600 font-semibold">{config.STEAM_BOT_STEAM_ID}</span></div>
                   <div>Dream Level: <span className="text-blue-600 font-semibold">{dreamLevel}</span></div>
-                  <div>Price: <span className="text-blue-600 font-semibold">${amount}</span></div>
+                  <div className="flex gap-1">
+                    Price:
+                    {discountedAmount === amount && (<span className="text-blue-600 font-semibold">${amount}</span>)}
+                    {discountedAmount !== amount && (<span className="font-semibold flex gap-1">
+                      <span className="line-through decoration-blue-600 text-blue-600/60"> ${amount}</span>
+                      <span className="text-blue-600">${discountedAmount}</span>
+                    </span>)}
+                  </div>
+
                   {status.errorMessage && (
                     <div>
                       <div>Status: <span className="text-blue-600 font-semibold">Failed</span></div>

@@ -1,31 +1,87 @@
 import React from "react";
-import Layout from "../../components/layout";
 import { Button } from "@material-tailwind/react";
+import Cookies from "js-cookie";
+
+import Layout from "../../components/layout";
 import Icon from "../../components/icon";
 import { Link, useNavigate } from "react-router-dom";
 import { restApi } from "../../context/restApi";
 import updateLevelBadge from "../../hooks/get-level-badge";
 import Loading from "../../components/loading";
-
-const tempArray = Array.from({ length: 10 }, (_, index) => index + 1);
+import { copyToClipboard } from "../../context/helper";
+import { showToast } from "../../context/helper";
+import { useGlobalContext } from "../../context";
 
 const Affiliates = () => {
   const navigate = useNavigate()
-
-  const [ranks, setRanks] = React.useState<any>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [state, { dispatch }]: GlobalContextType = useGlobalContext()
+  const userData = state.userData
+  const inputRef = React.useRef<HTMLInputElement>(null)
+  const [status, setStatus] = React.useState({
+    ranks: null as any,
+    isLoading: false,
+    isLoadingCode: false,
+    affiliateCode: "",
+    isEditing: false,
+    isCopied: false,
+    affiliate: {
+      referrals: 0,
+      buyers: 0,
+      totalProfit: 0,
+    }
+  })
 
   React.useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
       const res = await restApi.postRequest("get-ranks");
-      setRanks(res.data);
-      setIsLoading(false);
+      try {
+        setStatus({ ...status, isLoading: true })
+        const resp = await restApi.postRequest("get-user");
+        setStatus({ ...status, ranks: res.data, isLoading: false, affiliateCode: resp.data.affiliateCode, affiliate: resp.data.affiliate })
+        dispatch({ type: "userData", payload: resp.data })
+      } catch (error) {
+        setStatus({ ...status, isLoading: false, ranks: res.data })
+      }
     };
     fetchData();
   }, []);
 
 
+  const handleCopy = () => {
+    copyToClipboard(`https://steamupgrade.com/home?ref=${status.affiliateCode}`);
+    setStatus({ ...status, isCopied: false })
+    setTimeout(() => {
+      setStatus({ ...status, isCopied: true })
+    }, 1500);
+  }
+
+  const onCode = async () => {
+    if (status.isLoadingCode) return;
+    if (!status.isEditing) {
+      setStatus({ ...status, isEditing: true })
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
+    } else {
+      if (!status.affiliateCode || status.affiliateCode.length < 5) {
+        showToast("Affiliate code must be at least 5 characters", "error");
+        return;
+      }
+      if (!Cookies.get("authToken")) {
+        showToast("Please login to update your affiliate code", "error");
+        return;
+      }
+      setStatus({ ...status, isLoadingCode: true })
+      const res = await restApi.postRequest("update-affiliate-code", { affiliateCode: status.affiliateCode });
+      if (res.status === 200) {
+        setStatus({ ...status, isEditing: false, isLoadingCode: false })
+        showToast("Affiliate code updated successfully", "success");
+      } else {
+        showToast(res.message, "error");
+        setStatus({ ...status, isLoadingCode: false })
+      }
+    }
+  }
 
   return (
     <Layout>
@@ -42,7 +98,7 @@ const Affiliates = () => {
             <div className="flex items-center gap-3">
               <div className="text-[#A9ABCD]"><Icon icon="Affiliates" className="w-6" /></div>
               <h2 className="text-[#F3F3F3] text-[1.4rem] font-[900] leading-[22px]">
-                Affiliates
+                {status.isLoading ? (<div className="w-27 h-4.5 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span>Affiliates</span>)}
               </h2>
             </div>
           </div>
@@ -57,70 +113,93 @@ const Affiliates = () => {
           <div className="w-full sm:w-[65%] bg-primary-lightDark rounded-md flex flex-col gap-5 p-4 md:p-5">
             <div className="flex gap-2 items-center">
               <Icon icon="Users" />
-              <span className="text-primary-white text-base">Share & Earn</span>
+              {status.isLoading ? (<div className="w-24 h-4.5 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-base">Share & Earn</span>)}
             </div>
             <div className="space-y-4">
-              <p className="text-primary-grey text-[0.75rem] font-[700] leading-[16.8px]">
-                Join our affiliate program and earn 10% of every purchase made
-                through your unique referral link. It's a simple way to share,
-                save and profit!
-              </p>
+              {status.isLoading ? (<div className="flex flex-col gap-1 pt-2">
+                <div className="w-full h-3 bg-primary-animation rounded-sm animate-pulse"></div>
+                <div className="w-3/5 h-3 bg-primary-animation rounded-sm animate-pulse"></div>
+              </div>)
+                : (<p className="text-primary-grey text-[0.75rem] font-[700] leading-[16.8px]">
+                  Join our affiliate program and earn 10% of every purchase made
+                  through your unique referral link. It's a simple way to share,
+                  save and profit!
+                </p>)}
               <hr className="bg-primary-dark border-primary-dark" />
               <div className="space-y-2">
-                <span className="text-primary-grey text-[0.75rem] font-[700]">
+                {status.isLoading ? (<div className="w-27 h-3.5 mt-6 mb-4 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.75rem] font-[700]">
                   Your Affiliate Code
-                </span>
-                <div className="flex items-center text-[0.85rem] text-primary-white text-sm bg-primary-dark/50 rounded-[10px] pr-1 py-1">
+                </span>)}
+                {status.isLoading ? (<div className="w-full h-8 bg-primary-animation rounded-md animate-pulse"></div>) : (<div className="flex items-center text-[0.85rem] text-primary-white text-sm bg-primary-dark/50 rounded-[10px] pr-1 py-1">
                   <input
+                    disabled={!status.isEditing}
+                    ref={inputRef}
                     type="text"
                     className="inline-block bg-transparent focus:outline-none focus:ring-0 rounded-[10px] w-full px-4 py-1.5 items-center"
-                    value="madness"
-                    onChange={() => { }}
+                    value={status.affiliateCode}
+                    onChange={(e) => setStatus({ ...status, affiliateCode: e.target.value })}
                   />
                   <button
+                    onClick={onCode}
                     className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 px-3 flex items-center justify-center">
-                    <Icon icon="Edit" />
+                    {status.isLoadingCode ? <div className="animate-spin rounded-full border-2 border-solid border-primary-gray border-t-transparent w-3.5 h-3.5" /> : (
+                      status.isEditing ? <Icon icon="Save" className="w-4 h-4" /> : <Icon icon="Edit" />
+                    )}
                   </button>
-                </div>
+                </div>)}
               </div>
               <div className="space-y-2 mt-2">
-                <span className="text-primary-grey text-[0.75rem] font-[700]">
+                {status.isLoading ? (<div className="w-26 h-3.5 mt-7 mb-4 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.75rem] font-[700]">
                   Your Affiliate Link
-                </span>
-                <div className="flex items-center text-[0.85rem] text-primary-white text-sm bg-primary-dark/50 rounded-[10px] pr-1 py-1">
-                  <input
-                    type="text"
-                    className="inline-block bg-transparent focus:outline-none focus:ring-0 rounded-[10px] w-full px-4 py-1.5 items-center"
-                    value="https://steamupgrade.com/a/madness"
-                    onChange={() => { }}
-                  />
+                </span>)}
+                {status.isLoading ? (<div className="w-full h-8 bg-primary-animation rounded-md animate-pulse"></div>) : (<div className="relative items-center text-[0.85rem] w-full text-primary-white text-sm bg-primary-dark/50 rounded-[10px] pr-1 py-1">
+                  <div
+                    className="bg-transparent focus:outline-none focus:ring-0 rounded-[10px] w-full min-h-8 pl-4 sm:px-4 py-1.5 items-center"
+                  >
+                    {status.affiliateCode ? `https://steamupgrade.com/home?ref=${status.affiliateCode}` : ""}
+                  </div>
                   <button
-                    className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 px-3 flex items-center justify-center">
-                    <Icon icon="Copy" />
+                    onClick={handleCopy}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 px-3 flex items-center justify-center">
+                    {status.isCopied ? <Icon icon="Copied" className="w-4 h-4" /> : <Icon icon="Copy" />}
                   </button>
-                </div>
+                </div>)}
               </div>
               <hr className="bg-primary-dark border-primary-dark mt-2" />
               <div className="grid grid-cols-1 xsm:grid-cols-3 gap-4 mt-4">
                 <div className="flex gap-2 items-center">
-                  <div className="text-[#A9ABCD]"><Icon icon="Affiliates" className="w-6" /></div>
+                  <div className="text-[#A9ABCD]">
+                    <Icon icon="Affiliates" className="w-5" />
+                  </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-primary-white text-[0.93rem] font-[900] leading-[15px]">49</span>
-                    <span className="text-primary-grey text-[0.81rem] font-[400]">Referrals</span>
+                    {
+                      status.isLoading ? (<div className="ml-1 w-6 h-4 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.93rem] font-[900] leading-[15px]">{status.affiliate.referrals ? status.affiliate.referrals : 0}</span>)
+                    }
+                    {
+                      status.isLoading ? (<div className="w-13 h-4 ml-1 mt-1 opacity-50 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.81rem] font-[400]">Referrals</span>)
+                    }
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
                   <Icon icon="CheckedUser" />
                   <div className="flex flex-col gap-1">
-                    <span className="text-primary-white text-[0.93rem] font-[900] leading-[15px]">15</span>
-                    <span className="text-primary-grey text-[0.81rem] font-[400]">Buyers</span>
+                    {
+                      status.isLoading ? (<div className="w-5 h-4 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.93rem] font-[900] leading-[15px]">{status.affiliate.buyers ? status.affiliate.buyers : 0}</span>)
+                    }
+                    {
+                      status.isLoading ? (<div className="w-10 h-4 mt-1 opacity-50 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.81rem] font-[400]">Buyers</span>)
+                    }
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
                   <Icon icon="Users" />
                   <div className="flex flex-col gap-1">
-                    <span className="text-primary-white text-[0.93rem] font-[900] leading-[15px]">$225.34</span>
-                    <span className="text-primary-grey text-[0.81rem] font-[400]">Total Profit</span>
+                    {
+                      status.isLoading ? (<div className="w-20 h-4 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.93rem] font-[900] leading-[15px]">$ {status.affiliate.totalProfit ? status.affiliate.totalProfit : 0}</span>)
+                    }
+                    {
+                      status.isLoading ? (<div className="w-16 h-4 mt-1 opacity-50 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.81rem] font-[400]">Total Profit</span>)
+                    }
                   </div>
                 </div>
               </div>
@@ -131,21 +210,21 @@ const Affiliates = () => {
             <div className="flex flex-col gap-8">
               <div className="flex gap-2 items-center">
                 <Icon icon="Users" />
-                <span className="text-primary-white text-base">Missions</span>
+                {status.isLoading ? (<div className="w-16 h-4.5 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-base">Missions</span>)}
               </div>
               <hr className="bg-primary-dark border-primary-dark" />
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between">
                   <div className="flex flex-col gap-2">
-                    <span className="text-primary-white text-[0.87rem] font-[700] leading-[14px]">
+                    {status.isLoading ? (<div className="mt-1 w-20 h-3.5 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.87rem] font-[700] leading-[14px]">
                       Share Level
-                    </span>
-                    <span className="text-primary-grey text-[0.72rem] font-[400] leading-[12px]">
+                    </span>)}
+                    {status.isLoading ? (<div className="mt-0.5 w-28 h-3 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.72rem] font-[400] leading-[12px]">
                       Share your new Level
-                    </span>
+                    </span>)}
                   </div>
                   <div className="inline-flex items-center">
-                    <label className="relative flex items-center cursor-pointer p-3 rounded-full">
+                    {status.isLoading ? (<div className="w-4 h-4 mt-3 mr-3 bg-primary-animation rounded-sm animate-pulse"></div>) : (<label className="relative flex items-center cursor-pointer p-3 rounded-full">
                       <input
                         type="checkbox"
                         className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark"
@@ -154,20 +233,20 @@ const Affiliates = () => {
                       <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
                         <Icon icon="CheckedBox" />
                       </span>
-                    </label>
+                    </label>)}
                   </div>
                 </div>
                 <div className="flex justify-between">
                   <div className="flex flex-col gap-2">
-                    <span className="text-primary-white text-[0.87rem] font-[700] leading-[14px]">
+                    {status.isLoading ? (<div className="mt-1 w-16 h-3.5 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.87rem] font-[700] leading-[14px]">
                       Follow Us
-                    </span>
-                    <span className="text-primary-grey text-[0.72rem] font-[400] leading-[12px]">
+                    </span>)}
+                    {status.isLoading ? (<div className="mt-0.5 w-40 h-3 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.72rem] font-[400] leading-[12px]">
                       Follow @SteamUpgrade on X
-                    </span>
+                    </span>)}
                   </div>
                   <div className="inline-flex items-center">
-                    <label className="relative flex items-center cursor-pointer p-3 rounded-full">
+                    {status.isLoading ? (<div className="w-4 h-4 mr-3 mt-2.5 bg-primary-animation rounded-sm animate-pulse"></div>) : (<label className="relative flex items-center cursor-pointer p-3 rounded-full">
                       <input
                         type="checkbox"
                         className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark"
@@ -175,20 +254,23 @@ const Affiliates = () => {
                       <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
                         <Icon icon="CheckedBox" />
                       </span>
-                    </label>
+                    </label>)}
                   </div>
                 </div>
                 <div className="flex justify-between">
                   <div className="flex flex-col gap-2">
-                    <span className="text-primary-white text-[0.87rem] font-[700] leading-[14px]">
+                    {status.isLoading ? (<div className="mt-1 w-17 h-3.5 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.87rem] font-[700] leading-[14px]">
                       Steam Bio
-                    </span>
-                    <span className="text-primary-grey text-[0.72rem] font-[400] leading-[12px]">
+                    </span>)}
+                    {status.isLoading ? (<div className="flex flex-col">
+                      <div className="mt-0.5 w-[200px] h-3 bg-primary-animation rounded-sm animate-pulse"></div>
+                      <div className="mt-0.5 w-4 h-3 bg-primary-animation rounded-sm animate-pulse"></div>
+                    </div>) : (<span className="text-primary-grey text-[0.72rem] font-[400] leading-[12px]">
                       Link SteamUpgrade.com in your Steam Bio
-                    </span>
+                    </span>)}
                   </div>
                   <div className="inline-flex items-center">
-                    <label className="relative flex items-center cursor-pointer p-3 rounded-full">
+                    {status.isLoading ? (<div className="w-4 h-4 mt-2 mr-3 bg-primary-animation rounded-sm animate-pulse"></div>) : (<label className="relative flex items-center cursor-pointer p-3 rounded-full">
                       <input
                         type="checkbox"
                         className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark"
@@ -197,26 +279,49 @@ const Affiliates = () => {
                       <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
                         <Icon icon="CheckedBox" />
                       </span>
-                    </label>
+                    </label>)}
                   </div>
                 </div>
               </div>
             </div>
             <div>
-              <Button
-                className="mt-5 sm:mt-0 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4 inline-block w-full opacity-50" disabled placeholder=""                >
+              {status.isLoading ? (<div className="w-full h-10 bg-primary-animation rounded-md animate-pulse"></div>) : (<Button className="mt-5 sm:mt-0 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4 inline-block w-full opacity-50" disabled placeholder=""                >
                 <div className="flex gap-1 justify-center items-center">
                   <span className="text-white normal-case text-sm">
                     Claim discount
                   </span>
                 </div>
-              </Button>
+              </Button>)}
             </div>
           </div>
         </div>
 
-        <div className="relative flex flex-col justify-center items-center min-h-[400px] w-full h-full overflow-hidden bg-primary-lightDark/90 shadow-inner-[0_0px_0px_1px_rgba(0,0,0,0.3)] rounded-lg md:p-8 mt-5">
-          {isLoading ? <Loading /> : (
+        <div className="relative flex flex-col  items-center min-h-[400px] w-full h-full overflow-hidden bg-primary-lightDark/90 shadow-inner-[0_0px_0px_1px_rgba(0,0,0,0.3)] rounded-lg p-3 md:p-8 mt-5">
+          {status.isLoading ? <div className="flex flex-col gap-1 mt-1 w-full justify-start items-start">
+            <div className="flex gap-2 w-full">
+              <div className="w-10 h-8 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+              <div className="w-full h-6 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+              <div className="w-40 h-6 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+              <div className="w-40 h-6 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+              <div className="w-40 h-6 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+              <div className="w-55 h-6 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+              <div className="w-55 h-6 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+              <div className="w-30 h-6 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+            </div>
+
+            {Array.from({ length: 10 }).map((_, index) => (
+              <div key={index} className="flex gap-2 w-full">
+                <div className="w-10 h-8 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+                <div className="w-full h-8 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+                <div className="w-40 h-8 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+                <div className="w-40 h-8 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+                <div className="w-40 h-8 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+                <div className="w-55 h-8 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+                <div className="w-55 h-8 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+                <div className="w-30 h-8 bg-primary-animation rounded-md m-1 my-1.5 animate-pulse"></div>
+              </div>
+            ))}
+          </div> : (
             <div className="w-full overflow-x-auto">
               <table className="w-full text-left table-auto min-w-[800px]">
                 <thead>
@@ -279,7 +384,7 @@ const Affiliates = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {ranks?.map((rank: any, k: number) => (
+                  {status.ranks?.map((rank: any, k: number) => (
                     <tr key={k} className="border-b border-[#161620E5]">
                       <td className="pr-1 py-5">
                         <p className="text-sm text-primary-grey">{k + 1}</p>

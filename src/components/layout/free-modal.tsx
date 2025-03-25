@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import Modal from "../modal";
 import { Button } from "@material-tailwind/react";
 import Icon from "../icon";
-import { useClickOutside } from "../../hooks/use-modal";
+
 const CASE_ITEMS = [
   {
     id: 1,
@@ -66,8 +66,7 @@ const CASE_ITEMS = [
   }
 ];
 
-
-const CaseItem = ({ item }: { item: { color: string, image: string, chance: string, name: string, type: string, price: string, fromColor: string, viaColor: string, toColor: string } }) => {
+const CaseItem = ({ item }) => {
   return (
     <div className={`relative flex flex-col gap-2 items-center p-[1px] bg-gradient-to-tl from-[${item.fromColor}] via-[${item.viaColor}] to-[${item.toColor}] rounded-xl`}>
       <div className="w-full h-full bg-primary-semiDark rounded-xl p-2">
@@ -89,35 +88,38 @@ const CaseItem = ({ item }: { item: { color: string, image: string, chance: stri
   );
 };
 
-const FreeModal = ({
-  isOpen,
-  onClose,
-}: {
-  isOpen: boolean;
-  onClose: VoidFunction;
-}) => {
+const FreeModal = ({ isOpen, onClose }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  const modalRef = useClickOutside({ isOpen, onClose });
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <Modal>
-      <div
-        className="grid place-items-center fixed w-screen h-screen bg-black bg-opacity-60 backdrop-blur-sm fade-in"
-        style={{ opacity: 1 }}
-      >
+      <div className="grid place-items-center fixed w-screen h-screen bg-black bg-opacity-60 backdrop-blur-sm fade-in">
         <div
           ref={modalRef}
-          className={`relative m-4 shadow-2xl text-blue-gray-500 antialiased font-sans text-base font-light leading-relaxed !max-w-[1052px] min-h-[80vh] h-[80vh] bg-[#252633] rounded-xl flex flex-col gap-6 p-6 border-0 overflow-auto my-16 transform transition-transform duration-500 ${isOpen ? "scale-100 translate-y-0" : "scale-95 translate-y-8 opacity-0"
-            }`}
+          className={`relative m-4 shadow-2xl text-blue-gray-500 antialiased font-sans text-base font-light leading-relaxed !max-w-[1052px] min-h-[80vh] h-[80vh] bg-[#252633] rounded-xl flex flex-col gap-6 p-6 border-0 overflow-auto my-16 transform transition-transform duration-500 ${isOpen ? "scale-100 translate-y-0" : "scale-95 translate-y-8 opacity-0"}`}
         >
           <div className="flex justify-between items-center">
             <div className="flex gap-2 items-center">
               <Icon icon="Free" />
               <span className="text-sm text-primary-white">Free Case</span>
             </div>
-            <div
-              onClick={onClose}
-            >
+            <div onClick={onClose}>
               <Icon icon="Cancel" />
             </div>
           </div>
@@ -150,9 +152,7 @@ const FreeModal = ({
             </div>
             <div className="flex gap-2 items-center mt-8">
               <Icon icon="Item" />
-              <span className="text-sm text-primary-white">
-                Items in this Case
-              </span>
+              <span className="text-sm text-primary-white">Items in this Case</span>
             </div>
             <div className="flex gap-2 flex-wrap justify-between">
               {CASE_ITEMS.map((item) => (
@@ -167,6 +167,5 @@ const FreeModal = ({
     </Modal>
   );
 };
-
 
 export default FreeModal;
