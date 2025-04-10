@@ -202,3 +202,17 @@ export const getDaysDifference = (expireDays: string) => {
     const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
     return daysDiff;
 }
+
+export const formatTimeDiff = (seconds: number) => {
+    console.log(seconds, "-", currentTime());
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+
+    // Pad the hours, minutes, and seconds with leading zeros if necessary
+    const paddedHours = String(hours).padStart(2, '0');
+    const paddedMinutes = String(minutes).padStart(2, '0');
+    const paddedSeconds = String(remainingSeconds).padStart(2, '0');
+
+    return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
+}

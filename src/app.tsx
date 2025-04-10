@@ -4,6 +4,7 @@ import {
   Route,
   Routes,
   Navigate,
+  useNavigate,
 } from "react-router-dom";
 
 import Cookies from "js-cookie";
@@ -29,6 +30,8 @@ function App() {
 const Routers = () => {
   
   const [state, { dispatch }]: GlobalContextType = useGlobalContext();
+  const navigate = useNavigate();
+  console.log(state);
 
   React.useEffect(() => {
     const isLoading = Cookies.get("isLoading");
@@ -41,7 +44,7 @@ const Routers = () => {
   // Scroll to top on route change
   React.useEffect(() => {
     window.scrollTo(0, 0);
-  }, [state]); // You can also add dependencies if needed
+  }, [navigate]); 
 
   return (
       <Routes>

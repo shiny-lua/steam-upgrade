@@ -2,7 +2,7 @@ import axios from "axios";
 import { config } from ".";
 import Cookies from "js-cookie";
 
-axios.defaults.baseURL = config.BACKEND_URL + '/api/';
+axios.defaults.baseURL = config.BACKEND_URL + '/api/client';
 axios.interceptors.request.use((config) => {
   const token = Cookies.get("authToken")
   if (token) {
