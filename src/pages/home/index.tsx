@@ -344,7 +344,7 @@ const Home = () => {
                   <span className="text-primary-grey text-xs">Your Level</span>
                   <div className="bg-primary-dark opacity-50 rounded-[10px] w-full px-4 py-3 flex justify-between items-center">
                     <span className="text-[#EDEDED] text-sm">{status.currentSteamLevel} </span>
-                    <div className="w-6 h-6 flex text-[10px] justify-center items-center rounded-full border border-[#828385] text-white">
+                    <div className="w-8 h-8 flex text-sm justify-center items-center rounded-full border-2 border-[#828385] text-white">
                       {status.currentSteamLevel}
                     </div>
                   </div>
@@ -355,7 +355,7 @@ const Home = () => {
                     </span>
                   </Button>
                 </div>
-                <div className="flex justify-center py-4 sm:py-0 items-center">
+                <div className="flex justify-center py-4 sm:py-5 sm:-mt-3 items-center">
                   <Icon className="hidden sm:block" icon="ArrowRight" />
                   <Icon className="block sm:hidden" icon="ArrowDown" />
                 </div>

@@ -1,9 +1,38 @@
 import React, { useRef, useEffect } from "react";
-import Modal from "../modal";
+import Carousel from "react-multi-carousel"
 import { Button } from "@material-tailwind/react";
+
+import Modal from "../modal";
 import Icon from "../icon";
 import { restApi } from "../../context/restApi";
 import { currentTime, formatTimeDiff } from "../../context/helper";
+
+const responsive = {
+  desktop: {
+    breakpoint: {
+      max: 3000,
+      min: 1024
+    },
+    items: 4,
+    partialVisibilityGutter: 40
+  },
+  mobile: {
+    breakpoint: {
+      max: 464,
+      min: 0
+    },
+    items: 1,
+    partialVisibilityGutter: 30
+  },
+  tablet: {
+    breakpoint: {
+      max: 1024,
+      min: 464
+    },
+    items: 2,
+    partialVisibilityGutter: 30
+  }
+}
 
 const CASE_ITEMS = [
   {
@@ -71,9 +100,9 @@ const CASE_ITEMS = [
 const CaseItem = ({ item }) => {
   return (
     <div
-      className="relative flex flex-col gap-2 items-center p-[1px] rounded-xl transition-transform duration-300 hover:scale-105"
+      className="relative flex flex-col gap-2 items-center p-[1px] rounded-xl transition-transform duration-300"
       style={{
-        background: `linear-gradient(to top left, ${item.fromColor}, ${item.viaColor}, ${item.toColor})`
+        background: `linear-gradient(to top left, ${item.fromColor}, ${item.viaColor}, ${item.toColor})`,
       }}
     >
       <div className="w-full h-full bg-primary-semiDark rounded-xl p-2 transition-shadow duration-300 hover:shadow-lg">
@@ -164,8 +193,8 @@ const FreeModal = ({ isOpen, onClose }) => {
             </div>
           </div>
           <div className="flex flex-col gap-4 h-[1200px] overflow-y-auto">
-            <div className="flex gap-8 flex-col md:flex-row">
-              <div className="w-full md:w-1/3 lg:w-1/5 flex flex-col md:flex-row lg:flex-col gap-4 md:ml-4 items-center">
+            <div className="flex gap-8 flex-col lg:flex-row">
+              <div className="w-full lg:w-1/5 flex flex-col lg:flex-col gap-4 lg:ml-4 items-center">
                 <div className="flex flex-col gap-2 items-center">
                   <Icon icon="Box" />
                   <span className="hidden md:block text-white text-[18px]">Daily Case</span>
@@ -182,16 +211,60 @@ const FreeModal = ({ isOpen, onClose }) => {
                   <div className="text-green-400">
                     {formatTimeDiff(caseExpireTime)} <span className="">Remaining</span>
                   </div>
+                  
                 )}
               </div>
-              <div className="w-full md:w-1/3 h-[250px] lg:w-4/5 flex gap-4 md:ml-4 items-center relative">
-                <div className="flex h-full bg-[#191924] top-0 left-0 absolute bg-opacity-50 rounded-xl">
-                  <img className="w-[25%]" src="image/sword-1.png" alt="" />
-                  <img className="w-[25%] opacity-70 -translate-x-10" src="image/sword-1.png" alt="" />
-                  <img className="w-[25%] -translate-x-10" src="image/sword-1.png" alt="" />
-                  <img className="w-[25%] -translate-x-10" src="image/sword-1.png" alt="" />
+              <div className="w-full h-[250px] lg:w-4/5 flex gap-4 lg:ml-4 items-center relative">
+              <div className="flex h-full w-[666px] md:w-full gap-2 overflow-x-auto md:overflow-x-none ">
+                  <div className="relative w-1/5  flex flex-col gap-2 items-center p-[1px] rounded-xl transition-transform duration-300" style={{ background: `linear-gradient(to top left, #0C0D15, #0C0D15, #FF49ED)` }}>
+                    <div className="w-full h-full bg-primary-semiDark rounded-xl p-2 transition-shadow duration-300 hover:shadow-lg">
+                      <img className="absolute left-0 right-0 top-5" src="image/effect.png" alt="" />
+                      <img className="absolute left-0 top-8" src="image/sealed-graffiti.png" alt="" />
+                      <div className="absolute bottom-6 left-0 right-0 text-primary-white">
+                        <div className="text-center text-sm">Sealed Graffiti</div>
+                        <div className="text-center text-xs">Bling</div>
+                      </div>
+                    </div>
+                  </div><div className="relative w-1/5  flex flex-col gap-2 items-center p-[1px] rounded-xl transition-transform duration-300" style={{ background: `linear-gradient(to top left, #0C0D15, #0C0D15, #FF49ED)` }}>
+                    <div className="w-full h-full bg-primary-semiDark rounded-xl p-2 transition-shadow duration-300 hover:shadow-lg">
+                      <img className="absolute left-0 right-0 top-5" src="image/effect.png" alt="" />
+                      <img className="absolute left-8 top-17" width={100} height={100} src="image/hand-wraps.png" alt="" />
+                      <div className="absolute bottom-6 left-0 right-0 text-primary-white">
+                        <div className="text-center text-sm">Hand Wraps</div>
+                        <div className="text-center text-xs">Overprint</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="relative w-1/5  flex flex-col gap-2 items-center p-[1px] rounded-xl transition-transform duration-300" style={{ background: `linear-gradient(to top left, #0C0D15, #0C0D15, #FF49ED)` }}>
+                    <div className="w-full h-full bg-primary-semiDark rounded-xl p-2 transition-shadow duration-300 hover:shadow-lg">
+                      <img className="absolute left-0 right-0 top-5" src="image/effect.png" alt="" />
+                      <img className="absolute left-0 top-9" src="image/teeth.png" alt="" />
+                      <div className="absolute bottom-6 left-0 right-0 text-primary-white">
+                        <div className="text-center text-sm">Sealed Graffiti</div>
+                        <div className="text-center text-xs">Mr. Teeth</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="relative w-1/5  flex flex-col gap-2 items-center p-[1px] rounded-xl transition-transform duration-300" style={{ background: `linear-gradient(to top left, #0C0D15, #0C0D15, #FF49ED)` }}>
+                    <div className="w-full h-full bg-primary-semiDark rounded-xl p-2 transition-shadow duration-300 hover:shadow-lg">
+                      <img className="absolute left-0 right-0 top-5" src="image/effect.png" alt="" />
+                      <img className="absolute left-8 top-17" width={75} height={75} src="image/moto-gloves.png" alt="" />
+                      <div className="absolute bottom-6 left-0 right-0 text-primary-white">
+                        <div className="text-center text-sm">Moto Gloves</div>
+                        <div className="text-center text-xs">Transport</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="relative w-1/5  flex flex-col gap-2 items-center p-[1px] rounded-xl transition-transform duration-300" style={{ background: `linear-gradient(to top left, #0C0D15, #0C0D15, #FF49ED)` }}>
+                    <div className="w-full h-full bg-primary-semiDark rounded-xl p-2 transition-shadow duration-300 hover:shadow-lg">
+                      <img className="absolute left-0 right-0 top-5" src="image/effect.png" alt="" />
+                      <div className="absolute bottom-6 left-0 right-0 text-primary-white">
+                        <div className="text-center text-sm">Nothing</div>
+                        <div className="text-center text-xs">Better luck next time</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="hidden lg:block w-30 h-full bg-[#191924] top-0 right-0 absolute bg-opacity-100 rounded-xl"></div>
               </div>
             </div>
             <div className="flex gap-2 items-center mt-8">
@@ -208,7 +281,7 @@ const FreeModal = ({ isOpen, onClose }) => {
           </div>
         </div>
       </div>
-    </Modal>
+    </Modal >
   );
 };
 

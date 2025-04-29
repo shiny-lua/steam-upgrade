@@ -47,15 +47,31 @@ export const ConfirmModal = async (title: string, text?: string, confirmText?: s
     }
 };
 
-export const validateEvmAddress = (address: string) => {
-    const regex = /^(0x)?[0-9a-f]{40}$/i;
-    return regex.test(address);
-};
+export const validateAddress = (address: string, network: string) => {
+    switch (network) {
+        case "Bitcoin":
+            const legacyAddressPattern = /^[1][A-Za-z0-9]{25,34}$/; // Legacy address (starting with 1)
+            const segwitAddressPattern = /^[3][A-Za-z0-9]{25,34}$/; // SegWit address (starting with 3)
+            const bech32AddressPattern = /^bc1[a-zA-HJ-NP-Z0-9]{39,59}$/; // Bech32 address (starting with bc1)
 
-export const validateTronAddress = (address: string) => {
-    const regex = /^T[a-zA-Z0-9]{33}$/;
-    return regex.test(address);
-};
+            return legacyAddressPattern.test(address) ||
+                segwitAddressPattern.test(address) ||
+                bech32AddressPattern.test(address);
+        case "Ethereum":
+        case "Binance Smart Chain":
+        case "Polygon":
+            return /^0x[a-fA-F0-9]{40}$/.test(address);
+        case "TRON":
+            return /^T[a-zA-Z0-9]{33}$/.test(address);
+        case "Solana":
+            return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address); // Base58 check for Solana (32 to 44 characters)
+        case "Litecoin":
+            return /^[LM3][a-km-zA-HJ-NP-Z1-9]{26,33}$/.test(address); // Litecoin address format
+        default:
+            return false;
+    }
+
+}
 
 export const passwordAlert = async () => {
 

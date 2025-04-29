@@ -5,6 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import { ThemeProvider } from "@material-tailwind/react";
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-loading-skeleton/dist/skeleton.css'
+import 'react-multi-carousel/lib/styles.css';
 
 import App from './app';
 import './index.css';
