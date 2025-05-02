@@ -1,5 +1,4 @@
 import React, { useRef, useEffect } from "react";
-import Carousel from "react-multi-carousel"
 import { Button } from "@material-tailwind/react";
 
 import Modal from "../modal";
@@ -7,41 +6,14 @@ import Icon from "../icon";
 import { restApi } from "../../context/restApi";
 import { currentTime, formatTimeDiff } from "../../context/helper";
 
-const responsive = {
-  desktop: {
-    breakpoint: {
-      max: 3000,
-      min: 1024
-    },
-    items: 4,
-    partialVisibilityGutter: 40
-  },
-  mobile: {
-    breakpoint: {
-      max: 464,
-      min: 0
-    },
-    items: 1,
-    partialVisibilityGutter: 30
-  },
-  tablet: {
-    breakpoint: {
-      max: 1024,
-      min: 464
-    },
-    items: 2,
-    partialVisibilityGutter: 30
-  }
-}
-
 const CASE_ITEMS = [
   {
     id: 1,
     color: '#E65C5C',
-    image: '/image/icons/sword-1.png',
+    image: '/image/sealed-graffiti.png',
     chance: '0.0001%',
-    name: 'Karambit',
-    type: 'Lore',
+    name: 'Sealed Graffiti',
+    type: 'Bling',
     price: '$1357.87',
     fromColor: '#0C0D15',
     viaColor: '#0C0D15',
@@ -50,10 +22,10 @@ const CASE_ITEMS = [
   {
     id: 2,
     color: '#E65C5C',
-    image: '/image/icons/sword-2.png',
+    image: '/image/hand-wraps.png',
     chance: '0.0001%',
-    name: 'Karambit',
-    type: 'Lore',
+    name: 'Hand Wraps',
+    type: 'Overprint',
     price: '$1357.87',
     fromColor: '#0C0D15',
     viaColor: '#0C0D15',
@@ -62,10 +34,10 @@ const CASE_ITEMS = [
   {
     id: 3,
     color: '#FF49ED',
-    image: '/image/icons/sword-1.png',
+    image: '/image/teeth.png',
     chance: '0.0001%',
-    name: 'Karambit',
-    type: 'Lore',
+    name: 'Sealed Graffiti',
+    type: 'Mr. Teeth',
     price: '$1357.87',
     fromColor: '#0C0D15',
     viaColor: '#0C0D15',
@@ -74,10 +46,10 @@ const CASE_ITEMS = [
   {
     id: 4,
     color: '#FF49ED',
-    image: '/image/icons/sword-1.png',
+    image: '/image/moto-gloves.png',
     chance: '0.0001%',
-    name: 'Karambit',
-    type: 'Lore',
+    name: 'Moto Gloves',
+    type: 'Transport',
     price: '$1357.87',
     fromColor: '#0C0D15',
     viaColor: '#0C0D15',
@@ -86,15 +58,86 @@ const CASE_ITEMS = [
   {
     id: 5,
     color: 'white',
-    image: '/image/icons/sword-1.png',
+    image: '/image/effect.png',
     chance: '0.0001%',
-    name: 'Karambit',
-    type: 'Lore',
+    name: 'Nothing',
+    type: 'Better luck next time',
     price: '$1357.87',
     fromColor: '#0C0D15',
     viaColor: '#0C0D15',
     toColor: 'white'
   }
+];
+
+const rewardItems = [
+  {
+    title: "Sealed Graffiti",
+    desc: "Bling",
+    image: "sealed-graffiti.png",
+    width: 100,
+    height: 100,
+    left: "20",
+    top: "48"
+  },
+  {
+    title: "Hand Wraps",
+    desc: "Overprint",
+    image: "hand-wraps.png",
+    width: 100,
+    height: 100,
+    left: "32",
+    top: "68"
+  },
+  {
+    title: "Nothing",
+    desc: "Better luck next time",
+    width: 75,
+    height: 75,
+    left: "0",
+    top: "5"
+  },
+  {
+    title: "Nothing",
+    desc: "Better luck next time",
+    width: 75,
+    height: 75,
+    left: "0",
+    top: "5"
+  },
+  {
+    title: "Sealed Graffiti",
+    desc: "Mr. Teeth",
+    image: "teeth.png",
+    width: 100,
+    height: 100,
+    left: "20",
+    top: "50"
+  },
+  {
+    title: "Nothing",
+    desc: "Better luck next time",
+    width: 75,
+    height: 75,
+    left: "0",
+    top: "5"
+  },
+  {
+    title: "Moto Gloves",
+    desc: "Transport",
+    image: "moto-gloves.png",
+    width: 75,
+    height: 75,
+    left: "32",
+    top: "68"
+  },
+  {
+    title: "Nothing",
+    desc: "Better luck next time",
+    width: 75,
+    height: 75,
+    left: "0",
+    top: "5"
+  },
 ];
 
 const CaseItem = ({ item }) => {
@@ -111,7 +154,7 @@ const CaseItem = ({ item }) => {
           <span className="text-[10px] text-primary-grey">{item.chance}</span>
         </div>
         <div className="flex gap-4 w-full pl-4 pb-2">
-          <img src={item.image} alt={item.name} className="w-12 h-12" />
+          <img src={item.image} alt={item.name} className="w-14 h-14" />
           <div className="flex gap-1 flex-col">
             <span className="text-primary-grey text-xs">{item.name}</span>
             <span className="text-white text-sm">{item.type}</span>
@@ -159,53 +202,6 @@ const FreeModal = ({ isOpen, onClose }) => {
   const [isSpinning, setIsSpinning] = React.useState(false);
   const [finalPosition, setFinalPosition] = React.useState(0);
 
-  const rewardItems = [
-    {
-      title: "Sealed Graffiti",
-      desc: "Bling",
-      image: "sealed-graffiti.png",
-      width: 100,
-      height: 100,
-      left: "20",
-      top: "48"
-    },
-    {
-      title: "Hand Wraps",
-      desc: "Overprint",
-      image: "hand-wraps.png",
-      width: 100,
-      height: 100,
-      left: "32",
-      top: "68"
-    },
-    {
-      title: "Sealed Graffiti",
-      desc: "Mr. Teeth",
-      image: "teeth.png",
-      width: 100,
-      height: 100,
-      left: "20",
-      top: "50"
-    },
-    {
-      title: "Moto Gloves",
-      desc: "Transport",
-      image: "moto-gloves.png",
-      width: 75,
-      height: 75,
-      left: "32",
-      top: "68"
-    },
-    {
-      title: "Nothing",
-      desc: "Better luck next time",
-      width: 75,
-      height: 75,
-      left: "0",
-      top: "5"
-    }
-  ];
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -236,7 +232,7 @@ const FreeModal = ({ isOpen, onClose }) => {
           return 0;
         }
       });
-    }, 1000);
+    }, 2000);
     return () => clearInterval(interval);
   }, [caseExpireTime]);
 
@@ -252,16 +248,16 @@ const FreeModal = ({ isOpen, onClose }) => {
     if (isSpinning) return;
     setIsSpinning(true);
     
-    // Initial speed
-    setAnimationSpeed('5s');
+    // Start with a moderate speed
+    setAnimationSpeed('3s');
 
-    // Generate acceleration sequence
+    // Generate acceleration sequence with more steps and smoother curve
     const speedUpSequence = generateSmoothTransitionSequence(
-      15,           // More steps for smoother acceleration
-      5,            // Start slower (5s)
-      0.2,          // End at very fast speed (0.2s)
-      50,           // Start delay
-      80            // Smaller delay increments for smoother transitions
+      20,           // More steps for smoother acceleration
+      3,            // Start at moderate speed
+      0.15,         // End at very fast speed
+      30,           // Shorter initial delay
+      60            // Smaller delay increments for smoother transitions
     );
 
     // Execute speed up sequence
@@ -271,13 +267,13 @@ const FreeModal = ({ isOpen, onClose }) => {
 
     // Maintain max speed then start slowing down
     setTimeout(() => {
-      // Generate deceleration sequence
+      // Generate deceleration sequence with more dramatic slowdown
       const slowDownSequence = generateSmoothTransitionSequence(
-        12,           // Fewer steps for dramatic slowdown
-        0.2,          // Start at max speed
-        3.5,          // End slower for dramatic effect
+        35,           // Many more steps for extremely smooth deceleration
+        0.15,         // Start at max speed
+        8,            // End much slower for very dramatic effect
         0,            // No initial delay
-        120           // Larger delay increments for dramatic slowdown
+        200           // Much larger delay increments for very gradual slowdown
       ).reverse();    // Reverse for deceleration
 
       // Execute slow down sequence
@@ -291,9 +287,10 @@ const FreeModal = ({ isOpen, onClose }) => {
         setIsSpinning(false);
         setFinalPosition(-10);
         setReward("Moto Gloves");
-      }, 2000);
-    }, 2200);
+      }, 6000); // Much longer final transition
+    }, 3000); // Longer max speed duration
   }
+  
 
   return (
     <Modal>
@@ -357,7 +354,7 @@ const FreeModal = ({ isOpen, onClose }) => {
               <div className="w-full h-[250px] lg:w-4/5 flex gap-4 lg:ml-4 items-center relative">
                 <div className="relative overflow-hidden h-full w-full">
                   <div
-                    className={`flex h-full w-[200%] gap-2 animate-scroll ${!isSpinning && animationSpeed === '0s' ? 'paused' : ''}`}
+                    className={`flex h-full w-[150%] gap-2 animate-scroll ${!isSpinning && animationSpeed === '0s' ? 'paused' : ''}`}
                     style={{ 
                       animationDuration: animationSpeed,
                       animationIterationCount: 'infinite',
@@ -367,28 +364,6 @@ const FreeModal = ({ isOpen, onClose }) => {
                     }}
                   >
                     {/* First set of items */}
-                    {rewardItems.map((item, index) => (
-                      <div key={`item-${index}`} className="relative w-1/5 flex flex-col gap-2 items-center p-[1px] rounded-xl transition-transform duration-300" style={{ background: `linear-gradient(to top left, #0C0D15, #0C0D15, #FF49ED)` }}>
-                        <div className="w-full h-full bg-primary-semiDark rounded-xl p-2 transition-shadow duration-300 hover:shadow-lg">
-                          <img className="absolute left-0 right-0 top-5" src="image/effect.png" alt="" />
-                          {item.image && (
-                            <img
-                              className="absolute"
-                              style={{ left: `${item.left}px`, top: `${item.top}px`, right: "0px" }}
-                              width={item.width}
-                              height={item.height}
-                              src={`image/${item.image}`}
-                              alt={item.title}
-                            />
-                          )}
-                          <div className="absolute bottom-6 left-0 right-0 text-primary-white">
-                            <div className="text-center text-sm">{item.title}</div>
-                            <div className="text-center text-xs">{item.desc}</div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    {/* Duplicate set for infinite scroll */}
                     {rewardItems.map((item, index) => (
                       <div key={`item-duplicate-${index}`} className="relative w-1/5 flex flex-col gap-2 items-center p-[1px] rounded-xl transition-transform duration-300" style={{ background: `linear-gradient(to top left, #0C0D15, #0C0D15, #FF49ED)` }}>
                         <div className="w-full h-full bg-primary-semiDark rounded-xl p-2 transition-shadow duration-300 hover:shadow-lg">
