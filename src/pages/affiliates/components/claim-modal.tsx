@@ -45,7 +45,7 @@ const ClaimModal = ({ isOpen, onClose, profit }: { isOpen: boolean, onClose: () 
             return setStatus({ ...status, isValidAdress: isValidAddress })
         }
         setStatus({ ...status, isLoading: true })
-        const res = await restApi.postRequest("claim", { amount: status.amount, address: status.address, network: status.network })
+        const res = await restApi.postRequest("create-reward", { amount: status.amount, address: status.address, network: status.network })
 
         if (res.status === 200) {
             setStatus({ ...status, isSuccess: true })

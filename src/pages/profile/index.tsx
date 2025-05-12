@@ -12,14 +12,15 @@ import { getFormattedDate, showToast } from "../../context/helper";
 const Profile = () => {
     const [state, { dispatch, storeData }]: GlobalContextType = useGlobalContext();
     const navigate = useNavigate()
-    const { pathname } = useLocation();
 
-    const [status, setStatus] = React.useState({ email: "", tradeLink: "" } as { email: string, tradeLink: string })
+    const [status, setStatus] = React.useState({ email: "", tradeLink: "", isVerifiedEmail: false } as { email: string, tradeLink: string, isVerifiedEmail: boolean })
+    const [isLoading, setIsLoading] = React.useState(false)
 
     React.useEffect(() => {
         setStatus({
             email: state.userData.email,
             tradeLink: state.userData.tradeLink,
+            isVerifiedEmail: state.userData.isVerifiedEmail
         });
     }, [state.userData])
 
@@ -31,12 +32,23 @@ const Profile = () => {
     }
 
     const onSave = async () => {
-        const res = await restApi.postRequest("update-user", { email: status.email, tradeLink: status.tradeLink })
 
+        const res = await restApi.postRequest("update-user", { tradeLink: status.tradeLink })
         if (res.status === 200) {
             dispatch({ type: "userData", payload: res.data })
             showToast("Settings updated successfully", "success")
         }
+    }
+
+    const onVerifyEmail = async () => {
+        setIsLoading(true)
+        const res = await restApi.postRequest("request-email-verification", { email: status.email })
+        if (res.status === 200) {
+            showToast("Email verification sent, Please check your Email inbox", "success")
+        } else {
+            showToast("Failed to send email verification, Please try again later", "error")
+        }
+        setIsLoading(false)
     }
 
     return (
@@ -71,23 +83,24 @@ const Profile = () => {
                             </div>
                         </div>
                         <hr className="bg-primary-dark border-primary-dark my-2" />
-                        {/* <div className="space-y-2">
+                        <div className="space-y-2">
                             <div className="flex justify-between items-center text-primary-grey text-[0.75rem] font-[700]">
-                                <span>Your Email</span><span>Verified</span>
+                                <span>Your Email</span><span>{status.isVerifiedEmail ? <div className="text-green-500">Verified</div> : <div className="text-red-500">Not Verified</div>}</span>
                             </div>
                             <div className="flex items-center text-[0.85rem] text-primary-white text-sm bg-primary-dark/50 rounded-[10px] pr-1 py-1">
                                 <input
                                     type="text"
-                                    className="inline-block bg-transparent focus:outline-none focus:ring-0 rounded-[10px] w-full px-4 py-1.5 items-center"
+                                    disabled={status.isVerifiedEmail}
+                                    className={`${status.isVerifiedEmail ? "text-gray-500" : ""} inline-block bg-transparent focus:outline-none focus:ring-0 rounded-[10px] w-full px-4 py-1.5 items-center`}
                                     placeholder="Enter your email"
                                     value={status.email}
                                     onChange={e => setStatus({ ...status, email: e.target.value })}
                                 />
-                                <Button className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 px-3 flex items-center justify-center" placeholder=""  >
-                                    <Icon icon="Checked" />
-                                </Button>
+                                {!status.isVerifiedEmail && <Button onClick={onVerifyEmail} disabled={isLoading} className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 px-3 flex items-center justify-center" placeholder=""  >
+                                    {isLoading ? <div className="animate-spin rounded-full border-2 border-solid border-white border-t-transparent w-4 h-4" /> : <Icon icon="Checked" />}
+                                </Button>}
                             </div>
-                        </div> */}
+                        </div>
                         <div className="space-y-1.5 mt-2">
                             <span className="text-primary-grey text-[0.9rem] font-[700]">Your Trade URL</span>
                             <div className="flex items-center text-[0.85rem] text-primary-white text-sm bg-primary-dark/50 rounded-[10px] pr-1 py-1">

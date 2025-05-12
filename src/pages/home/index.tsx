@@ -10,7 +10,6 @@ import Icon from "../../components/icon";
 import { restApi } from "../../context/restApi";
 import { getDaysDifference, showToast } from "../../context/helper";
 import { getXPForLevel } from "../../hooks/get-user-xp";
-import SetTradeUrlModal from "./components/set-trade-url-modal";
 import CsGoModal from "./components/cs-go-modal";
 import Loading from "../../components/loading";
 
@@ -35,6 +34,7 @@ interface Status {
 }
 
 const Home = () => {
+  const navigate = useNavigate()
   const [state, { dispatch }] = useGlobalContext();
 
   const [isLoading, setIsLoading] = React.useState(false);
@@ -273,8 +273,9 @@ const Home = () => {
     if (status.dreamSteamLevel <= status.currentSteamLevel) {
       return showToast("Desired level should be higher than current level", "warning")
     }
-    if (!state.userData.tradeLink) {
-      setShowTradeUrlModal(true)
+    if (!state.userData.tradeLink || state.userData.isVerifiedEmail === false) {
+      showToast("Please verify your email and trade link to continue", "warning")
+      navigate("/profile")
       return
     }
     setShowLevelUpModal(true)
@@ -708,7 +709,6 @@ const Home = () => {
         {(state.isLoading || showLevelUpModal) && (
           <LevelUpModal amount={status.estimatedCost} discountedAmount={status.discountedCost} dreamLevel={status.dreamSteamLevel} isOpen={showLevelUpModal} showCsGoModal={() => setShowCsGoModal(true)} onClose={() => setShowLevelUpModal(false)} />
         )}
-        {showTradeUrlModal && <SetTradeUrlModal isOpen={showTradeUrlModal} onClose={() => setShowTradeUrlModal(false)} />}
         {showCsGoModal && <CsGoModal isOpen={showCsGoModal} onClose={() => setShowCsGoModal(false)} />}
       </div>
     </Layout>

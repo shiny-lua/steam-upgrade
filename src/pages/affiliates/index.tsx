@@ -1,17 +1,14 @@
 import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import Cookies from "js-cookie";
 
 import Layout from "../../components/layout";
 import Icon from "../../components/icon";
-import { Link, useNavigate } from "react-router-dom";
-import { restApi } from "../../context/restApi";
-import updateLevelBadge from "../../hooks/get-level-badge";
-import Loading from "../../components/loading";
-import { copyToClipboard } from "../../context/helper";
-import { showToast } from "../../context/helper";
-import { useGlobalContext } from "../../context";
 import ClaimModal from "./components/claim-modal";
+import { restApi } from "../../context/restApi";
+import { useGlobalContext } from "../../context";
+import { showToast, copyToClipboard } from "../../context/helper";
 const Affiliates = () => {
   const navigate = useNavigate()
   const [state, { dispatch }]: GlobalContextType = useGlobalContext()
@@ -46,6 +43,13 @@ const Affiliates = () => {
     };
     fetchData();
   }, []);
+
+  const onClaimModal = () => {
+    if (status.affiliate.totalProfit < 10) {
+      return
+    }
+    setStatus({ ...status, isClaimModalOpen: true })
+  }
 
 
   const handleCopy = () => {
@@ -206,7 +210,7 @@ const Affiliates = () => {
               </div>
             </div>
             <div>
-              {status.isLoading ? (<div className="w-full h-10 bg-primary-animation rounded-md animate-pulse"></div>) : (<Button onClick={() => setStatus({ ...status, isClaimModalOpen: true })} className={`mt-5 sm:mt-0 align-middle font-sans font-bold text-center uppercase transition-all text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 bg-primary-gradient px-4 inline-block w-full ${status.affiliate.totalProfit <= 10 ? "opacity-30" : "opacity-100"}`}>
+              {status.isLoading ? (<div className="w-full h-10 bg-primary-animation rounded-md animate-pulse"></div>) : (<Button onClick={onClaimModal} className={`mt-5 sm:mt-0 align-middle font-sans font-bold text-center uppercase transition-all text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 bg-primary-gradient px-4 inline-block w-full ${status.affiliate.totalProfit < 10 ? "opacity-30" : "opacity-100"}`}>
                 <div className="flex gap-1 justify-center items-center">
                   <span className="text-white normal-case text-sm">
                     Claim

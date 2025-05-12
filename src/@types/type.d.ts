@@ -19,7 +19,8 @@ interface InitStateObject {
             referrals: number
             buyers: number
             totalProfit: number
-        }
+        },
+        isVerifiedEmail: boolean
     }
     authToken: string
     steamLevel: number
