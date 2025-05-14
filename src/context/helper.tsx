@@ -1,9 +1,8 @@
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import crypto from 'crypto';
-
-import { config } from "./../context"
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export const showToast = (html: string, type: 'info' | 'success' | 'warning' | 'error' | 'default') => {
     toast(html, {
@@ -220,7 +219,6 @@ export const getDaysDifference = (expireDays: string) => {
 }
 
 export const formatTimeDiff = (seconds: number) => {
-    console.log(seconds, "-", currentTime());
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
@@ -230,5 +228,17 @@ export const formatTimeDiff = (seconds: number) => {
     const paddedMinutes = String(minutes).padStart(2, '0');
     const paddedSeconds = String(remainingSeconds).padStart(2, '0');
 
-    return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
+    return `00:${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
 }
+
+export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+  }
+  
+  export function hexToRgba(hex: string, alpha: number) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+  
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }

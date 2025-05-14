@@ -36,3 +36,53 @@ type GlobalContextType = [
         storeData: (authToken: any) => void
     }
 ]
+
+declare interface Item {
+    id: string;
+    name: string;
+    marketHashName: string;
+    type: string;
+    category: string;
+    image: string;
+    quality: string;
+    color: string;
+    createdAt: string;
+    updatedAt: string;
+  }
+  
+declare interface Case {
+  id: string;
+  name: string;
+  isAvailable: boolean;
+  createdAt: string;
+  updatedAt: string;
+  casePrizes: CasePrize[];
+}
+
+declare enum CasePrizeType {
+  ITEM = 'ITEM',
+  NOTHING = 'NOTHING',
+}
+
+declare interface CasePrize {
+  id: string;
+  value: number;
+  weight: number;
+  prizeType: CasePrizeType;
+  color: string | null;
+  item: Item | null;
+}
+
+declare interface DailyFreeCaseRequirements {
+  discordAccountLinked: boolean;
+  inDiscordGuild: boolean;
+  requiredSteamLevel: boolean;
+  steamAccountLinked: boolean;
+  tradeUrlSet: boolean;
+}
+
+declare interface DailyFreeCaseAvailability {
+  requirements: DailyFreeCaseRequirements;
+  caseAvailable: boolean;
+  openedAt: string | null;
+}
