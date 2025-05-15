@@ -1,14 +1,17 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import Cookies from "js-cookie";
 
 import Layout from "../../components/layout";
 import Icon from "../../components/icon";
-import ClaimModal from "./components/claim-modal";
+import { Link, useNavigate } from "react-router-dom";
 import { restApi } from "../../context/restApi";
+import updateLevelBadge from "../../hooks/get-level-badge";
+import Loading from "../../components/loading";
+import { copyToClipboard } from "../../context/helper";
+import { showToast } from "../../context/helper";
 import { useGlobalContext } from "../../context";
-import { showToast, copyToClipboard } from "../../context/helper";
+
 const Affiliates = () => {
   const navigate = useNavigate()
   const [state, { dispatch }]: GlobalContextType = useGlobalContext()
@@ -25,8 +28,7 @@ const Affiliates = () => {
       referrals: 0,
       buyers: 0,
       totalProfit: 0,
-    },
-    isClaimModalOpen: false
+    }
   })
 
   React.useEffect(() => {
@@ -43,13 +45,6 @@ const Affiliates = () => {
     };
     fetchData();
   }, []);
-
-  const onClaimModal = () => {
-    if (status.affiliate.totalProfit < 10) {
-      return
-    }
-    setStatus({ ...status, isClaimModalOpen: true })
-  }
 
 
   const handleCopy = () => {
@@ -115,7 +110,7 @@ const Affiliates = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 xsm:mt-10 relative z-10">
-          <div className="w-full bg-primary-lightDark rounded-md flex flex-col gap-5 p-4 md:p-5">
+          <div className="w-full sm:w-[65%] bg-primary-lightDark rounded-md flex flex-col gap-5 p-4 md:p-5">
             <div className="flex gap-2 items-center">
               <Icon icon="Users" />
               {status.isLoading ? (<div className="w-24 h-4.5 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-base">Share & Earn</span>)}
@@ -171,59 +166,138 @@ const Affiliates = () => {
                 </div>)}
               </div>
               <hr className="bg-primary-dark border-primary-dark mt-2" />
-              <div className="grid grid-cols-1 xsm:grid-cols-3 gap-4 mt-4">
-                <div className="flex gap-2 items-center">
-                  <div className="text-[#A9ABCD]">
-                    <Icon icon="Affiliates" className="w-5" />
+              <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end gap-2">
+                <div className="w-full sm:w-2/3 grid grid-cols-1 xsm:grid-cols-3 gap-3 mt-4">
+                  <div className="flex gap-2 items-center">
+                    <div className="text-[#A9ABCD]">
+                      <Icon icon="Affiliates" className="w-5" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      {
+                        status.isLoading ? (<div className="ml-1 w-6 h-4 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.93rem] font-[900] leading-[15px]">{status.affiliate.referrals ? status.affiliate.referrals : 0}</span>)
+                      }
+                      {
+                        status.isLoading ? (<div className="w-13 h-4 ml-1 mt-1 opacity-50 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.81rem] font-[400]">Referrals</span>)
+                      }
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    {
-                      status.isLoading ? (<div className="ml-1 w-6 h-4 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.93rem] font-[900] leading-[15px]">{status.affiliate.referrals ? status.affiliate.referrals : 0}</span>)
-                    }
-                    {
-                      status.isLoading ? (<div className="w-13 h-4 ml-1 mt-1 opacity-50 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.81rem] font-[400]">Referrals</span>)
-                    }
+                  <div className="flex gap-2 items-center">
+                    <Icon icon="CheckedUser" />
+                    <div className="flex flex-col gap-1">
+                      {
+                        status.isLoading ? (<div className="w-5 h-4 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.93rem] font-[900] leading-[15px]">{status.affiliate.buyers ? status.affiliate.buyers : 0}</span>)
+                      }
+                      {
+                        status.isLoading ? (<div className="w-10 h-4 mt-1 opacity-50 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.81rem] font-[400]">Buyers</span>)
+                      }
+                    </div>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <Icon icon="Users" />
+                    <div className="flex flex-col gap-1">
+                      {
+                        status.isLoading ? (<div className="w-20 h-4 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.93rem] font-[900] leading-[15px]">$ {status.affiliate.totalProfit ? status.affiliate.totalProfit : 0}</span>)
+                      }
+                      {
+                        status.isLoading ? (<div className="w-16 h-4 mt-1 opacity-50 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.81rem] font-[400]">Total Profit</span>)
+                      }
+                    </div>
+                  </div>
+
+                </div>
+                <div className="w-full sm:w-1/3">
+                  {status.isLoading ? (<div className="mt-4 w-full h-10 bg-primary-animation rounded-full animate-pulse"></div>) : (<Button className="mt-5 sm:mt-0 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-full text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4 inline-block w-full opacity-50" disabled placeholder=""                >
+                    <div className="flex gap-1 justify-center items-center">
+                      <span className="text-white normal-case text-sm">
+                        Claim Profit
+                      </span>
+                    </div>
+                  </Button>)}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full sm:w-[35%] bg-primary-lightDark rounded-md flex flex-col justify-between p-4 md:p-5">
+            <div className="flex flex-col gap-8">
+              <div className="flex gap-2 items-center">
+                <Icon icon="Users" />
+                {status.isLoading ? (<div className="w-16 h-4.5 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-base">Missions</span>)}
+              </div>
+              <hr className="bg-primary-dark border-primary-dark" />
+              <div className="flex flex-col gap-8">
+                <div className="flex justify-between">
+                  <div className="flex flex-col gap-3">
+                    {status.isLoading ? (<div className="mt-1 w-20 h-3.5 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.95rem] font-[700] leading-[14px]">
+                      Share Level
+                    </span>)}
+                    {status.isLoading ? (<div className="mt-0.5 w-28 h-3 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.8rem] font-[400] leading-[18px]">
+                      Share your new Level
+                    </span>)}
+                  </div>
+                  <div className="inline-flex items-center">
+                    {status.isLoading ? (<div className="w-4 h-4 mt-3 mr-3 bg-primary-animation rounded-sm animate-pulse"></div>) : (<label className="relative flex items-center cursor-pointer p-3 rounded-full">
+                      <input
+                        type="checkbox"
+                        className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark"
+                        id=":rj:"
+                      />
+                      <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
+                        <Icon icon="CheckedBox" />
+                      </span>
+                    </label>)}
                   </div>
                 </div>
-                <div className="flex gap-2 items-center">
-                  <Icon icon="CheckedUser" />
-                  <div className="flex flex-col gap-1">
-                    {
-                      status.isLoading ? (<div className="w-5 h-4 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.93rem] font-[900] leading-[15px]">{status.affiliate.buyers ? status.affiliate.buyers : 0}</span>)
-                    }
-                    {
-                      status.isLoading ? (<div className="w-10 h-4 mt-1 opacity-50 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.81rem] font-[400]">Buyers</span>)
-                    }
+                <div className="flex justify-between">
+                  <div className="flex flex-col gap-3">
+                    {status.isLoading ? (<div className="mt-1 w-16 h-3.5 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.95rem] font-[700] leading-[14px]">
+                      Follow Us
+                    </span>)}
+                    {status.isLoading ? (<div className="mt-0.5 w-40 h-3 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.8rem] font-[400] leading-[18px]">
+                      Follow @SteamUpgrade on X
+                    </span>)}
+                  </div>
+                  <div className="inline-flex items-center">
+                    {status.isLoading ? (<div className="w-4 h-4 mr-3 mt-2.5 bg-primary-animation rounded-sm animate-pulse"></div>) : (<label className="relative flex items-center cursor-pointer p-3 rounded-full">
+                      <input
+                        type="checkbox"
+                        className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark"
+                      />
+                      <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
+                        <Icon icon="CheckedBox" />
+                      </span>
+                    </label>)}
                   </div>
                 </div>
-                <div className="flex gap-2 items-center">
-                  <Icon icon="Users" />
-                  <div className="flex flex-col gap-1">
-                    {
-                      status.isLoading ? (<div className="w-20 h-4 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.93rem] font-[900] leading-[15px]">$ {status.affiliate.totalProfit ? status.affiliate.totalProfit : 0}</span>)
-                    }
-                    {
-                      status.isLoading ? (<div className="w-16 h-4 mt-1 opacity-50 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-grey text-[0.81rem] font-[400]">Total Profit</span>)
-                    }
+                <div className="flex justify-between">
+                  <div className="flex flex-col gap-3">
+                    {status.isLoading ? (<div className="mt-1 w-17 h-3.5 bg-primary-animation rounded-sm animate-pulse"></div>) : (<span className="text-primary-white text-[0.95rem] font-[700] leading-[14px]">
+                      Steam Bio
+                    </span>)}
+                    {status.isLoading ? (<div className="flex flex-col">
+                      <div className="mt-0.5 w-[200px] h-3 bg-primary-animation rounded-sm animate-pulse"></div>
+                      <div className="mt-0.5 w-4 h-3 bg-primary-animation rounded-sm animate-pulse"></div>
+                    </div>) : (<span className="text-primary-grey text-[0.8rem] font-[400] leading-[18px]">
+                      Link SteamUpgrade.com in your Steam Bio
+                    </span>)}
+                  </div>
+                  <div className="inline-flex items-center">
+                    {status.isLoading ? (<div className="w-4 h-4 mt-2 mr-3 bg-primary-animation rounded-sm animate-pulse"></div>) : (<label className="relative flex items-center cursor-pointer p-3 rounded-full">
+                      <input
+                        type="checkbox"
+                        className="peer relative appearance-none border cursor-pointer transition-all before:content[''] before:block before:bg-blue-gray-500 before:w-12 before:h-12 before:rounded-full before:absolute before:top-2/4 before:left-2/4 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 hover:before:opacity-10 before:transition-opacity checked:bg-blue-gray-500 checked:border-blue-gray-500 checked:before:bg-blue-gray-500 w-4 h-4 rounded-[4px] border-primary-grey bg-primary-lightDark"
+                        id=":rl:"
+                      />
+                      <span className="text-white absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">
+                        <Icon icon="CheckedBox" />
+                      </span>
+                    </label>)}
                   </div>
                 </div>
               </div>
             </div>
-            <div>
-              {status.isLoading ? (<div className="w-full h-10 bg-primary-animation rounded-md animate-pulse"></div>) : (<Button onClick={onClaimModal} className={`mt-5 sm:mt-0 align-middle font-sans font-bold text-center uppercase transition-all text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 bg-primary-gradient px-4 inline-block w-full ${status.affiliate.totalProfit < 10 ? "opacity-30" : "opacity-100"}`}>
-                <div className="flex gap-1 justify-center items-center">
-                  <span className="text-white normal-case text-sm">
-                    Claim
-                  </span>
-                </div>
-              </Button>)}
-            </div>
-            <span className="text-primary-grey text-[0.75rem] font-[700] leading-[16.8px]">
-              If you have successfully generated a total profit of $10, you can proceed to claim your rewards.
-            </span>
           </div>
         </div>
-        {status.isClaimModalOpen && <ClaimModal isOpen={status.isClaimModalOpen} profit={status.affiliate.totalProfit} onClose={() => setStatus({ ...status, isClaimModalOpen: false })} />}
       </div>
     </Layout>
   );
