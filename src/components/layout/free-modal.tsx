@@ -22,29 +22,30 @@ const CASE_ITEMS = [
     viaColor: '#0C0D15',
     toColor: '#FF9800'
   },
+  
   {
     id: 2,
-    color: '#E65C5C',
-    image: '/image/teeth.png',
-    chance: '0.0259%',
-    name: 'Sealed Graffiti',
-    type: 'Mr. Teeth',
-    price: '$1357.87',
-    fromColor: '#0C0D15',
-    viaColor: '#0C0D15',
-    toColor: '#E65C5C'
-  },
-  {
-    id: 3,
     color: '#4CAF50',
     image: '/image/hand-wraps.png',
-    chance: '0.458%',
+    chance: '0.0259%',
     name: 'Hand Wraps',
     type: 'Overprint',
     price: '$1357.87',
     fromColor: '#0C0D15',
     viaColor: '#0C0D15',
     toColor: '#4CAF50'
+  },
+  {
+    id: 3,
+    color: '#E65C5C',
+    image: '/image/teeth.png',
+    chance: '0.458%',
+    name: 'Sealed Graffiti',
+    type: 'Mr. Teeth',
+    price: '$1357.87',
+    fromColor: '#0C0D15',
+    viaColor: '#0C0D15',
+    toColor: '#E65C5C'
   },
   {
     id: 4,
@@ -84,6 +85,18 @@ const rewardItems = [
     viaColor: '#0C0D15',
     toColor: '#FF49ED'
   },
+  
+  {
+    title: "Sealed Graffiti | Mr. Teeth (Princess Pink)",
+    image: "teeth.png",
+    width: 100,
+    height: 100,
+    left: "20",
+    top: "50",
+    fromColor: '#0C0D15',
+    viaColor: '#0C0D15',
+    toColor: '#00BCD4'
+  },
   {
     title: "★ Hand Wraps | Overprint",
     image: "hand-wraps.png",
@@ -105,17 +118,6 @@ const rewardItems = [
     fromColor: '#0C0D15',
     viaColor: '#0C0D15',
     toColor: '#2196F3'
-  },
-  {
-    title: "Sealed Graffiti | Mr. Teeth (Princess Pink)",
-    image: "teeth.png",
-    width: 100,
-    height: 100,
-    left: "20",
-    top: "50",
-    fromColor: '#0C0D15',
-    viaColor: '#0C0D15',
-    toColor: '#00BCD4'
   },
   {
     title: "★ Moto Gloves | Transport",
