@@ -147,10 +147,10 @@ const CaseItem = ({ item }) => {
         </div>
         <div className="flex gap-4 w-full pl-4 pb-2">
           <img src={item.image} alt={item.name} className="w-14 h-14" />
-          <div className="flex gap-1 flex-col">
+          <div className="flex gap-3 my-2 flex-col">
             <span className="text-primary-grey text-xs">{item.name}</span>
             <span className="text-white text-sm">{item.type}</span>
-            <span className="text-white text-sm">{item.price}</span>
+            {/* <span className="text-white text-sm">{item.price}</span> */}
           </div>
         </div>
       </div>
