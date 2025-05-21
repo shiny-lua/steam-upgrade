@@ -94,65 +94,77 @@ const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFuncti
   }
 
   const onPaySkinsBack = async () => {
-    if (isLoading) {
-      return
-    }
-
-    setIsLoading(true)
-    const steamId = state.userData.id
-    const tradeLink = state.userData.tradeLink
-    const tradeToken = tradeLink.match(/[?&]token=([a-zA-Z0-9]+)/)?.[1]
-
-    if (!tradeToken) {
-      showToast("Please set your Trade Link", "warning")
-      return
-    }
-
-    const res = await restApi.postRequest("pay-skinsback", { steamId, tradeToken })
-    if (res.status === 200) {
-      window.location.href = res.data;
+    try {
+      if (isLoading) {
+        return
+      }
+  
+      setIsLoading(true)
+      const steamId = state.userData.id
+      const tradeLink = state.userData.tradeLink
+      const tradeToken = tradeLink.match(/[?&]token=([a-zA-Z0-9]+)/)?.[1]
+  
+      if (!tradeToken) {
+        showToast("Please set your Trade Link", "warning")
+        return
+      }
+  
+      const res = await restApi.postRequest("pay-skinsback", { steamId, tradeToken })
+      if (res.status === 200) {
+        window.location.href = res.data;
+      }
+    } catch (error) {
+      showToast(error?.data.error || "An error occurred while processing payment", "error")
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const onPayCryptomus = async (currency: string) => {
 
-    if (isLoading) {
-      return
-    }
-
-    setIsLoading(true)
-    const btcLimit = 0.00002
-    const ltcLimit = 0.02
-
-    if (status.amount <= 0) {
-      setInputError({ status: true, message: "Please enter an amount you want to pay" })
-      return
-    }
-
-    if (currency == "BTC") {
-      const res = await restApi.postRequest(`get-rate`, { currency: "BTC" })
-      const rate = res.rate
-      if (status.amount * 1 / rate < btcLimit) {
-        setInputError({ status: true, message: `The minimum amount for replenishing your account via Cryptomus is now $ ${(btcLimit * rate).toFixed(2)}` })
+    try {
+      if (isLoading) {
         return
       }
-    } else if (currency == "LTC") {
-      const rate = await restApi.postRequest(`get-rate`, { currency: "LTC" })
-      console.log(rate, "rate")
-      if (status.amount * 1 / rate < ltcLimit) {
-        setInputError({ status: true, message: `The minimum amount for replenishing your account via Cryptomus is now $ ${(ltcLimit * rate).toFixed(2)}` })
+
+      setIsLoading(true)
+      const btcLimit = 0.00002
+      const ltcLimit = 0.02
+
+      if (status.amount <= 0) {
+        setInputError({ status: true, message: "Please enter an amount you want to pay" })
         return
       }
-    }
-    const res = await restApi.postRequest("pay-cryptomus", {
-      amount: status.amount,
-      currency: currency
-    })
 
-    if (res.status === 200) {
-      dispatch({ type: "paymentStatus", payload: "pending" });
-      Cookies.set("paymentStatus", "pending");
-      window.location.href = res.data.url;
+      if (currency == "BTC") {
+        const res = await restApi.postRequest(`get-rate`, { currency: "BTC" })
+        const rate = res.rate
+        if (status.amount * 1 / rate < btcLimit) {
+          setInputError({ status: true, message: `The minimum amount for replenishing your account via Cryptomus is now $ ${(btcLimit * rate).toFixed(2)}` })
+          return
+        }
+      } else if (currency == "LTC") {
+        const rate = await restApi.postRequest(`get-rate`, { currency: "LTC" })
+        console.log(rate, "rate")
+        if (status.amount * 1 / rate < ltcLimit) {
+          setInputError({ status: true, message: `The minimum amount for replenishing your account via Cryptomus is now $ ${(ltcLimit * rate).toFixed(2)}` })
+          return
+        }
+      }
+      const res = await restApi.postRequest("pay-cryptomus", {
+        amount: status.amount,
+        currency: currency
+      })
+
+      if (res.status === 200) {
+        dispatch({ type: "paymentStatus", payload: "pending" });
+        Cookies.set("paymentStatus", "pending");
+        window.location.href = res.data.url;
+      }
+    } catch (error) {
+      showToast(error?.data.error || "An error occurred while processing payment", "error")
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -162,7 +174,6 @@ const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFuncti
       onClose();
     }
   }
-
   return (
     <Modal>
       <div
@@ -243,7 +254,7 @@ const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFuncti
 
             <Button className="bg-primary-gradient text-white text-sm flex flex-row gap-3 items-center justify-center" onClick={onHandlePayment}>
               {isLoading && (<div className="animate-spin rounded-full border-2 border-solid border-white border-t-transparent w-4 h-4" />)}
-              {(status.type === "CS2" || status.type === "TF2" || status.type === "Rust") ? "Pay with " + status.type : "Pay $" + status.amount }
+              {(status.type === "CS2" || status.type === "TF2" || status.type === "Rust") ? "Pay with " + status.type : "Pay $" + status.amount}
             </Button>
           </div>
           {/* <div className="flex flex-col gap-1">

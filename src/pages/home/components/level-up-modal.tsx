@@ -7,6 +7,7 @@ import Modal from "../../../components/modal";
 import Icon from "../../../components/icon";
 import { useClickOutside } from "../../../hooks/use-modal";
 import { restApi } from "../../../context/restApi";
+import { showToast } from "../../../context/helper";
 
 interface LevelUpModalProps {
   amount: number;
@@ -51,34 +52,39 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, discountedAmount, i
   }
 
   const onOffer = async () => {
-    dispatch({ type: "isLoading", payload: true });
-    Cookies.set("isLoading", "true");
-    const refCode = Cookies.get("refCode") || null;
-    const res = await restApi.postRequest("level-up", {
-      dreamLevel: dreamLevel,
-      refCode: refCode
-    });
-
-    if (res.status === 200) {
-      dispatch({ type: "isLoading", payload: false });
-      Cookies.remove("isLoading");
-      Cookies.remove("refCode");
-      Cookies.remove("refCode_expires");
-      setStatus({
-        ...status,
-        offerId: res.data.offerId,
-        showInfo: false,
-        tabIdx: 3,
+    try {
+      dispatch({ type: "isLoading", payload: true });
+      Cookies.set("isLoading", "true", { expires: new Date(new Date().getTime() + 10 * 60 * 1000) });
+      const refCode = Cookies.get("refCode") || null;
+      const res = await restApi.postRequest("level-up", {
+        dreamLevel: dreamLevel,
+        refCode: refCode
       });
 
-      fetchData();
-    } else {
-      setStatus({
-        ...status,
-        errorMessage: res.message,
-        orderId: res.orderId,
-        showInfo: false,
-      });
+      if (res.status === 200) {
+        dispatch({ type: "isLoading", payload: false });
+        Cookies.remove("isLoading");
+        Cookies.remove("refCode");
+        Cookies.remove("refCode_expires");
+        setStatus({
+          ...status,
+          offerId: res.data.offerId,
+          showInfo: false,
+          tabIdx: 3,
+        });
+
+        fetchData();
+      } else {
+        setStatus({
+          ...status,
+          errorMessage: res.message,
+          orderId: res.orderId,
+          showInfo: false,
+        });
+      }
+    } catch (error) {
+      showToast(error?.data.error || "An error occurred while processing payment", "error")
+    } finally {
       dispatch({ type: "isLoading", payload: false });
       Cookies.remove("isLoading");
     }
