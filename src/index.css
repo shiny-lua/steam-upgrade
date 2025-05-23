@@ -138,16 +138,6 @@ input::-webkit-scrollbar {
 .gallery-item.winner-showcase {
   pointer-events: none;
 }
-/* 
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 5px rgba(255, 73, 237, 0.5), 0 0 10px rgba(255, 73, 237, 0.2);
-  }
-
-  100% {
-    box-shadow: 0 0 10px rgba(255, 73, 237, 0.6), 0 0 15px rgba(255, 73, 237, 0.3);
-  }
-} */
 
 .gallery-item::after {
   content: '';
