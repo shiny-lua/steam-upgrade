@@ -301,7 +301,7 @@ const Home = () => {
         <div className="relative">
           <Icon icon="Effort" />
           <div className="flex flex-col lg:flex-row gap-4 relative z-10">
-            <div className="bg-primary-lightDark rounded-md flex flex-col gap-6 w-full lg:w-2/3 pt-5 p-3 xsm:p-5 sm:p-7 ">
+            <div className="bg-primary-lightDark rounded-md flex flex-col gap-7 w-full lg:w-2/3 pt-5 p-3 xsm:p-5 sm:p-7 ">
               <div className="flex gap-2 items-center">
                 <div className="text-primary-grey"><Icon className="w-4" icon="LevelUp" /></div>
                 <span className="text-primary-white text-base">Level Up</span>
@@ -468,7 +468,7 @@ const Home = () => {
                   </div>
                 </Button>
               )}
-              <div className="flex flex-col xsm:flex-row gap-2 items-center justify-between">
+              {/* <div className="flex flex-col xsm:flex-row gap-2 items-center justify-between">
                 <div className="flex items-center">
                   <Icon icon="Star" />
                   <span className="text-white text-xs">Trustpilot</span>
@@ -502,7 +502,7 @@ const Home = () => {
                   Rated 4.7 out of 5 Stars on{" "}
                   <span className="text-white">Trustpilot</span>
                 </span>
-              </div>
+              </div> */}
             </div>
             <div className="bg-primary-semiDark rounded-md flex flex-col gap-16 w-full lg:w-1/3 p-7">
               <div className="flex justify-between">
