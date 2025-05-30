@@ -28,7 +28,6 @@
     "bip32": "^5.0.0-rc.0",
     "bip39": "^3.1.0",
     "buffer": "^6.0.3",
-    "ethereumjs-wallet": "^1.0.2",
     "ethers": "^6.13.0",
     "flag-icons": "^7.3.2",
     "flatpickr": "^4.6.13",
