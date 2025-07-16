@@ -67,7 +67,7 @@ const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFuncti
       case "Litecoin":
       case "Solana":
         if (!!status.currency) {
-          onPayCryptomus(status.currency);
+          onPayHeleket(status.currency);
         }
         break;
       default:
@@ -120,7 +120,7 @@ const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFuncti
     }
   }
 
-  const onPayCryptomus = async (currency: string) => {
+  const onPayHeleket = async (currency: string) => {
 
     try {
       if (isLoading) {
@@ -140,18 +140,18 @@ const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFuncti
         const res = await restApi.postRequest(`get-rate`, { currency: "BTC" })
         const rate = res.rate
         if (status.amount * 1 / rate < btcLimit) {
-          setInputError({ status: true, message: `The minimum amount for replenishing your account via Cryptomus is now $ ${(btcLimit * rate).toFixed(2)}` })
+          setInputError({ status: true, message: `The minimum amount for replenishing your account via Heleket is now $ ${(btcLimit * rate).toFixed(2)}` })
           return
         }
       } else if (currency == "LTC") {
         const rate = await restApi.postRequest(`get-rate`, { currency: "LTC" })
         console.log(rate, "rate")
         if (status.amount * 1 / rate < ltcLimit) {
-          setInputError({ status: true, message: `The minimum amount for replenishing your account via Cryptomus is now $ ${(ltcLimit * rate).toFixed(2)}` })
+          setInputError({ status: true, message: `The minimum amount for replenishing your account via Heleket is now $ ${(ltcLimit * rate).toFixed(2)}` })
           return
         }
       }
-      const res = await restApi.postRequest("pay-cryptomus", {
+      const res = await restApi.postRequest("pay-heleket", {
         amount: status.amount,
         currency: currency
       })
