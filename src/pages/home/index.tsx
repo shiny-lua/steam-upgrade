@@ -273,11 +273,16 @@ const Home = () => {
     if (status.dreamSteamLevel <= status.currentSteamLevel) {
       return showToast("Desired level should be higher than current level", "warning")
     }
-    if (!state.userData.tradeLink || state.userData.isVerifiedEmail === false) {
-      showToast("Please verify your email and trade link to continue", "warning")
+    if (!state.userData.tradeLink) {
+      showToast("Please verify trade link to continue", "warning")
       navigate("/profile")
       return
     }
+    // if (!state.userData.tradeLink || state.userData.isVerifiedEmail === false) {
+    //   showToast("Please verify your email and trade link to continue", "warning")
+    //   navigate("/profile")
+    //   return
+    // }
     setShowLevelUpModal(true)
   }
 

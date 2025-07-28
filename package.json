@@ -8,11 +8,6 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "author": {
-    "name": "TailAdmin",
-    "email": "hello@tailadmin.com",
-    "url": "https://tailadmin.com"
-  },
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^4.6.1",
     "@material-tailwind/react": "^2.1.10",
