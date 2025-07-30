@@ -30,7 +30,8 @@ jobs:
               if ! command -v nvm &> /dev/null; then
                 echo "Installing NVM..."
                 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-                export NVM_DIR="$HOME/.nvm"[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                export NVM_DIR="$HOME/.nvm"
+                [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
               fi
               # Install Node.js if not available
               if ! command -v node &> /dev/null; then
@@ -41,7 +42,7 @@ jobs:
               # Install PM2 globally if not available
               if ! command -v pm2 &> /dev/null; then
                 echo "Installing PM2..."
-                yarn add -g pm2
+                npm install -g pm2
               fi
               # Deploy application
               cd /root/steam-upgrade/steam-upgrade
