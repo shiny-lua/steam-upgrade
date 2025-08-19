@@ -56,7 +56,7 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, discountedAmount, i
       dispatch({ type: "isLoading", payload: true });
       Cookies.set("isLoading", "true", { expires: new Date(new Date().getTime() + 10 * 60 * 1000) });
       const refCode = Cookies.get("refCode") || null;
-      const res = await restApi.postRequest("level-up", {
+      const res = await restApi.postRequest("trading-cards/send-set", {
         dreamLevel: dreamLevel,
         refCode: refCode
       });

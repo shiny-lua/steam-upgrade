@@ -3,6 +3,7 @@ import Layout from "../../components/layout";
 import Icon from "../../components/icon";
 import { Link, useNavigate } from "react-router-dom";
 import { restApi } from "../../context/restApi";
+import { showToast } from "../../context/helper";
 import Loading from "../../components/loading";
 import updateLevelBadge from "../../hooks/get-level-badge";
 
@@ -14,16 +15,17 @@ const Ranks = () => {
   const [globalStatus, setGlobalStatus] = React.useState<any>(null);
   const [ranks, setRanks] = React.useState<any>(null);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [currentSort, setCurrentSort] = React.useState<string>('rank');
 
   React.useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const res = await restApi.postRequest("get-ranks");
+      const res = await restApi.postRequest("get-ranks", { ladderType: currentSort });
       setRanks(res.data);
       setIsLoading(false);
     };
     fetchData();
-  }, []);
+  }, [currentSort]);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -33,11 +35,11 @@ const Ranks = () => {
     };
     fetchData();
   }, []);
-  
+
 
   return (
     <Layout>
-      <div className="relative h-full w-full max-w-[868px] mx-auto px-4 mt-5 md:mt-10">
+      <div className="relative h-full w-full max-w-[888px] mx-auto px-4 mt-5 md:mt-10">
         <Icon icon="Effort" />
         <div className="mb-5">
           <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
@@ -50,21 +52,22 @@ const Ranks = () => {
               </button>
               <div className="flex items-center gap-3">
                 <div className="text-[#A9ABCD]"><Icon icon="Ranks" className="w-8" /></div>
-                <h2 className="text-[#F3F3F3] text-[1.4rem] font-[900] leading-[22px]">
-                  Ranks
-                </h2>
+                <div className="flex flex-col">
+                  <h2 className="text-[#F3F3F3] text-[1.4rem] font-[900] leading-[22px]">
+                    Ranks
+                  </h2>
+                </div>
               </div>
             </div>
-            <div className="relative w-full sm:w-auto">
+            {/* <div className="relative w-full sm:w-auto">
               <Icon icon="Search" />
               <input
                 id="searchRank"
                 className="bg-transparent w-full sm:w-[250px] h-full text-primary-grey px-6 py-2 border border-[#252633] focus:outline-none focus:ring-1 focus:ring-primary-grey focus:px-9 rounded-md placeholder:text-[14px] placeholder:font-[500] placeholder:leading-[14px] placeholder:text-[#A9ABCD] placeholder:pl-2 transition-all"
                 placeholder="Search Steam ID..."
               />
-            </div>
+            </div> */}
           </div>
-
         </div>
 
         {isLoading ? (
@@ -105,6 +108,14 @@ const Ranks = () => {
               </div>
             </div>
             <div className="relative flex flex-col justify-center items-center min-h-[400px] w-full h-full overflow-hidden bg-primary-lightDark/90 shadow-inner-[0_0px_0px_1px_rgba(0,0,0,0.3)] rounded-lg md:p-8">
+              {isLoading && (
+                <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
+                  <div className="flex items-center gap-3 bg-primary-dark/90 px-4 py-2 rounded-lg">
+                    <div className="animate-spin rounded-full border-2 border-solid border-white border-t-transparent w-4 h-4" />
+                    <span className="text-white text-sm">Updating ranks...</span>
+                  </div>
+                </div>
+              )}
               <div className="w-full overflow-x-auto">
                 <table className="w-full text-left table-auto min-w-[800px]">
                   <thead>
@@ -126,41 +137,41 @@ const Ranks = () => {
                       </th>
                       <th className="pt-1 pb-5 whitespace-nowrap">
                         <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
-                          <button className="flex items-center gap-2">
+                          <button onClick={() => setCurrentSort('rank')} className="flex items-center gap-2">
                             <p>level</p>
-                            <Icon icon="Sort" />
+                            {currentSort === "rank" && <Icon icon="Sort" />}
                           </button>
                         </div>
                       </th>
                       <th className="pt-1 pb-5 whitespace-nowrap">
                         <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
-                          <button className="flex items-center gap-2">
+                          <button onClick={() => setCurrentSort('games')} className="flex items-center gap-2">
                             <p>games</p>
-                            <Icon icon="Sort" />
+                            {currentSort === "games" && <Icon icon="Sort" />}
                           </button>
                         </div>
                       </th>
                       <th className="pt-1 pb-5 whitespace-nowrap">
                         <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
-                          <button className="flex items-center gap-2">
+                          <button onClick={() => setCurrentSort('badges')} className="flex items-center gap-2">
                             <p>badges</p>
-                            <Icon icon="Sort" />
+                            {currentSort === "badges" && <Icon icon="Sort" />}
                           </button>
                         </div>
                       </th>
                       <th className="pt-1 pb-5 whitespace-nowrap">
                         <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
-                          <button className="flex items-center gap-2">
+                          <button onClick={() => setCurrentSort('playtime')} className="flex items-center gap-2">
                             <p>playtime</p>
-                            <Icon icon="Sort" />
+                            {currentSort === "playtime" && <Icon icon="Sort" />}
                           </button>
                         </div>
                       </th>
                       <th className="pt-1 pb-5 whitespace-nowrap">
                         <div className="text-[0.76rem] font-normal leading-[14px] text-primary-grey capitalize">
-                          <button className="flex items-center gap-2">
+                          <button onClick={() => setCurrentSort('steam_age')} className="flex items-center gap-2">
                             <p>year</p>
-                            <Icon icon="Sort" />
+                            {currentSort === "steam_age" && <Icon icon="Sort" />}
                           </button>
                         </div>
                       </th>
@@ -196,12 +207,14 @@ const Ranks = () => {
                         </td>
                         <td className="py-5">
                           <div className="flex items-center gap-2">
-                            {rank?.games !== "Private" ? <img src={rank?.games} alt={rank?.games} className="w-7 h-7" /> : <Icon icon="Lock" className="w-4 h-4" />}
+                            {currentSort === "games" ?
+                              <p className="text-sm text-white"> {currentSort === "games" ? rank?.gamesNum : rank?.games}</p> :
+                              rank?.games !== "Private" ? <img src={rank?.games} alt={rank?.games} className="w-7 h-7" /> : <Icon icon="Lock" className="w-4 h-4" />}
                           </div>
                         </td>
-                        <td className="py-5"><p className="text-sm text-white"> {rank?.badges}</p></td>
+                        <td className="py-5"><p className="text-sm text-white"> {currentSort === "badges" ? rank?.badgesNum : rank?.badges}</p></td>
                         <td className="py-5">{rank?.playtime === "Private" ? <Icon icon="Lock" className="w-4 h-4" /> : <p className="text-sm text-white"> {rank?.playtime} <span className="text-primary-grey">(H)</span></p>}</td>
-                        <td className="py-5 pl-6"><p className="text-sm text-white"> {rank?.years}</p></td>
+                        <td className="py-5"><p className="text-sm text-white">{rank?.years}</p></td>
                       </tr>
                     ))}
                   </tbody>

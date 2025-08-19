@@ -65,7 +65,7 @@ const CASE_ITEMS = [
     image: '/image/effect.png',
     chance: '79.4378%',
     name: 'Nothing',
-    type: 'Better luck next time',
+    type: '',
     price: '$1357.87',
     fromColor: '#0C0D15',
     viaColor: '#0C0D15',
@@ -147,9 +147,9 @@ const CaseItem = ({ item }) => {
         </div>
         <div className="flex gap-4 w-full pl-4 pb-2">
           <img src={item.image} alt={item.name} className="w-14 h-14" />
-          <div className="flex gap-3 my-2 flex-col">
-            <span className="text-primary-grey text-xs">{item.name}</span>
-            <span className="text-white text-sm">{item.type}</span>
+          <div className="flex gap-3 my-2 flex-col text-center">
+            <span className="text-sm text-white">{item.name}</span>
+            <span className="text-primary-grey text-xs">{item.type}</span>
             {/* <span className="text-white text-sm">{item.price}</span> */}
           </div>
         </div>
@@ -216,7 +216,7 @@ const FreeModal = ({ isOpen, onClose }) => {
           return 0;
         }
       });
-    }, 2000);
+    }, 1000);
     return () => clearInterval(interval);
   }, [caseExpireTime]);
 

@@ -87,9 +87,15 @@ const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFuncti
     }
 
     setIsLoading(true)
-    const res = await restApi.postRequest("create-payment-intent", { amount: status.amount, payment_method_types: currency })
-    if (res.status === 200) {
-      window.location.href = res.data;
+    try {
+      const res = await restApi.postRequest("create-payment-intent", { amount: status.amount, payment_method_types: currency })
+      if (res.status === 200) {
+        window.location.href = res.data;
+      }
+    } catch (error) {
+      showToast(error?.data.error || "An error occurred while processing payment", "error")
+    } finally {
+      setIsLoading(false)
     }
   }
 

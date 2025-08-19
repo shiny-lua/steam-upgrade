@@ -12,6 +12,7 @@ import { getDaysDifference, showToast } from "../../context/helper";
 import { getXPForLevel } from "../../hooks/get-user-xp";
 import CsGoModal from "./components/cs-go-modal";
 import Loading from "../../components/loading";
+import updateLevelBadge from "../../hooks/get-level-badge";
 
 interface Status {
   currentSteamLevel: number;
@@ -31,6 +32,10 @@ interface Status {
   levelBadgeOffset: number;
   discountedCost: number;
   daysDiff: number;
+  xpNeededToLevelUp: number;
+  xpNeededCurrentLevel: number;
+  currentXP: number;
+  levelProgress: string;
 }
 
 const Home = () => {
@@ -55,7 +60,11 @@ const Home = () => {
     levelBadge: "",
     levelBadgeOffset: 0,
     levelBadgeBorder: "",
-    daysDiff: 0
+    daysDiff: 0,
+    xpNeededToLevelUp: 0,
+    xpNeededCurrentLevel: 0,
+    currentXP: 0,
+    levelProgress: ""
   })
   const [showLevelUpModal, setShowLevelUpModal] = React.useState(false);
   const [showTradeUrlModal, setShowTradeUrlModal] = React.useState(false);
@@ -63,45 +72,80 @@ const Home = () => {
 
   React.useEffect(() => {
     const fetchData = async () => {
-      const res = await restApi.postRequest("get-steam-level")
+      try {
+        const res = await restApi.postRequest("get-steam-level")
 
-      const {
-        xp,
-        gameCoupons,
-        sets,
-        emotes,
-        backgrounds,
-        showcases,
-        friendCap,
-        boosterPackRate,
-        estimatedCost
-      } = getXPForLevel(res.data + 1, res.data);
-      const refCode = Cookies.get("refCode");
-      const expireDays = Cookies.get("refCode_expires");
-      let daysDiff = 0;
-      if (expireDays) {
-        daysDiff = getDaysDifference(expireDays);
+
+        if (res.data !== null && res.data !== undefined) {
+          const xpDiff = res.data.xp + res.data.xpNeededToLevelUp - res.data.xpNeededCurrentLevel - res.data.xpNeededToLevelUp
+          const {
+            xp,
+            gameCoupons,
+            sets,
+            emotes,
+            backgrounds,
+            showcases,
+            friendCap,
+            boosterPackRate,
+            estimatedCost
+          } = getXPForLevel(res.data.level + 1, res.data.level, xpDiff);
+          const refCode = Cookies.get("refCode");
+          const expireDays = Cookies.get("refCode_expires");
+          let daysDiff = 0;
+          if (expireDays) {
+            daysDiff = getDaysDifference(expireDays);
+          }
+          const discount = refCode ? 0.05 : 0;
+
+          console.log(`w-1/${((res.data.xp + res.data.xpNeededToLevelUp) - res.data.xpNeededCurrentLevel) / 100}`)
+          // Update status and global state
+          setStatus({
+            ...status,
+            currentSteamLevel: res.data.level,
+            dreamSteamLevel: res.data.level + 1,
+            xp,
+            sets,
+            gameCoupons,
+            emotes,
+            backgrounds,
+            showcases,
+            friendCap,
+            boosterPackRate,
+            estimatedCost: Number(estimatedCost),
+            discountedCost: Number((estimatedCost * (1 - discount)).toFixed(2)),
+            daysDiff,
+            xpNeededToLevelUp: res.data.xpNeededToLevelUp,
+            xpNeededCurrentLevel: res.data.xpNeededCurrentLevel,
+            currentXP: res.data.xp,
+            levelProgress: `w-1/${((res.data.xp + res.data.xpNeededToLevelUp) - res.data.xpNeededCurrentLevel) / 100}`
+          });
+
+          dispatch({ type: "steamLevel", payload: res.data })
+        }
+      } catch (error) {
+        console.error("Error fetching steam level:", error);
+        // Set default values if steam level fetch fails
+        setStatus({
+          ...status,
+          currentSteamLevel: 0,
+          dreamSteamLevel: 1,
+          xp: 0,
+          sets: 0,
+          gameCoupons: 0,
+          emotes: 0,
+          backgrounds: 0,
+          showcases: 0,
+          friendCap: 0,
+          boosterPackRate: 0,
+          estimatedCost: 0,
+          discountedCost: 0,
+          daysDiff: 0,
+          xpNeededToLevelUp: 0,
+          xpNeededCurrentLevel: 0,
+          currentXP: 0,
+          levelProgress: ""
+        });
       }
-      const discount = refCode ? 0.05 : 0;
-      // Update status and global state
-      setStatus({
-        ...status,
-        currentSteamLevel: res.data,
-        dreamSteamLevel: res.data + 1,
-        xp,
-        sets,
-        gameCoupons,
-        emotes,
-        backgrounds,
-        showcases,
-        friendCap,
-        boosterPackRate,
-        estimatedCost: Number(estimatedCost),
-        discountedCost: Number((estimatedCost * (1 - discount)).toFixed(2)),
-        daysDiff
-      });
-
-      dispatch({ type: "steamLevel", payload: res.data })
     }
 
     fetchData()
@@ -134,6 +178,7 @@ const Home = () => {
       showToast("We are only able to level up to 6199", "warning");
     }
 
+    const xpDiff = status.currentXP + n - status.xpNeededCurrentLevel - n
     // Calculate XP and related stats
     const {
       xp,
@@ -145,7 +190,7 @@ const Home = () => {
       friendCap,
       boosterPackRate,
       estimatedCost
-    } = getXPForLevel(n, status.currentSteamLevel);
+    } = getXPForLevel(n, status.currentSteamLevel, xpDiff);
 
     const refCode = Cookies.get("refCode");
     const discount = refCode ? 0.05 : 0;
@@ -221,6 +266,8 @@ const Home = () => {
       showToast("We are only able to level up to 6199", "warning");
     }
 
+    const xpDiff = status.currentXP + n - status.xpNeededCurrentLevel - n
+
     // Calculate XP and related stats
     const {
       xp,
@@ -232,7 +279,7 @@ const Home = () => {
       friendCap,
       boosterPackRate,
       estimatedCost
-    } = getXPForLevel(status.dreamSteamLevel + n, status.currentSteamLevel);
+    } = getXPForLevel(status.dreamSteamLevel + n, status.currentSteamLevel, xpDiff);
     const refCode = Cookies.get("refCode");
     const expireDays = Cookies.get("refCode_expires");
     let daysDiff = 0;
@@ -345,16 +392,45 @@ const Home = () => {
                   </span>
                 </div>
               </div>
+              {/* 
+              <div className="w-full h-6 bg-primary-semiDark rounded-full relative overflow-hidden">
+                <span className="text-white text-xs font-bold pr-2 z-10 text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                  Level {status.currentSteamLevel}: {status.xpNeededToLevelUp} / {status.currentXP + status.xpNeededToLevelUp - status.xpNeededCurrentLevel}
+                </span>
+                <div
+                  className={`h-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-400 rounded-full transition-all duration-1000 ease-out relative flex items-center justify-center ${status.levelProgress}`}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+                </div>
+              </div> */}
               <div className="flex flex-col sm:flex-row justify-between sm:gap-3">
                 <div className="flex flex-col gap-3 w-full sm:w-[45%]">
                   <span className="text-primary-grey text-xs">Your Level</span>
                   <div className="bg-primary-dark opacity-50 rounded-[10px] w-full px-4 py-3 flex justify-between items-center">
                     <span className="text-[#EDEDED] text-sm">{status.currentSteamLevel} </span>
-                    <div className="w-8 h-8 flex text-sm justify-center items-center rounded-full border-2 border-[#828385] text-white">
-                      {status.currentSteamLevel}
-                    </div>
+                    {(() => {
+                      const currentBadge = updateLevelBadge(status.currentSteamLevel);
+                      return (
+                        <div
+                          className="text-white text-sm relative w-8 h-8 bg-no-repeat flex justify-center items-center"
+                          style={{
+                            backgroundImage: currentBadge.levelBadge ? `url(${currentBadge.levelBadge})` : 'none',
+                            backgroundPosition: `center ${currentBadge.levelBadgeOffset}px`,
+                            border: currentBadge.levelBadgeBorder,
+                            borderRadius: currentBadge.levelBadgeBorder ? '50%' : 'none'
+                          }}
+                        >
+                          {status.currentSteamLevel}
+                        </div>
+                      );
+                    })()}
                   </div>
-                  <Button className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 flex items-center justify-center gap-1" >
+                  <Button
+                    className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-[#3A3B54] h-8 flex items-center justify-center gap-1"
+                    placeholder=""
+                    onPointerEnterCapture={() => { }}
+                    onPointerLeaveCapture={() => { }}
+                  >
                     <Icon icon="Refresh" />
                     <span className="text-primary-grey normal-case">
                       Refresh
@@ -377,17 +453,22 @@ const Home = () => {
                       onChange={e => onLevelChange(parseInt(e.target.value) || 0)}
                       className="text-[#EDEDED] text-sm border-none outline-none bg-transparent"
                     />
-                    <div
-                      className="text-white text-sm relative w-8 h-8 bg-no-repeat flex justify-center items-center"
-                      style={{
-                        backgroundImage: status.levelBadge ? `url(${status.levelBadge})` : 'none',
-                        backgroundPosition: `center ${status.levelBadgeOffset}px`,
-                        border: status.levelBadgeBorder,
-                        borderRadius: status.levelBadgeBorder ? '50%' : 'none'
-                      }}
-                    >
-                      {status.dreamSteamLevel}
-                    </div>
+                    {(() => {
+                      const dreamBadge = updateLevelBadge(status.dreamSteamLevel);
+                      return (
+                        <div
+                          className="text-white text-sm relative w-8 h-8 bg-no-repeat flex justify-center items-center"
+                          style={{
+                            backgroundImage: dreamBadge.levelBadge ? `url(${dreamBadge.levelBadge})` : 'none',
+                            backgroundPosition: `center ${dreamBadge.levelBadgeOffset}px`,
+                            border: dreamBadge.levelBadgeBorder,
+                            borderRadius: dreamBadge.levelBadgeBorder ? '50%' : 'none'
+                          }}
+                        >
+                          {status.dreamSteamLevel}
+                        </div>
+                      );
+                    })()}
                   </div>
                   <div className="flex gap-2 h-8">
                     <button onClick={() => onLevelUp(1)} className="bg-[#3A3B54] rounded-md text-xs font-bold flex items-center justify-center text-primary-grey w-1/4">
@@ -440,17 +521,35 @@ const Home = () => {
                   </div>
                 </div>
               </div>
+
               {status.discountedCost !== status.estimatedCost && (
-                <div className="flex gap-1 items-center -mt-5">
-                  <span className="text-deep-purple-300 text-[13px]">
-                    5% discount applied from referral code ({status.daysDiff} days left)
-                  </span>
+                <div className="relative flex items-center gap-2 -mt-5 p-3 bg-gradient-to-r from-purple-900/20 to-deep-purple-900/20 rounded-lg border border-purple-500/30 backdrop-blur-sm animate-slide-in-from-top hover:scale-[1.02] transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:border-purple-400/50 group">
+                  <div className="flex items-center justify-center w-6 h-6 bg-gradient-to-br from-purple-400 to-deep-purple-600 rounded-full animate-pulse group-hover:animate-glow-pulse">
+                    <Icon icon="Star" className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-deep-purple-200 text-sm font-medium animate-pulse group-hover:text-purple-100 transition-colors duration-300">
+                      5% discount applied
+                    </span>
+                    <span className="text-deep-purple-300/80 text-xs group-hover:text-deep-purple-200/90 transition-colors duration-300">
+                      From referral code • {status.daysDiff} days left
+                    </span>
+                  </div>
+                  <div className="ml-auto">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce group-hover:animate-ping"></div>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-purple-400/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
+                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600/20 to-deep-purple-600/20 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
                 </div>
               )}
               {!state.authToken ? (
                 <Button
                   onClick={onSignIn}
-                  className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4">
+                  className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4"
+                  placeholder=""
+                  onPointerEnterCapture={() => { }}
+                  onPointerLeaveCapture={() => { }}
+                >
                   <div className="flex gap-1 justify-center items-center">
                     {isLoading ? (
                       <div className="animate-spin rounded-full border-2 border-solid border-white border-t-transparent w-4 h-4" />
@@ -466,13 +565,18 @@ const Home = () => {
               ) : (
                 <Button
                   onClick={onShowLevelUpModal}
-                  className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4">
+                  className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient px-4"
+                  placeholder=""
+                  onPointerEnterCapture={() => { }}
+                  onPointerLeaveCapture={() => { }}
+                >
                   <div className="flex gap-2 justify-center items-center">
                     Continue{" "}
                     <Icon icon="TriangleRight" />
                   </div>
                 </Button>
               )}
+
               {/* <div className="flex flex-col xsm:flex-row gap-2 items-center justify-between">
                 <div className="flex items-center">
                   <Icon icon="Star" />
@@ -509,11 +613,26 @@ const Home = () => {
                 </span>
               </div> */}
             </div>
-            <div className="bg-primary-semiDark rounded-md flex flex-col gap-16 w-full lg:w-1/3 p-7">
+            <div className="bg-primary-lightDark rounded-md flex flex-col gap-16 w-full lg:w-1/3 p-7 lg:p-7">
               <div className="flex justify-between">
                 <div className="flex w-[45%]">
                   <div className="flex flex-col justify-center items-center gap-3 w-full">
-                    <div className="border-[2px] border-[#828385] rounded-full w-8 h-8 text-white text-sm flex justify-center items-center">{status.currentSteamLevel}</div>
+                    {(() => {
+                      const currentBadge = updateLevelBadge(status.currentSteamLevel);
+                      return (
+                        <div
+                          className="text-white text-sm relative w-8 h-8 bg-no-repeat flex justify-center items-center"
+                          style={{
+                            backgroundImage: currentBadge.levelBadge ? `url(${currentBadge.levelBadge})` : 'none',
+                            backgroundPosition: `center ${currentBadge.levelBadgeOffset}px`,
+                            border: currentBadge.levelBadgeBorder,
+                            borderRadius: currentBadge.levelBadgeBorder ? '50%' : 'none'
+                          }}
+                        >
+                          {status.currentSteamLevel}
+                        </div>
+                      );
+                    })()}
                     <span className="text-primary-grey text-xs">
                       Current Level
                     </span>
@@ -537,17 +656,22 @@ const Home = () => {
                 </div>
                 <div className="flex w-[45%]">
                   <div className="flex flex-col justify-center items-center gap-3 w-full">
-                    <div
-                      className="text-white text-sm relative w-8 h-8 bg-no-repeat flex justify-center items-center"
-                      style={{
-                        backgroundImage: status.levelBadge ? `url(${status.levelBadge})` : 'none',
-                        backgroundPosition: `center ${status.levelBadgeOffset}px`,
-                        border: status.levelBadgeBorder,
-                        borderRadius: status.levelBadgeBorder ? '50%' : 'none'
-                      }}
-                    >
-                      {status.dreamSteamLevel}
-                    </div>
+                    {(() => {
+                      const dreamBadge = updateLevelBadge(status.dreamSteamLevel);
+                      return (
+                        <div
+                          className="text-white text-sm relative w-8 h-8 bg-no-repeat flex justify-center items-center"
+                          style={{
+                            backgroundImage: dreamBadge.levelBadge ? `url(${dreamBadge.levelBadge})` : 'none',
+                            backgroundPosition: `center ${dreamBadge.levelBadgeOffset}px`,
+                            border: dreamBadge.levelBadgeBorder,
+                            borderRadius: dreamBadge.levelBadgeBorder ? '50%' : 'none'
+                          }}
+                        >
+                          {status.dreamSteamLevel}
+                        </div>
+                      );
+                    })()}
                     <span className="text-primary-grey text-xs">
                       Dream Level
                     </span>
@@ -556,61 +680,62 @@ const Home = () => {
               </div>
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-primary-grey text-xs">Sets</span>
-                  <span className="text-white text-xs font-bold">{status.sets}</span>
+                  <span className="text-primary-grey text-sm">Sets</span>
+                  <span className="text-white text-sm font-bold">{status.sets}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-primary-grey text-xs">XP</span>
-                  <span className="text-white text-xs font-bold">{status.xp}</span>
+                  <span className="text-primary-grey text-sm">XP</span>
+                  <span className="text-white text-sm font-bold">{status.xp}</span>
                 </div>
               </div>
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-primary-grey text-xs">
+                  <span className="text-primary-grey text-sm">
                     Game Coupons
                   </span>
-                  <span className="text-white text-xs font-bold">{status.gameCoupons}</span>
+                  <span className="text-white text-sm font-bold">{status.gameCoupons}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-primary-grey text-xs">Emotes</span>
-                  <span className="text-white text-xs font-bold">{status.emotes}</span>
+                  <span className="text-primary-grey text-sm">Emotes</span>
+                  <span className="text-white text-sm font-bold">{status.emotes}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-primary-grey text-xs">Backgrounds</span>
-                  <span className="text-white text-xs font-bold">{status.backgrounds}</span>
+                  <span className="text-primary-grey text-sm">Backgrounds</span>
+                  <span className="text-white text-sm font-bold">{status.backgrounds}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-primary-grey text-xs">Showcases</span>
-                  <span className="text-white text-xs font-bold">
+                  <span className="text-primary-grey text-sm">Showcases</span>
+                  <span className="text-white text-sm font-bold">
                     {status.showcases}
-                    <span className="text-primary-grey text-xs text-bold">
+                    <span className="text-primary-grey text-sm text-bold">
                       {" "} / {" "} 20
                     </span>
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-primary-grey text-xs">Friend Cap</span>
-                  <span className="text-white text-xs font-bold">
+                  <span className="text-primary-grey text-sm">Friend Cap</span>
+                  <span className="text-white text-sm font-bold">
                     {250 + status.friendCap}
-                    <span className="text-primary-grey text-xs text-bold">
+                    <span className="text-primary-grey text-sm text-bold">
                       {" "} / {" "} 2,000
                     </span>
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-primary-grey text-xs">
+                  <span className="text-primary-grey text-sm">
                     Booster Pack Rate
                   </span>
-                  <span className="text-white text-xs font-bold">+{status.boosterPackRate}%</span>
+                  <span className="text-white text-sm font-bold">+{status.boosterPackRate}%</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-primary-grey text-xs">World Rank</span>
-                  <span className="text-white text-xs font-bold">#{status.worldRank}</span>
+                  <span className="text-primary-grey text-sm">World Rank</span>
+                  <span className="text-white text-sm font-bold">#{status.worldRank}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
         <div className="pt-14 flex justify-center gap-[14px] flex-col items-center">
           <Icon icon="Help" />
           <span className="font-bold text-[26px] text-white">HOW IT WORKS</span>
@@ -703,7 +828,11 @@ const Home = () => {
               you may have!
             </span>
             <Button
-              className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-28 mt-2">
+              className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-28 mt-2"
+              placeholder=""
+              onPointerEnterCapture={() => { }}
+              onPointerLeaveCapture={() => { }}
+            >
               <div className="flex items-center gap-1">
                 <Icon icon="Discord" />
                 <span className="normal-case text-white">Contact</span>

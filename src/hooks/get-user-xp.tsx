@@ -31,7 +31,7 @@ const calculateLevelXP = (level: number): number => {
     return 100 + (Math.floor(level / 10) * 100);
 };
 
-export const getXPForLevel = (desiredLevel: number, currentLevel: number): LevelStats => {
+export const getXPForLevel = (desiredLevel: number, currentLevel: number, xp_diff: number): LevelStats => {
     let xp = 0;
     let totalCost = 0;
 
@@ -49,7 +49,7 @@ export const getXPForLevel = (desiredLevel: number, currentLevel: number): Level
     });
 
     const tenthLevel = Math.floor(desiredLevel / 10);
-
+    xp -= xp_diff;
     return {
         xp,
         sets: Math.floor(xp / 100),

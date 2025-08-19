@@ -2,51 +2,63 @@ const updateLevelBadge = (level: number) => {
     if (level < 100) {
       if (level < 10) {
         return {
-          levelBadge: '2px solid rgb(130, 131, 133)',
+          levelBadge: '',
           levelBadgeOffset: 0,
-          levelBadgeBorder: 'none'
+          levelBadgeBorder: '2px solid rgb(130, 131, 133)'
         };
       } else if (level < 20) {
         return {
-          levelBadge: '2px solid rgb(201, 43, 69)',
+          levelBadge: '',
           levelBadgeOffset: 0,
-          levelBadgeBorder: 'none'
+          levelBadgeBorder: '2px solid rgb(201, 43, 69)'
         };
       } else if (level < 30) {
         return {
-          levelBadge: '2px solid rgb(228, 96, 70)',
+          levelBadge: '',
           levelBadgeOffset: 0,
-          levelBadgeBorder: 'none'
+          levelBadgeBorder: '2px solid rgb(228, 96, 70)'
         };
       } else if (level < 40) {
         return {
-          levelBadge: '2px solid rgb(255, 214, 37)',
+          levelBadge: '',
           levelBadgeOffset: 0,
-          levelBadgeBorder: 'none'
+          levelBadgeBorder: '2px solid rgb(255, 214, 37)'
+        };
+      } else if (level < 50) {
+        return {
+          levelBadge: '',
+          levelBadgeOffset: 0,
+          levelBadgeBorder: '2px solid rgb(74, 128, 63)'
         };
       } else if (level < 60) {
         return {
-          levelBadge: '2px solid rgb(82, 148, 231)',
+          levelBadge: '',
           levelBadgeOffset: 0,
-          levelBadgeBorder: 'none'
+          levelBadgeBorder: '2px solid rgb(82, 148, 231)'
         };
       } else if (level < 70) {
         return {
-          levelBadge: '2px solid rgb(123, 87, 210)',
+          levelBadge: '',
           levelBadgeOffset: 0,
-          levelBadgeBorder: 'none'
+          levelBadgeBorder: '2px solid rgb(123, 87, 210)'
         };
       } else if (level < 80) {
         return {
-          levelBadge: '2px solid rgb(205, 87, 212)',
+          levelBadge: '',
           levelBadgeOffset: 0,
-          levelBadgeBorder: 'none'
+          levelBadgeBorder: '2px solid rgb(205, 87, 212)'
+        };
+      } else if (level < 90) {
+        return {
+          levelBadge: '',
+          levelBadgeOffset: 0,
+          levelBadgeBorder: '2px solid rgb(88, 38, 58)'
         };
       } else if (level < 100) {
         return {
-          levelBadge: '2px solid rgb(161, 130, 87)',
+          levelBadge: '',
           levelBadgeOffset: 0,
-          levelBadgeBorder: 'none'
+          levelBadgeBorder: '2px solid rgb(161, 130, 87)'
         };
       }
     } else if (level < 6200) {
@@ -61,7 +73,7 @@ const updateLevelBadge = (level: number) => {
       };
     }
     return {
-      levelBadge: 'none',
+      levelBadge: '',
       levelBadgeOffset: 0,
       levelBadgeBorder: 'none'
     };

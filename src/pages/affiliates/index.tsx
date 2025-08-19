@@ -19,7 +19,7 @@ const Affiliates = () => {
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [status, setStatus] = React.useState({
     ranks: null as any,
-    isLoading: false,
+    isLoading: true,
     isLoadingCode: false,
     affiliateCode: "",
     isEditing: false,

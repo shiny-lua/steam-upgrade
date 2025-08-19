@@ -22,7 +22,8 @@ const INIT_STATE: InitStateObject = {
             referrals: 0,
             buyers: 0,
             totalProfit: 0
-        }
+        },
+        isVerifiedEmail: false
     },
     isLoading: false,
     steamLevel: 0,
@@ -69,9 +70,14 @@ const GlobalContextProvider = ({ children }: any) => {
         };
 
         const getDeviceId = async () => {
-            const fp = await FingerprintJS.load();
-            const result = await fp.get();
-            setDeviceID(result.visitorId);  // This is the unique device ID
+            try {
+                const fp = await FingerprintJS.load();
+                const result = await fp.get();
+                setDeviceID(result.visitorId);  // This is the unique device ID
+            } catch (error) {
+                console.error("Error getting device ID:", error);
+                setDeviceID("unknown");
+            }
         };
 
         getIP();
@@ -82,8 +88,7 @@ const GlobalContextProvider = ({ children }: any) => {
         const updateRefCode = async () => {
             const params = new URLSearchParams(location.search);
             const refCode = params.get('ref');
-            console.log("refCode:", refCode)
-            if (refCode) {
+            if (refCode && ip && deviceID) {
                 const res = await restApi.postRequest("update-referrals", { ip, deviceID, refCode })
 
                 if (res.status === 200) {
@@ -98,15 +103,22 @@ const GlobalContextProvider = ({ children }: any) => {
         }
 
         updateRefCode()
-    }, [location]);
+    }, [location, ip, deviceID]);
 
     const fetchData = async () => {
-        const resp = await restApi.postRequest("get-user");
+        try {
+            const resp = await restApi.postRequest("get-user");
 
-        if (resp.status === 200) {
-            dispatch({ type: "userData", payload: resp.data });
-            dispatch({ type: "authToken", payload: cookie })
-            storeData(resp.data)
+            if (resp.status === 200 && resp.data) {
+                dispatch({ type: "userData", payload: resp.data });
+                dispatch({ type: "authToken", payload: cookie })
+                storeData(resp.data)
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+            // Set default values if user data fetch fails
+            dispatch({ type: "userData", payload: INIT_STATE.userData });
+            dispatch({ type: "authToken", payload: "" })
         }
     }
 
