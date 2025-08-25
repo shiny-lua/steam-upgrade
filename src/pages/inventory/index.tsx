@@ -74,7 +74,7 @@ interface InventoryData {
 
 const Inventory = () => {
     const navigate = useNavigate();
-    const [state] = useGlobalContext();
+    const [state, {dispatch}] = useGlobalContext();
     const [showModal, setShowModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [inventoryData, setInventoryData] = useState<InventoryData | null>(null);
@@ -115,6 +115,7 @@ const Inventory = () => {
 
             if (response.status === 200) {
                 setInventoryData(response.data);
+                dispatch({ type: "userData", payload: { ...state.userData, steamInventory: response.data } });
                 console.log(response.data);
             }
         } catch (error: any) {
