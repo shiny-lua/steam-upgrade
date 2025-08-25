@@ -1,55 +1,60 @@
 interface ReducerObject {
-    type: string
-    payload: any
+  type: string
+  payload: any
 }
 
 interface InitStateObject {
-    isLoggedIn: boolean
-    isOpenedMenu: boolean
-    userData: {
-        fullName: string
-        email: string
-        id: string
-        avatar: string
-        joinedDate: number
-        tradeLink: string
-        balance: number
-        affiliateCode: string
-        affiliate: {
-            referrals: number
-            buyers: number
-            totalProfit: number
-        },
-        isVerifiedEmail: boolean
-    }
-    authToken: string
-    steamLevel: number
-    paymentStatus: string
-    isLoading: boolean
+  isLoggedIn: boolean
+  isOpenedMenu: boolean
+  userData: {
+    fullName: string
+    email: string
+    id: string
+    avatar: string
+    joinedDate: number
+    tradeLink: string
+    balance: number
+    affiliateCode: string
+    affiliate: {
+      referrals: number
+      buyers: number
+      totalProfit: number
+    },
+    isVerifiedEmail: boolean
+  }
+  steamInventory: {
+    inventory: any[]
+    totalGame: number
+    totalItems: number
+  }
+  authToken: string
+  steamLevel: number
+  paymentStatus: string
+  isLoading: boolean
 }
 
 type GlobalContextType = [
-    InitStateObject,
+  InitStateObject,
 
-    {
-        dispatch: (data: ReducerObject) => void
-        storeData: (authToken: any) => void
-    }
+  {
+    dispatch: (data: ReducerObject) => void
+    storeData: (authToken: any) => void
+  }
 ]
 
 declare interface Item {
-    id: string;
-    name: string;
-    marketHashName: string;
-    type: string;
-    category: string;
-    image: string;
-    quality: string;
-    color: string;
-    createdAt: string;
-    updatedAt: string;
-  }
-  
+  id: string;
+  name: string;
+  marketHashName: string;
+  type: string;
+  category: string;
+  image: string;
+  quality: string;
+  color: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 declare interface Case {
   id: string;
   name: string;

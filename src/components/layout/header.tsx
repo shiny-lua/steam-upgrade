@@ -214,8 +214,8 @@ const Header = () => {
             </div>
             <Link to="/inventory" className="hidden lg:flex items-center bg-[#252633] bg-opacity-90 p-3 gap-2 rounded-[10px] cursor-pointer z-10 text-primary-grey">
               <Icon icon="Bag" />
-              <div className="bg-primary-dark flex items-center justify-center w-6 rounded-lg text-primary-grey">
-                0
+              <div className="bg-primary-dark flex items-center justify-center w-6 rounded-lg text-sm text-primary-grey">
+                {state.userData.steamInventory.totalItems || 0}
               </div>
             </Link>
             <div>

@@ -313,6 +313,10 @@ const Home = () => {
 
   const onShowLevelUpModal = () => {
 
+    // if (status.sets > 1000) {
+    //   return showToast("Unfortunately, we can only process a maximum of 1000 sets per order. Break up your order into smaller chunks and try again.", "warning")
+    // }
+
     if (state.userData.balance < status.estimatedCost) {
       return showToast("You don't have enough balance, please add more balance to your wallet", "warning")
     }
@@ -351,7 +355,7 @@ const Home = () => {
       )}
       <div className={`px-3 relative sm:px-4 md:px-8 lg:px-0 mx-auto max-w-[1000px] mt-5 md:mt-20 ${state.isLoading ? "pointer-events-none" : ""}`}>
         <div className="relative">
-          <Icon icon="Effort" />
+          <Icon icon="Effort" className="hidden lg:block" />
           <div className="flex flex-col lg:flex-row gap-4 relative z-10">
             <div className="bg-primary-lightDark rounded-md flex flex-col gap-7 w-full lg:w-2/3 pt-5 p-3 xsm:p-5 sm:p-7 ">
               <div className="flex gap-2 items-center">
@@ -439,7 +443,7 @@ const Home = () => {
                 </div>
                 <div className="flex justify-center py-4 sm:py-5 sm:-mt-3 items-center">
                   <Icon className="hidden sm:block" icon="ArrowRight" />
-                  <Icon className="block sm:hidden" icon="ArrowDown" />
+                  <Icon className="block sm:hidden text-primary-dark opacity-75" icon="ArrowDown" />
                 </div>
                 <div className="flex flex-col gap-3 w-full sm:w-[45%]">
                   <span className="text-primary-grey text-xs">
@@ -740,10 +744,10 @@ const Home = () => {
           <Icon icon="Help" />
           <span className="font-bold text-[26px] text-white">HOW IT WORKS</span>
           <span className="text-primary-grey text-sm">
-            A quick introduction on the basic features of the website.
+            Quick introduction on the basic features of the website.
           </span>
           {/* flex-none overflow-x-auto scroll-container */}
-          <div className="bg-[#161620] opacity-90 flex flex-col lg:flex-row gap-3 p-2 xsm:p-5 sm:p-7 ">
+          <div className="bg-[#161620] opacity-90 flex flex-col lg:flex-row gap-3 p-2 xsm:p-5 sm:p-7 w-full">
             <div className="rounded-[10px] bg-[#252633] opacity-90 w-full px-5 py-6 flex flex-col sm:flex-row lg:flex-col items-center gap-[14px]">
               <div className="flex flex-col justify-center gap-5">
                 <div className="font-bold text-sm text-white">
@@ -757,7 +761,7 @@ const Home = () => {
                 </div>
               </div>
               <div className="">
-                <Icon icon="Img1" />
+                <Icon icon="Img1" className="w-full h-auto" />
               </div>
             </div>
             <div className="rounded-[10px] bg-[#252633] opacity-90 w-full px-5 py-6 flex flex-col sm:flex-row lg:flex-col items-center gap-[14px]">
@@ -792,7 +796,7 @@ const Home = () => {
           <Icon icon="Video" />
           <span className="font-bold text-[26px] text-white">QUICK GUIDE</span>
           <span className="text-primary-grey text-sm">
-            A quick introduction on the basic features of the website.
+            Quick introduction on the basic features of the website.
           </span>
           <div className="bg-[#161620] opacity-90 flex gap-4 p-7 flex-col justify-center">
             <span className="font-bold text-base text-white">
@@ -816,7 +820,7 @@ const Home = () => {
           <Icon icon="EarPhone" />
           <span className="font-bold text-[26px] text-white">NEED HELP?</span>
           <span className="text-primary-grey text-sm">
-            A quick introduction on the basic features of the website.
+            Quick introduction on the basic features of the website.
           </span>
           <div className="bg-[#161620] opacity-90 flex gap-4 p-3 xsm:p-5 sm:p-7 flex-col justify-center">
             <span className="font-bold text-base text-white">Support</span>

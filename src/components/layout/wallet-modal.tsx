@@ -235,7 +235,7 @@ const WalletModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: VoidFuncti
               {status.amount > 0 && <span className="text-primary-grey absolute left-3 top-1/2 -translate-y-1/2">$</span>}
               <input
                 type="number"
-                placeholder="Enter an usd amount you want to pay"
+                placeholder="Deposit amount (USD)"
                 className={`w-full pl-3 outline-none bg-transparent ${status.amount ? "pl-2.5" : "pl-0"}`}
                 onChange={(e) => setStatus({ ...status, amount: Number(e.target.value) })}
               />

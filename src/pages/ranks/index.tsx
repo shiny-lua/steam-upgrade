@@ -40,7 +40,7 @@ const Ranks = () => {
   return (
     <Layout>
       <div className="relative h-full w-full max-w-[888px] mx-auto px-4 mt-5 md:mt-10">
-        <Icon icon="Effort" />
+        <Icon icon="Effort" className="hidden lg:block" />
         <div className="mb-5">
           <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
             <div className="space-y-3 w-full sm:w-auto">

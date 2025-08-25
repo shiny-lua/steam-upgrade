@@ -86,7 +86,7 @@ const Affiliates = () => {
   return (
     <Layout>
       <div className="relative h-full w-full max-w-[868px] mx-auto px-4 mt-5 md:mt-10">
-        <Icon icon="Effort" />
+        <Icon icon="Effort" className="hidden lg:block" />
         <div className="flex flex-col xsm:flex-row items-start justify-between gap-4 mb-4">
           <div className="space-y-3">
             <button onClick={() => navigate("/home")} className="relative flex gap-2 items-center">
