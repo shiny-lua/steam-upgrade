@@ -297,15 +297,7 @@ const Inventory = () => {
                         <div className="w-full flex justify-end gap-2">
                             {!state.authToken ? (
                                 <>
-                                    <Button
-                                        onClick={() => navigate("/inventory/demo")}
-                                        className="align-middle select-none font-sans font-bold text-center uppercase transition-all text-xs rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 bg-[#3A3B54] w-[140px] p-2.5 z-10 cursor-pointer"
-                                        placeholder=""
-                                        onPointerEnterCapture={() => { }}
-                                        onPointerLeaveCapture={() => { }}
-                                    >
-                                        <span className="capitalize text-sm">View Demo</span>
-                                    </Button>
+                                    
                                 </>
                             ) : (
                                 <>
@@ -400,7 +392,6 @@ const Inventory = () => {
                                     ) : (
                                         !inventoryData ? (
                                             <div className="text-center py-10">
-                                                <Icon icon="Bag" className="mx-auto mb-4 text-6xl text-primary-grey" />
                                                 <h3 className="text-white text-xl font-bold mb-2">No inventory loaded</h3>
                                                 <p className="text-primary-grey mb-4">Click "Refresh" to load your trading cards</p>
                                             </div>

@@ -313,9 +313,14 @@ const Home = () => {
 
   const onShowLevelUpModal = () => {
 
-    // if (status.sets > 1000) {
-    //   return showToast("Unfortunately, we can only process a maximum of 1000 sets per order. Break up your order into smaller chunks and try again.", "warning")
-    // }
+    if (!state.userData.tradeLink || state.userData.isVerifiedEmail === false) {
+      showToast("Please verify your email and trade link to continue", "warning")
+      return
+    }
+
+    if (status.sets > 1000) {
+      return showToast("Unfortunately, we can only process a maximum of 1000 sets per order. Break up your order into smaller chunks and try again.", "warning")
+    }
 
     if (state.userData.balance < status.estimatedCost) {
       return showToast("You don't have enough balance, please add more balance to your wallet", "warning")
@@ -329,11 +334,7 @@ const Home = () => {
       navigate("/profile")
       return
     }
-    // if (!state.userData.tradeLink || state.userData.isVerifiedEmail === false) {
-    //   showToast("Please verify your email and trade link to continue", "warning")
-    //   navigate("/profile")
-    //   return
-    // }
+    
     setShowLevelUpModal(true)
   }
 

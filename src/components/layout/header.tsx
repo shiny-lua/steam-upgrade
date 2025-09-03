@@ -8,6 +8,7 @@ import { config, useGlobalContext } from "../../context";
 import { Button } from "@material-tailwind/react";
 import Icon from "../icon";
 import { restApi } from "../../context/restApi";
+import { showToast } from "../../context/helper";
 
 const Header = () => {
   const [state, { dispatch, storeData }] = useGlobalContext();
@@ -45,6 +46,15 @@ const Header = () => {
   const onSignIn = async () => {
     setIsLoading(true);
     window.location.href = config.BACKEND_URL + "/auth/steam";
+  };
+
+  const onOpenFreeModal = () => {
+    console.log(state.userData)
+    if (!state.userData.tradeLink || state.userData.isVerifiedEmail === false) {
+      showToast("Please verify your email and trade link to continue", "warning")
+      return
+    }
+    setFreeModal(true);
   };
 
   return (
@@ -206,7 +216,7 @@ const Header = () => {
           </div>
           <div className="flex gap-3 items-center">
             <div
-              onClick={() => setFreeModal(true)}
+              onClick={onOpenFreeModal}
               className="hidden lg:flex items-center bg-[#252633] bg-opacity-90 p-3 gap-2 rounded-[10px] cursor-pointer z-10 text-primary-grey"
             >
               <Icon icon="Free" />
@@ -237,8 +247,8 @@ const Header = () => {
                 {showProfileDropdown && (
                   <div className="absolute top-15 right-0 w-[150px] bg-[#252633] shadow-[#525252] shadow-1 shadow-gray-900/10 flex items-center rounded-lg flex flex-col p-2 z-50 duration-300 ease-linear">
                     <div
-                      onClick={() => setFreeModal(true)}
-                      className="flex items-center w-full ml-4 gap-4 bg-[#252633] bg-opacity-90 p-3 gap-2 rounded-[10px] cursor-pointer z-10 text-primary-grey"
+                      onClick={onOpenFreeModal}
+                      className="flex items-center w-full ml-4 gap-4 bg-[#252633] bg-opacity-90 p-3 rounded-[10px] cursor-pointer z-10 text-primary-grey"
                     >
                       <Icon icon="Free" />
                       <span className="text-primary-grey text-sm">Free</span>
