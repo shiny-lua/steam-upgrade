@@ -222,12 +222,12 @@ const Header = () => {
               <Icon icon="Free" />
               <span className="text-primary-grey text-sm">Free</span>
             </div>
-            <Link to="/inventory" className="hidden lg:flex items-center bg-[#252633] bg-opacity-90 p-3 gap-2 rounded-[10px] cursor-pointer z-10 text-primary-grey">
+            {/* <Link to="/inventory" className="hidden lg:flex items-center bg-[#252633] bg-opacity-90 p-3 gap-2 rounded-[10px] cursor-pointer z-10 text-primary-grey">
               <Icon icon="Bag" />
               <div className="bg-primary-dark flex items-center justify-center w-6 rounded-lg text-sm text-primary-grey">
                 {state.userData.steamInventory ? state.userData.steamInventory.totalItems : 0}
               </div>
-            </Link>
+            </Link> */}
             <div>
               <Link to="/profile">
                 <img
@@ -253,13 +253,13 @@ const Header = () => {
                       <Icon icon="Free" />
                       <span className="text-primary-grey text-sm">Free</span>
                     </div>
-                    <Link to="/inventory" className="flex items-center w-full ml-4 gap-4 bg-[#252633] bg-opacity-90 p-3 gap-2 rounded-[10px] cursor-pointer z-10 text-primary-grey">
+                    {/* <Link to="/inventory" className="flex items-center w-full ml-4 gap-4 bg-[#252633] bg-opacity-90 p-3 gap-2 rounded-[10px] cursor-pointer z-10 text-primary-grey">
                       <Icon icon="Bag" />
                       <div>Cart</div>
                       <div className="bg-primary-dark flex items-center justify-center w-6 rounded-lg text-primary-grey">
                         0
                       </div>
-                    </Link>
+                    </Link> */}
                     <button onClick={() => setWalletModal(true)} className="flex md:hidden flex items-center w-full ml-4 gap-4 bg-[#252633] bg-opacity-90 p-3 gap-2 rounded-[10px] cursor-pointer z-10 text-primary-grey">
                       <Icon icon="Wallet" />
                       <span className="normal-case text-sm">Wallet</span>

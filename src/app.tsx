@@ -68,7 +68,7 @@ const Routers = () => {
       {/* <Route path="/profile" element={<Profile  />} /> */}
       <Route path="/profile" element={state.authToken ? <Profile /> : <Navigate to="/home" />} />
 
-      <Route path="/inventory" element={<Inventory />} />
+      {/* <Route path="/inventory" element={<Inventory />} /> */}
     </Routes>
   );
 }
