@@ -74,7 +74,7 @@ interface InventoryData {
 
 const Inventory = () => {
     const navigate = useNavigate();
-    const [state, {dispatch}] = useGlobalContext();
+    const [state, { dispatch }] = useGlobalContext();
     const [showModal, setShowModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [inventoryData, setInventoryData] = useState<InventoryData | null>(null);
@@ -297,7 +297,7 @@ const Inventory = () => {
                         <div className="w-full flex justify-end gap-2">
                             {!state.authToken ? (
                                 <>
-                                    
+
                                 </>
                             ) : (
                                 <>
@@ -600,26 +600,6 @@ const Inventory = () => {
                                 </>
                             )}
                         </div>
-                    </div>
-                </div>
-
-                <div className="pt-14 flex justify-center gap-[14px] flex-col items-center">
-                    <Icon icon="Video" />
-                    <span className="font-bold text-[26px] text-white">QUICK GUIDE</span>
-                    <span className="text-primary-grey text-sm">
-                        Quick introduction on the basic features of the website.
-                    </span>
-                    <div className="bg-[#161620] opacity-90 flex gap-4 p-7 flex-col justify-center">
-                        <span className="font-bold text-base text-white">
-                            How the inventory system works
-                        </span>
-                        <span className="text-primary-grey text-sm">
-                            View all your Steam trading cards organized by game sets. Each set shows the number of cards you have,
-                            complete sets you can craft, and the XP you'll earn. Select the sets you want to withdraw and we'll
-                            send them to your Steam inventory via trade offer. Make sure your Steam inventory is set to public
-                            to view your cards.
-                        </span>
-                        <Icon icon="Img4" />
                     </div>
                 </div>
             </div>

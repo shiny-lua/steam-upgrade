@@ -1,18 +1,16 @@
 import React, { useRef, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
+import { Button } from "@material-tailwind/react";
 
 import WalletModal from "./wallet-modal";
 import FreeModal from "./free-modal";
 import { config, useGlobalContext } from "../../context";
-import { Button } from "@material-tailwind/react";
 import Icon from "../icon";
-import { restApi } from "../../context/restApi";
 import { showToast } from "../../context/helper";
 
 const Header = () => {
-  const [state, { dispatch, storeData }] = useGlobalContext();
-  const navigate = useNavigate();
+  const [state, { dispatch }] = useGlobalContext();
 
   const location = useLocation();
   const { pathname } = location;
@@ -188,7 +186,8 @@ const Header = () => {
               </div>
             )}
             <Link to="/home" className="flex items-center gap-2">
-              <img src="/image/icons/logo.png" alt="logo" />
+              {/* <img src="/image/icons/logo.png" alt="logo" /> */}
+              <Icon icon="Logo" />
               {!state.isOpenedMenu && (
                 <div className="flex flex-col mt-1">
                   <p className="text-[#A942E7] font-bold text-[20px] leading-none">Steam</p>
@@ -338,7 +337,9 @@ const Header = () => {
               )}
             </div>
             <Link to="/home" className="flex items-center gap-2">
-              <img src="/image/icons/logo.png" alt="logo" />
+              {/* <img src="/image/icons/logo.png" alt="logo" /> */}
+              <Icon icon="Logo" />
+
               <div className="flex flex-col mt-1">
                 <p className="text-[#A942E7] font-bold text-[20px] leading-none">Steam</p>
                 <p className="text-[#A942E7] font-bold text-sm leading-none">Upgrade</p>

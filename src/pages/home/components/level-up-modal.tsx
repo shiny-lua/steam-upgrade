@@ -273,48 +273,91 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({ amount, discountedAmount, i
           )}
           {status.tabIdx == 1 && (
             <div>
-
-              <div className="bg-[#161620] drop-shadow-[0_2px_0_rgba(0,0,0,0.15)] p-6 mb-5 flex flex-col gap-2 rounded-lg">
-                <div className="flex items-center gap-2 text-2xl font-bold text-primary-grey">Order to
-                  <Link to={`https://steamcommunity.com/profiles/${config.STEAM_BOT_STEAM_ID}`} target="_blank" className="underline text-blue-400">
-                    {config.STEAM_BOT_NAME}
-                  </Link >
+              {/* Header with Level Boost tag */}
+              <div className="flex items-center gap-3 mb-6">
+                <h2 className="text-3xl font-bold text-white">Order Summary</h2>
+                <div className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  Level Boost
                 </div>
-                <div className="text-lg text-primary-grey">
-                  {status.orderId && (
-                    <div>Order ID: <span className="text-blue-600 font-semibold">{status.orderId}</span></div>
-                  )}
-                  <div>Bot Name: <span className="text-blue-600 font-semibold">{config.STEAM_BOT_NAME}</span></div>
-                  <div>Bot Steam ID: <span className="text-blue-600 font-semibold">{config.STEAM_BOT_STEAM_ID}</span></div>
-                  <div>Dream Level: <span className="text-blue-600 font-semibold">{dreamLevel}</span></div>
-                  <div className="flex gap-1">
-                    Price:
-                    {discountedAmount === amount && (<span className="text-blue-600 font-semibold">${amount}</span>)}
-                    {discountedAmount !== amount && (<span className="font-semibold flex gap-1">
-                      <span className="line-through decoration-blue-600 text-blue-600/60"> ${amount}</span>
-                      <span className="text-blue-600">${discountedAmount}</span>
-                    </span>)}
+              </div>
+
+              {/* Main Order Card */}
+              <div className="bg-[#161620] drop-shadow-[0_2px_0_rgba(0,0,0,0.15)] p-6 mb-6 rounded-lg">
+                {/* Order Details - Two Column Layout with Icons */}
+                <div className="flex justify-between items-start mb-6">
+                  {/* Dream Level Section */}
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Icon icon="Star" className="w-4 h-4 text-blue-400" />
+                      <span className="text-white text-sm font-medium">Dream Level</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-white text-4xl font-bold">{dreamLevel}</span>
+                    </div>
                   </div>
 
-                  {status.errorMessage && (
-                    <div>
-                      <div>Status: <span className="text-blue-600 font-semibold">Failed</span></div>
-                      <div className="flex flex-col" >
-                        Error Reason:
-                        <span className="text-red-500 font-semibold ">
-                          There was an issue with your trade submission. Please check that your profile and inventory settings are set to public and that your profile contains a valid trade URL. Once you update these settings, you can place a new order without needing to make another payment, as your balance will be applied automatically.
+                  {/* Price Section */}
+                  <div className="flex flex-col items-end">
+                    <div className="flex items-center gap-1 mb-2">
+                      <Icon icon="Wallet" className="w-4 h-4 text-green-400" />
+                      <span className="text-white text-sm font-medium">Price</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-white text-4xl font-bold">
+                        {discountedAmount === amount ? `$${amount}` : `$${discountedAmount}`}
+                      </span>
+                    </div>
+                    {discountedAmount !== amount && (
+                      <span className="text-gray-400 text-sm line-through mt-1">
+                        ${amount}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Error Message */}
+                {status.errorMessage && (
+                  <div className="mb-6 p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
+                    <div className="text-red-400 font-semibold mb-2">Status: Failed</div>
+                    <div className="text-red-300 text-sm">
+                      There was an issue with your trade submission. Please check that your profile and inventory settings are set to public and that your profile contains a valid trade URL. Once you update these settings, you can place a new order without needing to make another payment, as your balance will be applied automatically.
+                    </div>
+                  </div>
+                )}
+
+                {/* Service Guidelines */}
+                {status.showInfo && (
+                  <div className="border-t border-gray-600 pt-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="text-white font-semibold">Service Guidelines</span>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <div className="bg-[#252633] p-4 rounded-lg flex items-start gap-3">
+                        <span className="text-gray-300 text-sm">
+                          Make sure you have crafted all your sets before buying from us (or buying again from us). This ensures that we only send the sets you need.
+                        </span>
+                      </div>
+
+                      <div className="bg-[#252633] p-4 rounded-lg flex items-start gap-3">
+                        <span className="text-gray-300 text-sm">
+                          You can participate in all our promotions to get more bonuses!
+                        </span>
+                      </div>
+
+                      <div className="bg-[#252633] p-4 rounded-lg flex items-start gap-3">
+
+                        <span className="text-gray-300 text-sm">
+                          We recommend using our plugin to quickly craft received sets.
+                        </span>
+                      </div>
+
+                      <div className="bg-[#252633] p-4 rounded-lg flex items-start gap-3">
+                        <span className="text-gray-300 text-sm">
+                          Make sure you have an active <Link to={`https://help.steampowered.com/en/faqs/view/71D3-35C2-AD96-AA3A`} target="_blank" className="text-blue-400 hover:text-blue-300 underline">Steam Account</Link> before exchanging.
                         </span>
                       </div>
                     </div>
-                  )}
-
-                </div>
-                {status.showInfo && (
-                  <div className="text-md text-orange-700">
-                    <div>* Make sure you have crafted all your sets before buying from us (or buying again from us). This ensures that we only send the sets you need.</div>
-                    <div>* You can participate in all our promotions to get more bonuses!</div>
-                    <div>* We recommend using our plugin to quickly craft received sets.</div>
-                    <div>* Make sure you have an active Steam <Link to={`https://help.steampowered.com/en/faqs/view/71D3-35C2-AD96-AA3A`} target="_blank" className="underline">account</Link> before exchanging.</div>
                   </div>
                 )}
               </div>

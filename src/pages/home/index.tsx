@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import Cookies from "js-cookie";
 
@@ -334,7 +334,7 @@ const Home = () => {
       navigate("/profile")
       return
     }
-    
+
     setShowLevelUpModal(true)
   }
 
@@ -744,9 +744,7 @@ const Home = () => {
         <div className="pt-14 flex justify-center gap-[14px] flex-col items-center">
           <Icon icon="Help" />
           <span className="font-bold text-[26px] text-white">HOW IT WORKS</span>
-          <span className="text-primary-grey text-sm">
-            Quick introduction on the basic features of the website.
-          </span>
+          
           {/* flex-none overflow-x-auto scroll-container */}
           <div className="bg-[#161620] opacity-90 flex flex-col lg:flex-row gap-3 p-2 xsm:p-5 sm:p-7 w-full">
             <div className="rounded-[10px] bg-[#252633] opacity-90 w-full px-5 py-6 flex flex-col sm:flex-row lg:flex-col items-center gap-[14px]">
@@ -793,56 +791,27 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div className="pt-14 flex justify-center gap-[14px] flex-col items-center">
-          <Icon icon="Video" />
-          <span className="font-bold text-[26px] text-white">QUICK GUIDE</span>
-          <span className="text-primary-grey text-sm">
-            Quick introduction on the basic features of the website.
-          </span>
-          <div className="bg-[#161620] opacity-90 flex gap-4 p-7 flex-col justify-center">
-            <span className="font-bold text-base text-white">
-              How the process works
-            </span>
-            <span className="text-primary-grey text-sm">
-              The purpose of our service is to help you level up your steam
-              profile as fast and as cheap as possible. Steam levels in general
-              can be very confusing, and finding the right badges to craft can
-              be exhausting. After you make a payment using our service, we will
-              automatically send you a trade for all the cards that you need to
-              craft to reach your desired level. We will also go through all
-              your badges and only send you sets that you have not yet crafted.
-              All you have to do is simply accept the trade and craft your sets
-              to reach that sweet, sweet steam level!
-            </span>
-            <Icon icon="Img4" />
-          </div>
-        </div>
         <div className="flex flex-col gap-[14px] items-center pt-14 justify-center">
           <Icon icon="EarPhone" />
           <span className="font-bold text-[26px] text-white">NEED HELP?</span>
-          <span className="text-primary-grey text-sm">
-            Quick introduction on the basic features of the website.
-          </span>
+          
           <div className="bg-[#161620] opacity-90 flex gap-4 p-3 xsm:p-5 sm:p-7 flex-col justify-center">
             <span className="font-bold text-base text-white">Support</span>
             <span className="text-primary-grey text-sm">
               Need help? Click the button below to join our Discord server,
               where you can open a ticket in the{" "}
-              <span className="text-white">#open-ticket channel.</span> Our
+              <Link to="https://discord.gg/b4JjG4nWsu" target="_blank" rel="noopener noreferrer" className="text-white">#open-ticket channel.</Link> Our
               support team is ready to assist you with any questions or issues
               you may have!
             </span>
-            <Button
+            <Link to="https://discord.gg/b4JjG4nWsu" target="_blank" rel="noopener noreferrer"
               className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none bg-primary-gradient w-28 mt-2"
-              placeholder=""
-              onPointerEnterCapture={() => { }}
-              onPointerLeaveCapture={() => { }}
             >
               <div className="flex items-center gap-1">
                 <Icon icon="Discord" />
                 <span className="normal-case text-white">Contact</span>
               </div>
-            </Button>
+            </Link>
           </div>
         </div>
         {(state.isLoading || showLevelUpModal) && (

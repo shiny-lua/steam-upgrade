@@ -1,5 +1,5 @@
-import { Button } from "@material-tailwind/react";
 import Icon from "../icon";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -8,7 +8,9 @@ const Footer = () => {
         <div className="flex flex-row mb-6 sm:mb-0 justify-between sm:justify-start sm:flex-col w-full sm:w-2/3 gap-6">
           <div>
             <div className="flex gap-1 items-center">
-              <img src="/image/icons/logo.png" alt="logo" />
+              {/* <img src="/image/icons/logo.png" alt="logo" /> */}
+              <Icon icon="Logo" />
+
               <div className="flex flex-col mt-1">
                 <p className="text-[#A942E7] font-bold text-[19px] leading-none">Steam</p>
                 <p className="text-[#A942E7] font-bold text-sm leading-none">
@@ -20,16 +22,14 @@ const Footer = () => {
               © 2024 SteamUpgrade.com | All rights reserved.
             </div>
           </div>
-          <Button
-            className="align-middle select-none font-sans font-bold text-center uppercase transition-all text-xs px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none h-[45px] w-[140px] bg-primary-grey bg-opacity-10 lg:mt-10">
-            <div className="flex gap-1 ">
-              <Icon icon="Discord" />
-              <span className="text-[13px] text-primary-grey normal-case">
-                Support
-              </span>
-              <Icon icon="Link" className="w-3.5 ml-1" />
-            </div>
-          </Button>
+          <Link to="https://discord.gg/b4JjG4nWsu" target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-1 select-none font-sans font-bold text-center uppercase transition-all text-xs px-6 rounded-lg text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none h-[45px] w-[140px] bg-primary-grey bg-opacity-10 lg:mt-10">
+            <Icon icon="Discord" />
+            <span className="text-[13px] text-primary-grey normal-case">
+              Support
+            </span>
+            <Icon icon="Link" className="w-3.5 ml-1" />
+          </Link>
         </div>
         <div className="flex w-full sm:w-1/3 sm:gap-6 lg:gap-16">
           <div className="flex flex-col gap-3 w-3/5">
@@ -37,13 +37,13 @@ const Footer = () => {
             <span className="text-primary-grey font-bold text-sm">
               Cookies Policy
             </span>
-            <span className="text-primary-grey font-bold text-sm">
+            <Link to="/terms" className="text-primary-grey font-bold text-sm hover:text-white transition-colors">
               Terms of Service
-            </span>
-            <span className="text-primary-grey font-bold text-sm">
+            </Link>
+            <Link to="/privacy" className="text-primary-grey font-bold text-sm hover:text-white transition-colors">
               Privacy Policy
-            </span>
-            <span className="text-primary-grey font-bold text-sm">Contact Us</span>
+            </Link>
+            <Link to="https://discord.gg/b4JjG4nWsu" target="_blank" rel="noopener noreferrer" className="text-primary-grey font-bold text-sm">Contact Us</Link>
           </div>
           <div className="flex flex-col gap-3 w-2/5">
             <span className="text-white font-bold text-sm">SOCIAL</span>
@@ -51,14 +51,15 @@ const Footer = () => {
               <Icon icon="Steam" />
               <span className="text-primary-grey text-sm">Steam</span>
             </div>
-            <div className="flex gap-1 items-center">
+            <Link to="https://discord.gg/b4JjG4nWsu" target="_blank" rel="noopener noreferrer"
+              className="flex gap-1 items-center">
               <Icon icon="Discord" />
               <span className="text-primary-grey text-sm mt-1">Discord</span>
-            </div>
-            <div className="flex gap-1 items-center">
+            </Link>
+            <Link to="https://x.com/steamupgrade" target="_blank" rel="noopener noreferrer" className="flex gap-1 items-center">
               <Icon icon="X" />
               <span className="text-primary-grey text-sm mt-1">X</span>
-            </div>
+            </Link>
           </div>
         </div>
       </div>

@@ -15,7 +15,8 @@ import Rank from "./pages/ranks";
 import Orders from "./pages/orders";
 import Affiliates from "./pages/affiliates";
 import Profile from "./pages/profile";
-import Inventory from "./pages/inventory";
+import Terms from "./pages/terms";
+import Privacy from "./pages/privacy";
 
 import { GlobalContextProvider, useGlobalContext } from "./context";
 import { restApi } from "./context/restApi";
@@ -65,6 +66,8 @@ const Routers = () => {
       <Route path="/ranks" element={<Rank />} />
       <Route path="/orders" element={<Orders />} />
       <Route path="/affiliates" element={<Affiliates />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
       {/* <Route path="/profile" element={<Profile  />} /> */}
       <Route path="/profile" element={state.authToken ? <Profile /> : <Navigate to="/home" />} />
 
