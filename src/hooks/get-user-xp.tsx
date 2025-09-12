@@ -16,11 +16,12 @@ interface LevelStats {
 }
 
 const LEVEL_PRICING: LevelPricing[] = [
-    { threshold: 111, price: 0.26 },
-    { threshold: 157, price: 0.29 },
-    { threshold: 256, price: 0.30 },
-    { threshold: 422, price: 0.36 },
-    { threshold: Infinity, price: 0.45 }
+    { threshold: 75, price: 0.34 },
+    { threshold: 78, price: 0.36 },
+    { threshold: 164, price: 0.39 },
+    { threshold: 306, price: 0.45 },
+    { threshold: 486, price: 0.54 },
+    { threshold: Infinity, price: 0.76 }
 ];
 
 const getPriceForLevel = (level: number): number => {
