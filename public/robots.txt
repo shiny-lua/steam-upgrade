@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://steamupgrade.com/sitemap.xml
+
+# Disallow admin and API endpoints
+Disallow: /api/
+Disallow: /auth/
+Disallow: /admin/
+
+# Allow all other pages
+Allow: /home
+Allow: /ranks
+Allow: /orders
+Allow: /affiliates
+Allow: /profile
+Allow: /terms
+Allow: /privacy
+
+# Crawl delay (optional)
+Crawl-delay: 1
